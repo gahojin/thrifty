@@ -377,9 +377,9 @@ class KotlinCodeGeneratorTest {
 
         val parcelize = ClassName("kotlinx.android.parcel", "Parcelize")
 
-        struct.annotationSpecs.any { it.typeName == parcelize } shouldBe true
-        anEnum.annotationSpecs.any { it.typeName == parcelize } shouldBe true
-        svc.annotationSpecs.any { it.typeName == parcelize } shouldBe false
+        struct.annotations.any { it.typeName == parcelize } shouldBe true
+        anEnum.annotations.any { it.typeName == parcelize } shouldBe true
+        svc.annotations.any { it.typeName == parcelize } shouldBe false
     }
 
     @Test
@@ -435,14 +435,15 @@ class KotlinCodeGeneratorTest {
             |public class SvcClient(
             |  protocol: Protocol,
             |  listener: AsyncClientBase.Listener,
-            |) : AsyncClientBase(protocol, listener), Svc {
-            |  public override suspend fun doSomething(foo: Int): Int = suspendCoroutine { cont ->
+            |) : AsyncClientBase(protocol, listener),
+            |    Svc {
+            |  override suspend fun doSomething(foo: Int): Int = suspendCoroutine { cont ->
             |    this.enqueue(DoSomethingCall(foo, object : ServiceMethodCallback<Int> {
-            |      public override fun onSuccess(result: Int): Unit {
+            |      override fun onSuccess(result: Int) {
             |        cont.resumeWith(Result.success(result))
             |      }
             |
-            |      public override fun onError(error: Throwable): Unit {
+            |      override fun onError(error: Throwable) {
             |        cont.resumeWith(Result.failure(error))
             |      }
             |    }))
@@ -566,25 +567,25 @@ class KotlinCodeGeneratorTest {
             |  public data class Foo(
             |    public val `value`: Int,
             |  ) : Union() {
-            |    public override fun toString(): String = "Union(Foo=${'$'}value)"
+            |    override fun toString(): String = "Union(Foo=${'$'}value)"
             |  }
             |
             |  public data class Bar(
             |    public val `value`: Long,
             |  ) : Union() {
-            |    public override fun toString(): String = "Union(Bar=${'$'}value)"
+            |    override fun toString(): String = "Union(Bar=${'$'}value)"
             |  }
             |
             |  public data class Baz(
             |    public val `value`: String,
             |  ) : Union() {
-            |    public override fun toString(): String = "Union(Baz=${'$'}value)"
+            |    override fun toString(): String = "Union(Baz=${'$'}value)"
             |  }
             |
             |  public data class NotFoo(
             |    public val `value`: Int,
             |  ) : Union() {
-            |    public override fun toString(): String = "Union(NotFoo=${'$'}value)"
+            |    override fun toString(): String = "Union(NotFoo=${'$'}value)"
             |  }
             |
         """.trimMargin())
@@ -616,25 +617,19 @@ class KotlinCodeGeneratorTest {
             |      this.value_ = source
             |    }
             |
-            |    public override fun build(): Union {
-            |      val resultVar = value_
-            |      if (resultVar == null) {
-            |        error("Invalid union; at least one value is required")
-            |      }
-            |      return resultVar!!
-            |    }
+            |    override fun build(): Union = value_ ?: kotlin.error("Invalid union; at least one value is required")
             |
-            |    public override fun reset(): Unit {
+            |    override fun reset() {
             |      value_ = null
             |    }
             |
-            |    public fun Foo(`value`: Int) = apply { this.value_ = Union.Foo(value) }
+            |    public fun Foo(`value`: Int): Builder = apply { this.value_ = Union.Foo(value) }
             |
-            |    public fun Bar(`value`: Long) = apply { this.value_ = Union.Bar(value) }
+            |    public fun Bar(`value`: Long): Builder = apply { this.value_ = Union.Bar(value) }
             |
-            |    public fun Baz(`value`: String) = apply { this.value_ = Union.Baz(value) }
+            |    public fun Baz(`value`: String): Builder = apply { this.value_ = Union.Baz(value) }
             |
-            |    public fun NotFoo(`value`: Int) = apply { this.value_ = Union.NotFoo(value) }
+            |    public fun NotFoo(`value`: Int): Builder = apply { this.value_ = Union.NotFoo(value) }
             |  }
         """.trimMargin())
     }
@@ -702,9 +697,9 @@ class KotlinCodeGeneratorTest {
         file.shouldCompile()
 
         file.single().toString() should contain("""
-            |    public override fun read(protocol: Protocol) = read(protocol, Builder())
+            |    override fun read(protocol: Protocol): Union = read(protocol, Builder())
             |
-            |    public override fun read(protocol: Protocol, builder: Builder): Union {
+            |    override fun read(protocol: Protocol, builder: Builder): Union {
             |      protocol.readStructBegin()
             |      while (true) {
             |        val fieldMeta = protocol.readFieldBegin()
@@ -771,7 +766,7 @@ class KotlinCodeGeneratorTest {
         file.shouldCompile()
 
         file.single().toString() should contain("""
-            |    public override fun read(protocol: Protocol): Union {
+            |    override fun read(protocol: Protocol): Union {
             |      protocol.readStructBegin()
             |      var result : Union? = null
             |      while (true) {
@@ -901,14 +896,14 @@ class KotlinCodeGeneratorTest {
 
         file.single().toString() should contain("""
             |public sealed class UnionStruct : Struct {
-            |  public override fun write(protocol: Protocol): Unit {
+            |  override fun write(protocol: Protocol) {
             |    ADAPTER.write(protocol, this)
             |  }
             |
             |  public data class Struct(
             |    public val `value`: Bonk,
             |  ) : UnionStruct() {
-            |    public override fun toString(): String = "UnionStruct(Struct=${'$'}value)"
+            |    override fun toString(): String = "UnionStruct(Struct=${'$'}value)"
             |  }
             |
             |  public class Builder : StructBuilder<UnionStruct> {
@@ -952,7 +947,7 @@ class KotlinCodeGeneratorTest {
         file.shouldCompile()
 
         file.single().toString() should contain("""
-            |    public override fun build(): Bonk = Bonk(message = this.message, type = this.type)
+            |    override fun build(): Bonk = Bonk(message = this.message, type = this.type)
         """.trimMargin())
     }
 
@@ -972,9 +967,7 @@ class KotlinCodeGeneratorTest {
           1 -> {
             if (fieldMeta.typeId == TType.I32) {
               val field_ = protocol.readI32().let {
-                TestEnum.findByValue(it) ?: throw
-                    ThriftException(ThriftException.Kind.PROTOCOL_ERROR,
-                    "Unexpected value for enum type TestEnum: ${'$'}it")
+                TestEnum.findByValue(it) ?: throw ThriftException(ThriftException.Kind.PROTOCOL_ERROR, "Unexpected value for enum type TestEnum: ${'$'}it")
               }
               builder.field_(field_)
             } else {
@@ -1016,9 +1009,7 @@ class KotlinCodeGeneratorTest {
           2 -> {
             if (fieldMeta.typeId == TType.I32) {
               val field2 = protocol.readI32().let {
-                TestEnum.findByValue(it) ?: throw
-                    ThriftException(ThriftException.Kind.PROTOCOL_ERROR,
-                    "Unexpected value for enum type TestEnum: ${'$'}it")
+                TestEnum.findByValue(it) ?: throw ThriftException(ThriftException.Kind.PROTOCOL_ERROR, "Unexpected value for enum type TestEnum: ${'$'}it")
               }
               builder.field2(field2)
             } else {
@@ -1063,9 +1054,7 @@ class KotlinCodeGeneratorTest {
           2 -> {
             if (fieldMeta.typeId == TType.I32) {
               val field2 = protocol.readI32().let {
-                TestEnum.findByValue(it) ?: throw
-                    ThriftException(ThriftException.Kind.PROTOCOL_ERROR,
-                    "Unexpected value for enum type TestEnum: ${'$'}it")
+                TestEnum.findByValue(it) ?: throw ThriftException(ThriftException.Kind.PROTOCOL_ERROR, "Unexpected value for enum type TestEnum: ${'$'}it")
               }
               _local_field2 = field2
             } else {

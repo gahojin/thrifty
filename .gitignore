@@ -3,6 +3,7 @@ out/
 .gradle/
 local.properties
 .idea/
+.kotlin/
 .git/
 .build-cache/
 bin/

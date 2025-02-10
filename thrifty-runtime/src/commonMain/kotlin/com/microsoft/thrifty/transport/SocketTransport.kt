@@ -42,6 +42,11 @@ expect class SocketTransport internal constructor(
         fun build(): SocketTransport
     }
 
+    override fun read(buffer: ByteArray, offset: Int, count: Int): Int
+    override fun write(buffer: ByteArray, offset: Int, count: Int)
+    override fun flush()
+    override fun close()
+
     @Throws(okio.IOException::class)
     fun connect()
 }

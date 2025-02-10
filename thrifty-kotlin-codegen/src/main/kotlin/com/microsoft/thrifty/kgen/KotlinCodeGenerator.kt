@@ -824,6 +824,7 @@ class KotlinCodeGenerator(
         return FunSpec.builder("toString")
                 .addModifiers(KModifier.OVERRIDE)
                 .addCode(block)
+                .returns(String::class)
                 .build()
     }
 
@@ -880,6 +881,7 @@ class KotlinCodeGenerator(
             val builderFunSpec = FunSpec.builder(name)
                     .addParameter(name, buildFunParamType)
                     .addStatement("return apply·{ this.%N·= %N }", name, name)
+                    .returns(structTypeName.nestedClass("Builder"))
 
             // Add initialization in default ctor
             defaultCtor.addStatement("this.%N = %L", name, defaultValueBlock)
@@ -962,20 +964,10 @@ class KotlinCodeGenerator(
                 .addFunction(FunSpec.builder("build")
                         .addModifiers(KModifier.OVERRIDE)
                         .returns(structTypeName)
-                        // We're doing some convoluted stuff to work around an apparent kotlinc bug
-                        // where type inference and/or smart-casting fails.  iOS tests got a compiler
-                        // error about the builder var being of type "UnionType.Builder" which clearly
-                        // it isn't.  This reformulation seems to work.
-                        .addStatement("val %N = %N", resultVarName, builderVarName)
-                        .beginControlFlow("if (%N == null)", resultVarName)
-                        .addStatement("%M(%S)", MemberName("kotlin", "error"), "Invalid union; at least one value is required")
-                        .endControlFlow()
-                        .addStatement("return %N!!", resultVarName)
-//                        .addStatement(
-//                                "return %N ?: %M(%S)",
-//                                builderVarName,
-//                                MemberName("kotlin", "error"),
-//                                "Invalid union; at least one value is required")
+                        .addStatement(
+                                "return %N ?: kotlin.error(%S)",
+                                builderVarName,
+                                "Invalid union; at least one value is required")
                         .build())
                 .addFunction(FunSpec.builder("reset")
                         .addModifiers(KModifier.OVERRIDE)
@@ -991,6 +983,7 @@ class KotlinCodeGenerator(
             spec.addFunction(FunSpec.builder(name)
                     .addParameter("value", type)
                     .addStatement("return apply·{ this.%N·= ${struct.name}.%N(value) }", builderVarName, typeName)
+                    .returns(structTypeName.nestedClass("Builder"))
                     .build())
         }
 
@@ -1173,6 +1166,7 @@ class KotlinCodeGenerator(
         if (builderType != null) {
             adapter.addFunction(FunSpec.builder("read")
                     .addModifiers(KModifier.OVERRIDE)
+                    .returns(struct.typeName)
                     .addParameter("protocol", Protocol::class)
                     .addStatement("return read(protocol, %T())", builderType)
                     .build())
@@ -1315,6 +1309,7 @@ class KotlinCodeGenerator(
         if (builderType != null) {
             adapter.addFunction(FunSpec.builder("read")
                     .addModifiers(KModifier.OVERRIDE)
+                    .returns(struct.typeName)
                     .addParameter("protocol", Protocol::class)
                     .addStatement("return read(protocol, %T())", builderType)
                     .build())

@@ -98,17 +98,17 @@ actual class SocketTransport actual constructor(
         }
 
     @Throws(IOException::class)
-    override fun read(buffer: ByteArray, offset: Int, count: Int): Int {
+    actual override fun read(buffer: ByteArray, offset: Int, count: Int): Int {
         return inputStream!!.read(buffer, offset, count)
     }
 
     @Throws(IOException::class)
-    override fun write(buffer: ByteArray, offset: Int, count: Int) {
+    actual override fun write(buffer: ByteArray, offset: Int, count: Int) {
         outputStream!!.write(buffer, offset, count)
     }
 
     @Throws(IOException::class)
-    override fun flush() {
+    actual override fun flush() {
         outputStream!!.flush()
     }
 
@@ -126,7 +126,7 @@ actual class SocketTransport actual constructor(
         outputStream = socket!!.getOutputStream()
     }
 
-    override fun close() {
+    actual override fun close() {
         val socket = socket
         val input = inputStream
         val output = outputStream

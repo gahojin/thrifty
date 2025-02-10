@@ -69,27 +69,23 @@ actual class SocketTransport actual constructor(
         }
     }
 
-    override fun read(buffer: ByteArray, offset: Int, count: Int): Int {
+    actual override fun read(buffer: ByteArray, offset: Int, count: Int): Int {
         return socket!!.read(buffer, offset, count)
     }
 
-    override fun write(data: ByteArray) {
-        write(data, 0, data.size)
-    }
-
-    override fun write(buffer: ByteArray, offset: Int, count: Int) {
+    actual override fun write(buffer: ByteArray, offset: Int, count: Int) {
         require(offset >= 0)
         require(count >= 0)
         require(count <= buffer.size - offset)
         socket!!.write(buffer, offset, count)
     }
 
-    override fun flush() {
+    actual override fun flush() {
         // no-op?
         socket?.flush()
     }
 
-    override fun close() {
+    actual override fun close() {
         socket?.close()
     }
 

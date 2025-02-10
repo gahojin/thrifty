@@ -21,6 +21,10 @@
 package com.microsoft.thrifty.transport
 
 expect class HttpTransport(url: String) : Transport {
+    override fun read(buffer: ByteArray, offset: Int, count: Int): Int
+    override fun write(buffer: ByteArray, offset: Int, count: Int)
+    override fun flush()
+    override fun close()
     fun setConnectTimeout(timeout: Int)
     fun setReadTimeout(timeout: Int)
     fun setCustomHeaders(headers: Map<String, String>)

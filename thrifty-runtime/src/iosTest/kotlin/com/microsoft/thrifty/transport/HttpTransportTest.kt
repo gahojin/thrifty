@@ -21,12 +21,9 @@
 package com.microsoft.thrifty.transport
 
 import com.microsoft.thrifty.runtime.kgen.coro.Insanity
-import com.microsoft.thrifty.runtime.kgen.coro.Numberz
 import com.microsoft.thrifty.runtime.kgen.coro.ThriftTestClient
-import com.microsoft.thrifty.runtime.kgen.coro.UserId
 import com.microsoft.thrifty.protocol.BinaryProtocol
 import com.microsoft.thrifty.service.AsyncClientBase
-import com.microsoft.thrifty.service.ServiceMethodCallback
 import io.kotest.matchers.maps.beEmpty
 import io.kotest.matchers.shouldNot
 import kotlinx.coroutines.runBlocking

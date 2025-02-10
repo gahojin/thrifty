@@ -53,8 +53,3 @@ tasks.register("codeCoverageReport", JacocoReport) { t ->
         fileTree(dir: it, exclude: filters)
     }))
 }
-
-wrapper {
-    gradleVersion = "8.3"
-    distributionType = Wrapper.DistributionType.BIN
-}

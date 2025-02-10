@@ -114,10 +114,8 @@ open class ShouldCompileMatcher : Matcher<List<FileSpec>> {
             noReflect = true
 
             // we have a Need for Speed
-            useK2 = true
             noOptimize = true
             useFastJarFileSystem = true
-            useIR = true
         }
 
         return K2JVMCompiler().exec(collector, Services.EMPTY, args)

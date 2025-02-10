@@ -25,8 +25,8 @@ plugins {
 dependencies {
     api libs.junitApi
     implementation libs.apacheThrift
-    implementation "commons-codec:commons-codec:1.15"
-    implementation "org.apache.httpcomponents:httpclient:4.5.13"
-    implementation "org.slf4j:slf4j-api:2.0.5"
-    implementation "org.apache.tomcat.embed:tomcat-embed-core:10.1.4"
+    implementation "commons-codec:commons-codec:1.17.0"
+    implementation "org.apache.httpcomponents:httpclient:4.5.14"
+    implementation "org.slf4j:slf4j-api:2.0.12"
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.2'
 }
