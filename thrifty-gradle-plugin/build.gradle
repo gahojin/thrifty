@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * Thrifty
  *
@@ -20,11 +22,20 @@
  */
 
 plugins {
-    id 'thrifty-jvm-module'
-    id 'thrifty-publish-module'
     id 'java-gradle-plugin'
+    id 'java-library'
+    id 'idea'
+    alias libs.plugins.maven.publish
+}
 
-    alias libs.plugins.gradlePluginPublish
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
 }
 
 gradlePlugin {
@@ -47,7 +58,7 @@ def versionTask = tasks.register("generateVersionProps", WriteProperties) {
     destinationFile = generatedResourcesDir.map {dir -> dir.file("thrifty-version.properties") }
 
     property("THRIFTY_VERSION", VERSION_NAME)
-    property("KOTLIN_VERSION", libs.versions.kotlin.get())
+    property("KOTLIN_VERSION", libs.versions.kotlin.asProvider().get())
 }
 
 processResources {
@@ -72,7 +83,7 @@ dependencies {
 }
 
 def installLocal = tasks.register("installForTesting") {
-    dependsOn project.rootProject.subprojects
+    dependsOn rootProject.subprojects
             .collect {it.tasks.findByName("publishToMavenLocal") }
             .findAll { it != null }
 }

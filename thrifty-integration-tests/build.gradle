@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * Thrifty
  *
@@ -20,8 +22,9 @@
  */
 
 plugins {
-    id 'thrifty-kotlin-module'
     id 'application'
+    id 'idea'
+    alias libs.plugins.kotlin.jvm
     alias libs.plugins.shadow
 }
 
@@ -32,10 +35,12 @@ dependencies {
     testImplementation project(':thrifty-test-server')
     testImplementation libs.guava
 
-    testImplementation libs.bundles.kotlin
-    testImplementation libs.bundles.testing
+    testImplementation libs.kotlin.stdlib
+    testImplementation libs.junit
+    testImplementation libs.hamcrest
+    testImplementation libs.kotest.assertions.core
 
-    implementation libs.apacheThrift
+    implementation libs.apache.thrift
 }
 
 sourceSets {
@@ -45,6 +50,17 @@ sourceSets {
                 'build/generated-src/thrifty-kotlin/kotlin',
                 'build/generated-src/thrifty-kotlin-coro/kotlin'
         ]
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
     }
 }
 
@@ -119,18 +135,13 @@ compileTestKotlin {
     dependsOn compileTestThrift
     dependsOn kompileTestThrift
     dependsOn kompileCoroutineTestThrift
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs = ['-Xjvm-default=all']
-    }
-}
-
-clean {
-    dependsOn cleanTestCode
 }
 
 compileTestJava {
     dependsOn compileTestThrift
     dependsOn kompileTestThrift
+}
+
+clean {
+    dependsOn cleanTestCode
 }

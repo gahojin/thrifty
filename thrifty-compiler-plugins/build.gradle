@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * Thrifty
  *
@@ -20,11 +22,22 @@
  */
 
 plugins {
-    id 'thrifty-jvm-module'
-    id 'thrifty-publish-module'
+    id 'java-library'
+    id 'idea'
+    alias libs.plugins.maven.publish
 }
 
 dependencies {
-    api libs.javaPoet
-    api libs.kotlinPoet
+    api libs.java.poet
+    api libs.kotlin.poet
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
 }

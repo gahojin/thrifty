@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * Thrifty
  *
@@ -20,8 +22,11 @@
  */
 
 plugins {
-    id 'thrifty-kotlin-module'
-    id 'thrifty-publish-module'
+    id 'java-library'
+    id 'idea'
+    alias libs.plugins.dokka
+    alias libs.plugins.kotlin.jvm
+    alias libs.plugins.maven.publish
     alias libs.plugins.shadow
 }
 
@@ -32,7 +37,18 @@ dependencies {
     implementation project(':thrifty-compiler-plugins')
 
     implementation libs.clikt
-    implementation libs.bundles.kotlin
+    implementation libs.kotlin.stdlib
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
+    }
 }
 
 sourceSets {
@@ -44,6 +60,11 @@ sourceSets {
             srcDir 'build/generated-src/gen/java'
         }
     }
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
 }
 
 shadowJar {
@@ -63,7 +84,7 @@ def compileTestCase = tasks.register('compileTestCase', JavaExec) { t ->
     t.outputs.dir("$projectDir/build/generated-src/gen")
 }
 
-task deleteTestCase(type: Delete) {
+tasks.register('deleteTestCase', Delete) {
     delete compileTestCase
 }
 

@@ -1,7 +1,10 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) Zenichi Amano
  *
  * All rights reserved.
  *
@@ -19,14 +22,20 @@
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
 plugins {
-    id 'thrifty-jvm-module'
+    id 'java-library'
+    id 'idea'
 }
 
 dependencies {
-    api libs.junitApi
-    implementation libs.apacheThrift
-    implementation "commons-codec:commons-codec:1.17.0"
-    implementation "org.apache.httpcomponents:httpclient:4.5.14"
-    implementation "org.slf4j:slf4j-api:2.0.12"
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.2'
+    api libs.junit.api
+    implementation libs.apache.thrift
+    implementation libs.commons.codec
+    implementation libs.httpclient
+    implementation libs.slf4j.api
+    implementation libs.tomcat.embed.core
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }

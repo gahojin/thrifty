@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * Thrifty
  *
@@ -19,15 +21,28 @@
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
 plugins {
-    id 'thrifty-kotlin-module'
+    id 'java-library'
+    id 'idea'
+    alias libs.plugins.kotlin.jvm
 }
 
 dependencies {
     implementation project(':thrifty-compiler-plugins')
-    implementation libs.javaPoet
+    implementation libs.java.poet
 
-    implementation libs.bundles.kotlin
-    implementation libs.kotlinPoet
+    implementation libs.kotlin.stdlib
+    implementation libs.kotlin.poet
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
+    }
 }
 
 jar {
@@ -48,5 +63,4 @@ jar {
     manifest {
         attributes("Main-Class": "com.microsoft.thrifty.compiler.ThriftyCompiler")
     }
-
 }

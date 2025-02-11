@@ -18,8 +18,6 @@ dependencyResolutionManagement {
     }
 }
 
-includeBuild("build-src")
-
 rootProject.name = "thrifty"
 include("thrifty-schema")
 include("thrifty-runtime")

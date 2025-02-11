@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * Thrifty
  *
@@ -20,8 +22,10 @@
  */
 
 plugins {
-    id 'thrifty-kotlin-module'
-    id 'thrifty-publish-module'
+    id 'java-library'
+    id 'idea'
+    alias libs.plugins.kotlin.jvm
+    alias libs.plugins.maven.publish
 }
 
 description = 'Converts Thrifty Schemas into Java source files'
@@ -30,11 +34,28 @@ dependencies {
     api project(":thrifty-schema")
     api project(":thrifty-compiler-plugins")
     api libs.okio
-    api libs.javaPoet
+    api libs.java.poet
 
-    api libs.bundles.kotlin
+    api libs.kotlin.stdlib
 
     implementation project(':thrifty-runtime')
 
-    testImplementation libs.bundles.testing
+    testImplementation libs.junit
+    testImplementation libs.kotest.assertions.core
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
 }

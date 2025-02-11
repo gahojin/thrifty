@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * Thrifty
  *
@@ -19,9 +21,12 @@
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
 plugins {
-    id 'thrifty-kotlin-module'
-    id 'thrifty-publish-module'
+    id 'java-library'
+    id 'idea'
     id 'antlr'
+    alias libs.plugins.dokka
+    alias libs.plugins.kotlin.jvm
+    alias libs.plugins.maven.publish
 }
 
 description = 'A simple Thrift IDL parser and validator'
@@ -35,11 +40,28 @@ dependencies {
     implementation libs.antlr
 
     api libs.guava
-    api libs.bundles.kotlin
+    api libs.kotlin.stdlib
 
     implementation libs.okio
 
-    testImplementation libs.bundles.testing
+    testImplementation libs.junit
+    testImplementation libs.kotest.assertions.core
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
 }
 
 // For some reason, Kotlin compilation is being run prior to antlr by default.
@@ -53,6 +75,6 @@ tasks.named('compileTestKotlin').configure {
 
 // antlr doesn't hook up nicely with javaSourcesJar, so Gradle complains about
 // it unless we manually specify the dependency between the two
-tasks.matching { it.name == 'javaSourcesJar' || it.name == 'kotlinSourcesJar' }.configureEach {
+tasks.matching { it.name == 'sourcesJar' || it.name == 'kotlinSourcesJar' || it.name == 'dokkaGeneratePublicationHtml' }.configureEach {
     dependsOn 'generateGrammarSource'
 }

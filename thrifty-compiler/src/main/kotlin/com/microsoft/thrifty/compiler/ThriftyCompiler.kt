@@ -302,13 +302,11 @@ class ThriftyCompiler {
             }
 
             if (language != null && impliedLanguage != null && impliedLanguage != language) {
-                TermUi.echo(
-                        "You specified $language, but provided options implying $impliedLanguage (which will be ignored).",
-                        err = true)
+                echo("You specified $language, but provided options implying $impliedLanguage (which will be ignored).", err = true)
             }
 
             if (emitNullabilityAnnotations) {
-                TermUi.echo("Warning: --use-android-annotations is deprecated and superseded by the --nullability-annotation-type option.")
+                echo("Warning: --use-android-annotations is deprecated and superseded by the --nullability-annotation-type option.")
             }
 
             when (language ?: impliedLanguage) {
@@ -342,7 +340,7 @@ class ThriftyCompiler {
             val gen = KotlinCodeGenerator(nameStyle)
 
             if (nullabilityAnnotationType != NullabilityAnnotationType.NONE) {
-                TermUi.echo("Warning: Nullability annotations are unnecessary in Kotlin and will not be generated")
+                echo("Warning: Nullability annotations are unnecessary in Kotlin and will not be generated")
             }
 
             if (emitParcelable) {
