@@ -22,7 +22,7 @@ antlr = "4.13.2"
 
 apache-thrift = "0.21.0"
 
-clikt = "3.1.0"
+clikt = "5.0.3"
 
 commons-codec = "1.18.0"
 
