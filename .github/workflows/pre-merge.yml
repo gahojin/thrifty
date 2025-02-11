@@ -70,7 +70,7 @@ jobs:
 
       - name: Build and test
         shell: bash
-        run: ./gradlew check codeCoverageReport --parallel --no-daemon -x iosX64Test
+        run: ./gradlew check koverLog --parallel --no-daemon -x iosX64Test
 
       - name: Boot simulator
         if: matrix.os == 'macos-14'

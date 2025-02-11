@@ -25,6 +25,8 @@ plugins {
     id 'java-gradle-plugin'
     id 'java-library'
     id 'idea'
+    alias libs.plugins.kotlinx.kover
+    alias libs.plugins.gradle.plugin.publish
     alias libs.plugins.maven.publish
 }
 
@@ -90,4 +92,10 @@ def installLocal = tasks.register("installForTesting") {
 
 tasks.withType(Test).configureEach {
     dependsOn installLocal
+
+    useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+        events("passed", "skipped", "failed")
+    }
 }

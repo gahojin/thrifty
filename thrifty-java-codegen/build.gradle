@@ -25,6 +25,7 @@ plugins {
     id 'java-library'
     id 'idea'
     alias libs.plugins.kotlin.jvm
+    alias libs.plugins.kotlinx.kover
     alias libs.plugins.maven.publish
 }
 
@@ -52,6 +53,14 @@ java {
 kotlin {
     compilerOptions {
         jvmTarget = JvmTarget.JVM_1_8
+    }
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+        events("passed", "skipped", "failed")
     }
 }
 

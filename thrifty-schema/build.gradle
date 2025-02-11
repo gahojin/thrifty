@@ -59,6 +59,14 @@ kotlin {
     }
 }
 
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+        events("passed", "skipped", "failed")
+    }
+}
+
 mavenPublishing {
     publishToMavenCentral()
     signAllPublications()

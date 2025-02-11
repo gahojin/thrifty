@@ -25,9 +25,9 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import javax.inject.Inject
 
 plugins {
-    id 'java-library'
     id 'idea'
     alias libs.plugins.kotlin.mpp
+    alias libs.plugins.kotlinx.kover
     alias libs.plugins.dokka
     alias libs.plugins.maven.publish
 }
@@ -113,13 +113,11 @@ kotlin {
 
         commonTest {
             dependencies {
+                implementation libs.kotest.assertions.core
                 implementation libs.kotlin.test.common
                 implementation libs.kotlin.test.annotations.common
-                implementation libs.kotest.assertions.core
+                implementation libs.kotlinx.coroutines.test
             }
-        }
-
-        jvmMain {
         }
 
         jvmTest {
@@ -143,6 +141,10 @@ kotlin {
 
 jvmTest {
     useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+        events("passed", "skipped", "failed")
+    }
 }
 
 abstract class IosTestTask extends DefaultTask {
