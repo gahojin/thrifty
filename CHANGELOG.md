@@ -3,6 +3,7 @@
 - Change: 依存ライブラリアップデート
 - BREAK: 互換性確認テスト以外のJavaコードをKotlinに移行
 - Change(runtime): Atomicクラスをatomicfuに置き換え
+- BREAK: 未使用のHttpClientライブラリ削除 (Commons Codecも16進数文字列変換のみの使用のため削除)
 
 3.1.0 (released 13 December 2022)
 ------------------
