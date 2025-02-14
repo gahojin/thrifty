@@ -22,7 +22,7 @@ antlr = "4.13.2"
 
 apache-thrift = "0.21.0"
 
-assertj = "3.27.2"
+assertj = "3.27.3"
 
 clikt = "5.0.3"
 
