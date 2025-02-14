@@ -2,6 +2,7 @@
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
  *
@@ -44,7 +45,6 @@ import org.apache.thrift.TProcessor;
 import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.server.TExtensibleServlet;
 
-@SuppressWarnings("serial")
 public class TestServlet extends TExtensibleServlet {
     private final TProtocolFactory protocolFactory;
 
@@ -62,7 +62,6 @@ public class TestServlet extends TExtensibleServlet {
         return protocolFactory;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     protected TProcessor getProcessor() {
         ThriftTestHandler handler = new ThriftTestHandler(System.out);

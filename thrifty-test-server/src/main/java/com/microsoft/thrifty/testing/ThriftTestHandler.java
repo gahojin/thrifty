@@ -2,6 +2,7 @@
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
  *
@@ -30,8 +31,8 @@ import com.microsoft.thrifty.test.gen.Xception;
 import com.microsoft.thrifty.test.gen.Xception2;
 import com.microsoft.thrifty.test.gen.Xtruct;
 import com.microsoft.thrifty.test.gen.Xtruct2;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.thrift.TException;
+import org.apache.tomcat.util.buf.HexUtils;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
@@ -98,7 +99,7 @@ public class ThriftTestHandler implements ThriftTest.Iface {
         byte[] data = new byte[count];
         thing.get(data);
 
-        out.printf("testBinary(\"%s\")\n", Hex.encodeHexString(data));
+        out.printf("testBinary(\"%s\")\n", HexUtils.toHexString(data));
 
         return ByteBuffer.wrap(data);
     }

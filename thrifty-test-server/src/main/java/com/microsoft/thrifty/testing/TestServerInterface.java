@@ -2,6 +2,7 @@
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
  *
@@ -19,8 +20,6 @@
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
 package com.microsoft.thrifty.testing;
-
-import com.microsoft.thrifty.test.gen.ThriftTest;
 
 public interface TestServerInterface {
     void run(ServerProtocol protocol, ServerTransport transport);

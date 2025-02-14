@@ -29,8 +29,6 @@ plugins {
 dependencies {
     api libs.junit.api
     implementation libs.apache.thrift
-    implementation libs.commons.codec
-    implementation libs.httpclient
     implementation libs.slf4j.api
     implementation libs.tomcat.embed.core
 }
