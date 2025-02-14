@@ -41,6 +41,7 @@ dependencies {
     testImplementation libs.kotlin.stdlib
     testImplementation libs.junit
     testImplementation libs.kotest.assertions.core
+    testImplementation libs.ktor.client.cio
 
     implementation libs.apache.thrift
 }

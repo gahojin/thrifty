@@ -21,7 +21,7 @@
  */
 package com.microsoft.thrifty.schema
 
-import  com.google.common.base.CaseFormat
+import com.google.common.base.CaseFormat
 import java.util.regex.Pattern
 
 /**

@@ -20,33 +20,110 @@
  */
 package com.microsoft.thrifty.transport
 
-expect class SocketTransport internal constructor(
-    builder: Builder
+import io.ktor.network.selector.SelectorManager
+import io.ktor.network.sockets.Socket
+import io.ktor.network.sockets.SocketOptions
+import io.ktor.network.sockets.aSocket
+import io.ktor.network.sockets.openReadChannel
+import io.ktor.network.sockets.openWriteChannel
+import io.ktor.network.tls.tls
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.ByteWriteChannel
+import io.ktor.utils.io.close
+import io.ktor.utils.io.readFully
+import io.ktor.utils.io.writeFully
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.runBlocking
+import kotlin.coroutines.CoroutineContext
+import kotlin.jvm.JvmOverloads
+
+class SocketTransport @JvmOverloads constructor(
+    private val host: String,
+    private val port: Int,
+    private val enableTls: Boolean = false,
+    private val context: CoroutineContext = Dispatchers.IO,
+    private val socketOptions: SocketOptions.TCPClientSocketOptions.() -> Unit = {
+        keepAlive = true
+        noDelay = true
+        reuseAddress = false
+        reusePort = false
+    },
 ) : Transport {
-    class Builder(host: String, port: Int) {
-        /**
-         * The number of milliseconds to wait for a connection to be established.
-         */
-        fun connectTimeout(connectTimeout: Int): Builder
+    private lateinit var selectorManager: SelectorManager
+    private lateinit var socket: Socket
+    private lateinit var readChannel: ByteReadChannel
+    private lateinit var writeChannel: ByteWriteChannel
 
-        /**
-         * The number of milliseconds a read operation should wait for completion.
-         */
-        fun readTimeout(readTimeout: Int): Builder
-
-        /**
-         * Enable TLS for this connection.
-         */
-        fun enableTls(enableTls: Boolean): Builder
-
-        fun build(): SocketTransport
+    override fun read(buffer: ByteArray, offset: Int, count: Int): Int {
+        return runBlocking {
+            readChannel.readFully(
+                out =  buffer,
+                start = offset,
+                end =  offset + count,
+            )
+            count
+        }
     }
 
-    override fun read(buffer: ByteArray, offset: Int, count: Int): Int
-    override fun write(buffer: ByteArray, offset: Int, count: Int)
-    override fun flush()
-    override fun close()
+     override fun write(buffer: ByteArray, offset: Int, count: Int) {
+         runBlocking {
+            writeChannel.writeFully(
+                value = buffer,
+                startIndex = offset,
+                endIndex = offset + count,
+            )
+        }
+    }
 
-    @Throws(okio.IOException::class)
-    fun connect()
+    override fun flush() {
+        runBlocking {
+            writeChannel.flush()
+        }
+    }
+
+    fun connect() {
+        runBlocking {
+            selectorManager = SelectorManager(context)
+            socket = aSocket(selectorManager).tcp().connect(host, port, socketOptions)
+
+            if (enableTls) {
+                socket = socket.tls(context)
+            }
+            readChannel = socket.openReadChannel()
+            writeChannel = socket.openWriteChannel(autoFlush = false)
+        }
+    }
+
+    override fun close() {
+        writeChannel.close(null)
+        socket.close()
+        selectorManager.close()
+    }
+
+    class Builder(
+        var host: String,
+        val port: Int,
+    ) {
+        private var readTimeout: Long = Long.MAX_VALUE
+        private var enableTls: Boolean = false
+
+        fun readTimeout(value: Long): Builder = apply {
+            readTimeout = value
+        }
+
+        fun enableTls(value: Boolean): Builder = apply {
+            enableTls = value
+        }
+
+        fun build(): SocketTransport {
+            return SocketTransport(host, port, enableTls) {
+                keepAlive = true
+                noDelay = true
+                reuseAddress = false
+                reusePort = true
+                socketTimeout = this@Builder.readTimeout
+            }
+        }
+    }
 }

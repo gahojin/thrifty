@@ -45,13 +45,12 @@
 package com.microsoft.thrifty.protocol
 
 import com.microsoft.thrifty.TType
-import com.microsoft.thrifty.internal.ProtocolException
 import com.microsoft.thrifty.transport.Transport
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
 import okio.EOFException
 import okio.IOException
-import kotlin.experimental.and
+import okio.ProtocolException
 
 /**
  * An implementation of the Thrift compact binary protocol.

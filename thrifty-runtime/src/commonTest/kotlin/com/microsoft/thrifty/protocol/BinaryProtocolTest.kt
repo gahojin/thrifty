@@ -22,7 +22,6 @@
 package com.microsoft.thrifty.protocol
 
 import com.microsoft.thrifty.TType
-import com.microsoft.thrifty.internal.ProtocolException
 import com.microsoft.thrifty.transport.BufferTransport
 import com.microsoft.thrifty.util.ProtocolUtil.skip
 import io.kotest.assertions.fail
@@ -34,6 +33,7 @@ import okio.ByteString
 import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.encodeUtf8
 import okio.IOException
+import okio.ProtocolException
 import kotlin.math.PI
 import kotlin.test.Test
 

@@ -29,9 +29,7 @@ interface Transport : Closeable {
     fun read(buffer: ByteArray, offset: Int, count: Int): Int
 
     @Throws(IOException::class)
-    fun write(data: ByteArray) {
-        write(data, 0, data.size)
-    }
+    fun write(data: ByteArray) = write(data, 0, data.size)
 
     @Throws(IOException::class)
     fun write(buffer: ByteArray, offset: Int, count: Int)
