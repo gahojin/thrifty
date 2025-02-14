@@ -1,11 +1,7 @@
 Thrifty
 =======
 
-![Build status](https://github.com/microsoft/thrifty/workflows/Pre-merge%20checks/badge.svg) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Thrifty-green.svg?style=true)](https://android-arsenal.com/details/1/3227)
-[![codecov](https://codecov.io/gh/Microsoft/thrifty/branch/master/graph/badge.svg)](https://codecov.io/gh/Microsoft/thrifty)
-
-# NOTE: This repository is [DEPRECATED](https://github.com/microsoft/thrifty/issues/540)
-## An active fork can be found at https://github.com/benjamin-bader/thrifty
+[![Pre-merge checks](https://github.com/gahojin/thrifty/actions/workflows/pre-merge.yml/badge.svg)](https://github.com/gahojin/thrifty/actions/workflows/pre-merge.yml)
 
 Thrifty is an implementation of the Apache Thrift software stack, which uses 1/4 of the method count taken by
 the Apache Thrift compiler, which makes it especially appealing for use on Android.
@@ -378,4 +374,6 @@ An equal debt is owed to Facebook and Apache for developing and opening Thrift t
 
 -------
 
-Copyright © Microsoft Corporation
+Copyright (C) Microsoft Corporation
+
+Copyright (C) GAHOJIN, Inc.

@@ -1,3 +1,8 @@
+4.0.0 (unreleased)
+------------------
+- 依存ライブラリアップデート
+- 互換性確認テスト以外のJavaコードをKotlinに移行
+
 3.1.0 (released 13 December 2022)
 ------------------
 - Add: Support default field values in struct-typed constants (#507)
