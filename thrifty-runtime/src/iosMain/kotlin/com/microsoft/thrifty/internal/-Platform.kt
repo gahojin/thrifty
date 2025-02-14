@@ -20,9 +20,6 @@
  */
 package com.microsoft.thrifty.internal
 
-import kotlinx.coroutines.Dispatchers
 import okio.IOException
 
 actual class ProtocolException actual constructor(message: String) : IOException(message)
-
-actual val DefaultDispatcher: kotlinx.coroutines.CoroutineDispatcher = Dispatchers.Default
