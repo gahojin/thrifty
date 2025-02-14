@@ -37,9 +37,9 @@ dependencies {
     testImplementation project(':thrifty-test-server')
     testImplementation libs.guava
 
+    testImplementation libs.assertj
     testImplementation libs.kotlin.stdlib
     testImplementation libs.junit
-    testImplementation libs.hamcrest
     testImplementation libs.kotest.assertions.core
 
     implementation libs.apache.thrift

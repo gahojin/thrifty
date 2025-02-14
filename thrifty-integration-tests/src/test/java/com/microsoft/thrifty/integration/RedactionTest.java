@@ -2,6 +2,7 @@
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
  *
@@ -29,10 +30,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RedactionTest {
     @Test
@@ -43,9 +41,9 @@ public class RedactionTest {
                 .three("value-three")  // expe
                 .build();
 
-        assertThat(hr.toString(), containsString("one=value-one"));
-        assertThat(hr.toString(), not(containsString("should-not-appear")));
-        assertThat(hr.two, is("should-not-appear"));
+        assertThat(hr.toString()).contains("one=value-one");
+        assertThat(hr.toString()).doesNotContain("should-not-appear");
+        assertThat(hr.two).isEqualTo("should-not-appear");
     }
 
     @Test
@@ -56,8 +54,8 @@ public class RedactionTest {
                 .three("value-three")
                 .build();
 
-        assertThat(hr.toString(), containsString("three=6A39B242"));
-        assertThat(hr.three, is("value-three"));
+        assertThat(hr.toString()).contains("three=6A39B242");
+        assertThat(hr.three).isEqualTo("value-three");
     }
 
     @Test
@@ -66,7 +64,7 @@ public class RedactionTest {
                 .foo("bar")
                 .build();
 
-        assertThat(hcbr.toString(), is("HasCommentBasedRedaction{foo=<REDACTED>}"));
+        assertThat(hcbr.toString()).isEqualTo("HasCommentBasedRedaction{foo=<REDACTED>}");
     }
 
     @Test
@@ -75,7 +73,7 @@ public class RedactionTest {
                 .numz(Arrays.asList(1, 2, 3))
                 .build();
 
-        assertThat(oc.toString(), containsString("numz=list<i32>(size=3)"));
+        assertThat(oc.toString()).contains("numz=list<i32>(size=3)");
     }
 
     @Test
@@ -84,15 +82,15 @@ public class RedactionTest {
                 .stringz(Collections.singletonMap("foo", "bar"))
                 .build();
 
-        assertThat(oc.toString(), containsString("stringz=map<string, string>(size=1)"));
+        assertThat(oc.toString()).contains("stringz=map<string, string>(size=1)");
     }
 
     @Test
     public void obfuscatedString() {
         HasObfuscation ho = new HasObfuscation.Builder().build();
-        assertThat(ho.toString(), is("HasObfuscation{ssn=null}"));
+        assertThat(ho.toString()).isEqualTo("HasObfuscation{ssn=null}");
 
         ho = new HasObfuscation.Builder().ssn("123-45-6789").build();
-        assertThat(ho.toString(), is("HasObfuscation{ssn=1E1DB4B3}"));
+        assertThat(ho.toString()).isEqualTo("HasObfuscation{ssn=1E1DB4B3}");
     }
 }
