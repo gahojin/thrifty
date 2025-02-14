@@ -47,7 +47,6 @@ def compileTestThrift = tasks.register("compileTestThrift", JavaExec) { t ->
 
     args = [
             "--out=$projectDir/build/generated-src/thrifty-kotlin/kotlin",
-            "--kt-struct-builders",
             "--service-type=coroutine",
             "$projectDir/ClientThriftTest.thrift"
     ]

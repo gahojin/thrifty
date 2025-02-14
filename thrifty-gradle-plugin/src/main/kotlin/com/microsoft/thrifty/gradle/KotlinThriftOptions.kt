@@ -63,9 +63,6 @@ open class KotlinThriftOptions : ThriftOptions(), Serializable {
         }
 
     @get:Input
-    var structBuilders: Boolean = false
-
-    @get:Input
     var isGenerateServer: Boolean = false
 
     fun setServiceClientStyle(clientStyleName: String) {

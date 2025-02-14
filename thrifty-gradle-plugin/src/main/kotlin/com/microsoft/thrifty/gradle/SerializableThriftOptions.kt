@@ -40,7 +40,6 @@ class SerializableThriftOptions @JvmOverloads constructor(
 ) : Serializable {
     class Kotlin @JvmOverloads constructor(
         val serviceClientStyle: ClientStyle = ClientStyle.DEFAULT,
-        val isStructBuilders: Boolean = false,
         val isGenerateServer: Boolean = false,
     ) : Serializable
 
@@ -57,7 +56,7 @@ class SerializableThriftOptions @JvmOverloads constructor(
         isParcelable = options.parcelable,
         isAllowUnknownEnumValues = options.allowUnknownEnumValues,
         kotlinOpts = (options as? KotlinThriftOptions)?.let {
-            Kotlin(it.serviceClientStyle, it.structBuilders, it.isGenerateServer)
+            Kotlin(it.serviceClientStyle, it.isGenerateServer)
         },
         javaOpts = (options as? JavaThriftOptions)?.let {
             Java(it.nullabilityAnnotations)

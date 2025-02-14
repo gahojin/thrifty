@@ -216,12 +216,12 @@ abstract class KotlinConformanceTest {
     }
 
     @Test fun testStruct() {
-        val xtruct = Xtruct.Builder()
-                .byte_thing(1.toByte())
-                .i32_thing(2)
-                .i64_thing(3L)
-                .string_thing("foo")
-                .build()
+        val xtruct = Xtruct(
+            byte_thing = 1.toByte(),
+            i32_thing = 2,
+            i64_thing = 3L,
+            string_thing = "foo",
+        )
 
         val callback = AssertingCallback<Xtruct>()
         client.testStruct(xtruct, callback)
@@ -230,18 +230,18 @@ abstract class KotlinConformanceTest {
     }
 
     @Test fun testNest() {
-        val xtruct = Xtruct.Builder()
-                .byte_thing(1.toByte())
-                .i32_thing(2)
-                .i64_thing(3L)
-                .string_thing("foo")
-                .build()
+        val xtruct = Xtruct(
+            byte_thing = 1.toByte(),
+            i32_thing = 2,
+            i64_thing = 3L,
+            string_thing = "foo",
+        )
 
-        val nest = Xtruct2.Builder()
-                .byte_thing(4.toByte())
-                .i32_thing(5)
-                .struct_thing(xtruct)
-                .build()
+        val nest = Xtruct2(
+            byte_thing = 4.toByte(),
+            i32_thing = 5,
+            struct_thing = xtruct,
+        )
 
         val callback = AssertingCallback<Xtruct2>()
 
@@ -328,18 +328,18 @@ abstract class KotlinConformanceTest {
     }
 
     @Test fun testInsanity() {
-        val empty = Insanity.Builder().build()
-        val argument = Insanity.Builder()
-                .userMap(mapOf(Numberz.ONE to 10L, Numberz.TWO to 20L, Numberz.THREE to 40L))
-                .xtructs(listOf(
-                        Xtruct.Builder()
-                                .byte_thing(18.toByte())
-                                .i32_thing(37)
-                                .i64_thing(101L)
-                                .string_thing("what")
-                                .build()
-                ))
-                .build()
+        val empty = Insanity()
+        val argument = Insanity(
+            userMap = mapOf(Numberz.ONE to 10L, Numberz.TWO to 20L, Numberz.THREE to 40L),
+            xtructs = listOf(
+                Xtruct(
+                    byte_thing = 18.toByte(),
+                    i32_thing = 37,
+                    i64_thing = 101L,
+                    string_thing = "what",
+                ),
+            ),
+        )
 
         val expected = mapOf(
                 1L to mapOf(Numberz.TWO to argument, Numberz.THREE to argument),
@@ -353,12 +353,12 @@ abstract class KotlinConformanceTest {
     }
 
     @Test fun testMulti() {
-        val expected = Xtruct.Builder()
-                .string_thing("Hello2")
-                .byte_thing(9.toByte())
-                .i32_thing(11)
-                .i64_thing(13L)
-                .build()
+        val expected = Xtruct(
+            string_thing = "Hello2",
+            byte_thing = 9.toByte(),
+            i32_thing = 11,
+            i64_thing = 13L,
+        )
 
         val callback = AssertingCallback<Xtruct>()
         client.testMulti(9.toByte(), 11, 13L, mapOf(10.toShort() to "Hello"), Numberz.THREE, 5L, callback)
@@ -406,10 +406,10 @@ abstract class KotlinConformanceTest {
         val callback = AssertingCallback<Xtruct>()
         client.testMultiException("Xception", "nope", callback)
 
-        val expected = Xception.Builder()
-                .errorCode(1001)
-                .message_("This is an Xception")
-                .build()
+        val expected = Xception(
+            errorCode = 1001,
+            message_ = "This is an Xception",
+        )
 
         callback.error shouldBe expected
     }
@@ -430,11 +430,11 @@ abstract class KotlinConformanceTest {
 
     @Test fun testUnionArgument() {
         val callback = AssertingCallback<HasUnion>()
-        client.testUnionArgument(NonEmptyUnion.Builder().AString("foo").build(), callback)
+        client.testUnionArgument(NonEmptyUnion.AString("foo"), callback)
 
-        val expected = HasUnion.Builder()
-                .TheUnion(NonEmptyUnion.Builder().AString("foo").build())
-                .build()
+        val expected = HasUnion(
+            TheUnion = NonEmptyUnion.AString("foo"),
+        )
 
         callback.result shouldBe expected
     }

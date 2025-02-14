@@ -5,6 +5,7 @@
 - Change(runtime): Atomicクラスをatomicfuに置き換え
 - BREAK: 未使用のHttpClientライブラリ削除 (Commons Codecも16進数文字列変換のみの使用のため削除)
 - BREAK(integration-tests): アサーションライブラリをhamcrestからAssertJに変更
+- BREAK(kotlin-codegen): struct builder生成オプションを廃止
 
 3.1.0 (released 13 December 2022)
 ------------------

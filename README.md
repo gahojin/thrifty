@@ -320,7 +320,6 @@ java -jar thrifty-compiler.jar \
     --service-type=coroutine \
     --kt-file-per-type \
     --omit-file-comments \
-    --kt-struct-builders \
     --experimental-kt-generate-server \
     ...
 ```
@@ -340,8 +339,6 @@ public interface Google {
   public suspend fun search(query: Query): List<SearchResult>
 }
 ```
-
-Builders are unnecessary, and are not included by default.  For compatibility with older code, you can use the `--kt-struct-builders` flag, which will result in Java-style classes with Builders.
 
 By default, Thrifty generates one Kotlin file per JVM package.  For larger thrift files, this can be a little hard on the Kotlin compiler.  If you find build times or IDE performance suffering, the `--kt-file-per-type` flag can help.  Outlook Mobile's single, large, Kotlin file took up to one minute just to typecheck, using Kotlin 1.2.51!  For these cases, `--kt-file-per-type` will tell Thrifty to generate one single file per top-level class - just like the Java code.
 

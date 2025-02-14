@@ -138,10 +138,6 @@ abstract class GenerateThriftSourcesWorkAction : WorkAction<GenerateThriftSource
             gen.omitServiceClients()
         }
 
-        if (kopt.isStructBuilders) {
-            gen.withDataClassBuilders()
-        }
-
         if (kopt.isGenerateServer) {
             gen.generateServer()
         }
