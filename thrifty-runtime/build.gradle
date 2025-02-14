@@ -2,6 +2,7 @@
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
  *
