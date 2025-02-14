@@ -2,6 +2,7 @@
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
  *
@@ -19,12 +20,6 @@
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
 package com.microsoft.thrifty.integration.conformance;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -45,12 +40,14 @@ import com.microsoft.thrifty.testing.TestServer;
 import com.microsoft.thrifty.transport.FramedTransport;
 import com.microsoft.thrifty.transport.SocketTransport;
 import com.microsoft.thrifty.transport.Transport;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import kotlin.Unit;
 import okio.ByteString;
 import org.jetbrains.annotations.NotNull;
@@ -58,6 +55,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * A test of auto-generated service code for the standard ThriftTest
@@ -87,15 +86,15 @@ public abstract class ConformanceBase {
     static void beforeAll() throws Exception {
         int port = testServer.port();
         SocketTransport socketTransport = new SocketTransport.Builder("localhost", port)
-            .readTimeout(2000)
-            .build();
+                .readTimeout(2000)
+                .build();
 
         socketTransport.connect();
 
         switch (testServer.getTransport()) {
             case BLOCKING:
-               transport = socketTransport;
-               break;
+                transport = socketTransport;
+                break;
 
             case NON_BLOCKING:
                 transport = new FramedTransport(socketTransport);
@@ -157,7 +156,7 @@ public abstract class ConformanceBase {
         AssertingCallback<kotlin.Unit> callback = new AssertingCallback<>();
         client.testVoid(callback);
 
-        assertThat(callback.getResult(), is(Unit.INSTANCE));
+        assertThat(callback.getResult()).isEqualTo(Unit.INSTANCE);
     }
 
     @Test
@@ -165,7 +164,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Boolean> callback = new AssertingCallback<>();
         client.testBool(Boolean.TRUE, callback);
 
-        assertThat(callback.getResult(), is(Boolean.TRUE));
+        assertThat(callback.getResult()).isEqualTo(Boolean.TRUE);
     }
 
     @Test
@@ -173,7 +172,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Byte> callback = new AssertingCallback<>();
         client.testByte((byte) 200, callback);
 
-        assertThat(callback.getResult(), is((byte) 200));
+        assertThat(callback.getResult()).isEqualTo((byte) 200);
     }
 
     @Test
@@ -181,7 +180,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Integer> callback = new AssertingCallback<>();
         client.testI32(404, callback);
 
-        assertThat(callback.getResult(), is(404));
+        assertThat(callback.getResult()).isEqualTo(404);
     }
 
     @Test
@@ -189,7 +188,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Long> callback = new AssertingCallback<>();
         client.testI64(Long.MAX_VALUE, callback);
 
-        assertThat(callback.getResult(), is(Long.MAX_VALUE));
+        assertThat(callback.getResult()).isEqualTo(Long.MAX_VALUE);
     }
 
     @Test
@@ -197,7 +196,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Double> callback = new AssertingCallback<>();
         client.testDouble(Math.PI, callback);
 
-        assertThat(callback.getResult(), is(Math.PI));
+        assertThat(callback.getResult()).isEqualTo(Math.PI);
     }
 
     @Test
@@ -207,7 +206,7 @@ public abstract class ConformanceBase {
         AssertingCallback<ByteString> callback = new AssertingCallback<>();
         client.testBinary(binary, callback);
 
-        assertThat(callback.getResult(), equalTo(binary));
+        assertThat(callback.getResult()).isEqualTo(binary);
     }
 
     @Test
@@ -222,7 +221,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Xtruct> callback = new AssertingCallback<>();
         client.testStruct(xtruct, callback);
 
-        assertThat(callback.getResult(), equalTo(xtruct));
+        assertThat(callback.getResult()).isEqualTo(xtruct);
     }
 
     @Test
@@ -244,7 +243,7 @@ public abstract class ConformanceBase {
 
         client.testNest(nest, callback);
 
-        assertThat(callback.getResult(), equalTo(nest));
+        assertThat(callback.getResult()).isEqualTo(nest);
     }
 
     @Test
@@ -257,7 +256,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Map<Integer, Integer>> callback = new AssertingCallback<>();
         client.testMap(argument, callback);
 
-        assertThat(callback.getResult(), equalTo(argument));
+        assertThat(callback.getResult()).isEqualTo(argument);
     }
 
     @Test
@@ -270,7 +269,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Map<String, String>> callback = new AssertingCallback<>();
         client.testStringMap(argument, callback);
 
-        assertThat(callback.getResult(), equalTo(argument));
+        assertThat(callback.getResult()).isEqualTo(argument);
     }
 
     @Test
@@ -285,7 +284,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Set<Integer>> callback = new AssertingCallback<>();
         client.testSet(set, callback);
 
-        assertThat(callback.getResult(), equalTo(set));
+        assertThat(callback.getResult()).isEqualTo(set);
     }
 
     @Test
@@ -295,7 +294,7 @@ public abstract class ConformanceBase {
         AssertingCallback<List<Integer>> callback = new AssertingCallback<>();
         client.testList(list, callback);
 
-        assertThat(callback.getResult(), equalTo(list));
+        assertThat(callback.getResult()).isEqualTo(list);
     }
 
     @Test
@@ -305,7 +304,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Numberz> callback = new AssertingCallback<>();
         client.testEnum(argument, callback);
 
-        assertThat(callback.getResult(), equalTo(Numberz.EIGHT));
+        assertThat(callback.getResult()).isEqualTo(Numberz.EIGHT);
     }
 
     @Test
@@ -313,7 +312,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Long> callback = new AssertingCallback<>();
         client.testTypedef(Long.MIN_VALUE, callback);
 
-        assertThat(callback.getResult(), equalTo(Long.MIN_VALUE));
+        assertThat(callback.getResult()).isEqualTo(Long.MIN_VALUE);
     }
 
     @Test
@@ -336,7 +335,7 @@ public abstract class ConformanceBase {
                         .build())
                 .build();
 
-        assertThat(callback.getResult(), equalTo(expected));
+        assertThat(callback.getResult()).isEqualTo(expected);
     }
 
     @Test
@@ -360,7 +359,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Map<Long, Map<Numberz, Insanity>>> callback = new AssertingCallback<>();
         client.testInsanity(argument, callback);
 
-        assertThat(callback.getResult(), equalTo(expected));
+        assertThat(callback.getResult()).isEqualTo(expected);
     }
 
     @Test
@@ -375,7 +374,7 @@ public abstract class ConformanceBase {
         AssertingCallback<Xtruct> callback = new AssertingCallback<>();
         client.testMulti((byte) 9, 11, 13L, ImmutableMap.of((short) 10, "Hello"), Numberz.THREE, 5L, callback);
 
-        assertThat(callback.getResult(), equalTo(expected));
+        assertThat(callback.getResult()).isEqualTo(expected);
     }
 
     @Test
@@ -384,11 +383,11 @@ public abstract class ConformanceBase {
         client.testException("Xception", callback);
 
         Throwable error = callback.getError();
-        assertThat(error, instanceOf(Xception.class));
+        assertThat(error).isInstanceOf(Xception.class);
 
         Xception e = (Xception) error;
-        assertThat(e.errorCode, equalTo(1001));
-        assertThat(e.message, equalTo("Xception"));
+        assertThat(e.errorCode).isEqualTo(1001);
+        assertThat(e.message).isEqualTo("Xception");
     }
 
     @Test
@@ -397,10 +396,10 @@ public abstract class ConformanceBase {
         client.testException("TException", callback);
 
         Throwable error = callback.getError();
-        assertThat(error, instanceOf(ThriftException.class));
+        assertThat(error).isInstanceOf(ThriftException.class);
 
         ThriftException e = (ThriftException) error;
-        assertThat(e.kind, is(ThriftException.Kind.INTERNAL_ERROR));
+        assertThat(e.kind).isEqualTo(ThriftException.Kind.INTERNAL_ERROR);
     }
 
     @Test
@@ -414,7 +413,7 @@ public abstract class ConformanceBase {
         //       of the result are unspecified besides 'string_thing', and Thrift
         //       implementations differ on whether to return unset primitive values,
         //       depending on options set during codegen.
-        assertThat(actual.string_thing, equalTo("Hi there"));
+        assertThat(actual.string_thing).isEqualTo("Hi there");
     }
 
     @Test
@@ -427,7 +426,7 @@ public abstract class ConformanceBase {
                 .message("This is an Xception")
                 .build();
 
-        assertThat(callback.getError(), equalTo(expected));
+        assertThat(callback.getError()).isEqualTo(expected);
     }
 
     @Test
@@ -441,15 +440,15 @@ public abstract class ConformanceBase {
         //       of 'struct_thing' are unspecified besides 'string_thing', and Thrift
         //       implementations differ on whether to return unset primitive values,
         //       depending on options set during codegen.
-        assertThat(error.errorCode, equalTo(2002));
-        assertThat(error.struct_thing.string_thing, equalTo("This is an Xception2"));
+        assertThat(error.errorCode).isEqualTo(2002);
+        assertThat(error.struct_thing.string_thing).isEqualTo("This is an Xception2");
     }
 
     @Test
     public void testOneway() throws Throwable {
         AssertingCallback<kotlin.Unit> callback = new AssertingCallback<>();
         client.testOneway(0, callback);
-        assertThat(callback.getResult(), is(Unit.INSTANCE));
-        assertThat(callback.getError(), is(nullValue()));
+        assertThat(callback.getResult()).isEqualTo(Unit.INSTANCE);
+        assertThat(callback.getError()).isNull();
     }
 }
