@@ -77,26 +77,28 @@ private inline val Constant.javaPackage: String
 fun ThriftType.checkFunctionallyEquals(
     other: ThriftType,
     deepCheck: Boolean = false,
-    lazyMessage: () -> String
+    lazyMessage: () -> String,
 ) {
     check(annotations == other.annotations, lazyMessage)
     when (this) {
-        is BuiltinType -> {
-            check(this == other, lazyMessage)
-        }
+        is BuiltinType -> check(this == other, lazyMessage)
+
         is SetType -> {
             check(other is SetType)
             elementType.checkFunctionallyEquals(other.elementType, deepCheck, lazyMessage)
         }
+
         is ListType -> {
             check(other is ListType)
             elementType.checkFunctionallyEquals(other.elementType, deepCheck, lazyMessage)
         }
+
         is MapType -> {
             check(other is MapType)
             keyType.checkFunctionallyEquals(other.keyType, deepCheck, lazyMessage)
             valueType.checkFunctionallyEquals(other.valueType, deepCheck, lazyMessage)
         }
+
         is UserType -> {
             when (this) {
                 is StructType -> {
@@ -106,6 +108,7 @@ fun ThriftType.checkFunctionallyEquals(
                         checkFunctionallyEquals(other)
                     }
                 }
+
                 is EnumType -> {
                     check(other is EnumType, lazyMessage)
                     check(fqcn == other.fqcn, lazyMessage)
@@ -113,6 +116,7 @@ fun ThriftType.checkFunctionallyEquals(
                         checkFunctionallyEquals(other)
                     }
                 }
+
                 is TypedefType -> {
                     check(other is TypedefType, lazyMessage)
                     check(fqcn == other.fqcn, lazyMessage)
@@ -120,6 +124,7 @@ fun ThriftType.checkFunctionallyEquals(
                         checkFunctionallyEquals(other)
                     }
                 }
+
                 is ServiceType -> {
                     check(other is ServiceType, lazyMessage)
                     check(fqcn == other.fqcn, lazyMessage)

@@ -30,9 +30,9 @@ import kotlin.jvm.JvmField
  * service method call.
  */
 abstract class MethodCall<T>(
-        @JvmField val name: String,
-        @JvmField val callTypeId: Byte,
-        @JvmField val callback: ServiceMethodCallback<T>?,
+    @JvmField val name: String,
+    @JvmField val callTypeId: Byte,
+    @JvmField val callback: ServiceMethodCallback<T>?,
 ) {
 
     @Throws(IOException::class)

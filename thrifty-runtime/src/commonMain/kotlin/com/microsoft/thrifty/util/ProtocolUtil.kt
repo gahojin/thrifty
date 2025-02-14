@@ -50,6 +50,7 @@ object ProtocolUtil {
                 }
                 protocol.readStructEnd()
             }
+
             TType.LIST -> {
                 val listMetadata = protocol.readListBegin()
                 for (i in 0 until listMetadata.size) {
@@ -57,6 +58,7 @@ object ProtocolUtil {
                 }
                 protocol.readListEnd()
             }
+
             TType.SET -> {
                 val setMetadata = protocol.readSetBegin()
                 for (i in 0 until setMetadata.size) {
@@ -64,6 +66,7 @@ object ProtocolUtil {
                 }
                 protocol.readSetEnd()
             }
+
             TType.MAP -> {
                 val mapMetadata = protocol.readMapBegin()
                 for (i in 0 until mapMetadata.size) {
@@ -72,6 +75,7 @@ object ProtocolUtil {
                 }
                 protocol.readMapEnd()
             }
+
             else -> throw ProtocolException("Unrecognized TType value: $typeCode")
         }
     }

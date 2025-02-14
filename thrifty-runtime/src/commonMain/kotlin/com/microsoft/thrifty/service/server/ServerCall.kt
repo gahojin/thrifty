@@ -43,7 +43,7 @@ interface ServerCall<TArgs, THandler> {
         input: Protocol,
         output: Protocol,
         errorHandler: ErrorHandler,
-        handler: THandler
+        handler: THandler,
     ) {
         val args = receive(input)
         try {

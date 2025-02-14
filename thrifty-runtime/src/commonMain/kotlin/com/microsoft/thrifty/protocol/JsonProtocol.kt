@@ -62,8 +62,8 @@ import kotlin.jvm.JvmStatic
  * @property fieldNamesAsString Write out the TField names as a string instead of the default integer value
  */
 class JsonProtocol @JvmOverloads constructor(
-        transport: Transport,
-        private val fieldNamesAsString: Boolean = false
+    transport: Transport,
+    private val fieldNamesAsString: Boolean = false
 ) : BaseProtocol(transport) {
     // Stack of nested contexts that we may be in
     private val contextStack = ArrayDeque<JsonBaseContext>()
@@ -108,7 +108,7 @@ class JsonProtocol @JvmOverloads constructor(
     private fun readJsonSyntaxChar(b: ByteArray) {
         val ch = reader.read()
         if (ch != b[0]) {
-            throw ProtocolException("Unexpected character:" + ch.toInt().toChar())
+            throw ProtocolException("Unexpected character:${ch.toInt().toChar()}")
         }
     }
 
@@ -132,10 +132,12 @@ class JsonProtocol @JvmOverloads constructor(
                     tmpbuf[0] == 1.toByte() -> {
                         transport.write(b, i, 1)
                     }
+
                     tmpbuf[0] > 1 -> {
                         transport.write(BACKSLASH)
                         transport.write(tmpbuf, 0, 1)
                     }
+
                     else -> {
                         transport.write(ESCSEQ)
                         tmpbuf[0] = hexChar((b[i].toInt() shr 4).toByte())
@@ -176,8 +178,7 @@ class JsonProtocol @JvmOverloads constructor(
             '-' -> if (str[1] == 'I') { // -Infinity
                 special = true
             }
-            else -> {
-            }
+            else -> Unit
         }
         val escapeNum = special || context.escapeNum()
         if (escapeNum) {
@@ -257,6 +258,7 @@ class JsonProtocol @JvmOverloads constructor(
     }
 
     override fun writeFieldStop() {}
+
     @Throws(IOException::class)
     override fun writeMapBegin(keyTypeId: Byte, valueTypeId: Byte, mapSize: Int) {
         writeJsonArrayStart()
@@ -365,34 +367,36 @@ class JsonProtocol @JvmOverloads constructor(
                     try {
                         when {
                             cu.toInt().toChar().isHighSurrogate() -> {
-                                if (codeunits.size > 0) {
+                                if (codeunits.isNotEmpty()) {
                                     throw ProtocolException("Expected low surrogate char")
                                 }
                                 codeunits.add(cu.toInt().toChar())
                             }
+
                             cu.toInt().toChar().isLowSurrogate() -> {
-                                if (codeunits.size == 0) {
+                                if (codeunits.isEmpty()) {
                                     throw ProtocolException("Expected high surrogate char")
                                 }
                                 codeunits.add(cu.toInt().toChar())
                                 val bytes = Buffer()
-                                        .writeUtf8CodePoint(codeunits[0].code)
-                                        .writeUtf8CodePoint(codeunits[1].code)
-                                        .readUtf8()
-                                        .encodeToByteArray()
+                                    .writeUtf8CodePoint(codeunits[0].code)
+                                    .writeUtf8CodePoint(codeunits[1].code)
+                                    .readUtf8()
+                                    .encodeToByteArray()
                                 buffer.write(bytes)
                                 codeunits.clear()
                             }
+
                             else -> {
                                 val bytes = Buffer()
-                                        .writeUtf8CodePoint(cu.toInt())
-                                        .readUtf8()
-                                        .encodeToByteArray()
+                                    .writeUtf8CodePoint(cu.toInt())
+                                    .readUtf8()
+                                    .encodeToByteArray()
                                 buffer.write(bytes)
                             }
                         }
                         continue
-                    } catch (ex: IOException) {
+                    } catch (_: IOException) {
                         throw ProtocolException("Invalid unicode sequence")
                     }
                 } else {
@@ -420,15 +424,15 @@ class JsonProtocol @JvmOverloads constructor(
     // not do a complete regex check to validate that this is actually a number.
     @Throws(IOException::class)
     private fun readJsonNumericChars(): String {
-        val strbld = StringBuilder()
-        while (true) {
-            val ch = reader.peek()
-            if (!isJsonNumeric(ch)) {
-                break
+        return buildString {
+            while (true) {
+                val ch = reader.peek()
+                if (!isJsonNumeric(ch)) {
+                    break
+                }
+                append(reader.read().toInt().toChar())
             }
-            strbld.append(reader.read().toInt().toChar())
         }
-        return strbld.toString()
     }
 
     // Read in a Json number. If the context dictates, read in enclosing quotes.
@@ -444,7 +448,7 @@ class JsonProtocol @JvmOverloads constructor(
         }
         return try {
             str.toLong()
-        } catch (ex: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             throw ProtocolException("Bad data encountered in numeric data")
         }
     }
@@ -457,8 +461,7 @@ class JsonProtocol @JvmOverloads constructor(
         return if (reader.peek() == QUOTE[0]) {
             val str = readJsonString(true)
             val dub = str.utf8().toDouble()
-            if (!context.escapeNum() && !dub.isNaN()
-                    && !dub.isInfinite()) {
+            if (!context.escapeNum() && !dub.isNaN() && !dub.isInfinite()) {
                 // Throw exception -- we should not be in a string in this case
                 throw ProtocolException("Numeric data unexpectedly quoted")
             }
@@ -470,7 +473,7 @@ class JsonProtocol @JvmOverloads constructor(
             }
             try {
                 readJsonNumericChars().toDouble()
-            } catch (ex: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 throw ProtocolException("Bad data encountered in numeric data")
             }
         }
@@ -670,17 +673,17 @@ class JsonProtocol @JvmOverloads constructor(
     }
 
     private object JsonTypes {
-        @JvmField val BOOLEAN = byteArrayOf('t'.code.toByte(), 'f'.code.toByte())
-        @JvmField val BYTE = byteArrayOf('i'.code.toByte(), '8'.code.toByte())
-        @JvmField val I16 = byteArrayOf('i'.code.toByte(), '1'.code.toByte(), '6'.code.toByte())
-        @JvmField val I32 = byteArrayOf('i'.code.toByte(), '3'.code.toByte(), '2'.code.toByte())
-        @JvmField val I64 = byteArrayOf('i'.code.toByte(), '6'.code.toByte(), '4'.code.toByte())
-        @JvmField val DOUBLE = byteArrayOf('d'.code.toByte(), 'b'.code.toByte(), 'l'.code.toByte())
-        @JvmField val STRUCT = byteArrayOf('r'.code.toByte(), 'e'.code.toByte(), 'c'.code.toByte())
-        @JvmField val STRING = byteArrayOf('s'.code.toByte(), 't'.code.toByte(), 'r'.code.toByte())
-        @JvmField val MAP = byteArrayOf('m'.code.toByte(), 'a'.code.toByte(), 'p'.code.toByte())
-        @JvmField val LIST = byteArrayOf('l'.code.toByte(), 's'.code.toByte(), 't'.code.toByte())
-        @JvmField val SET = byteArrayOf('s'.code.toByte(), 'e'.code.toByte(), 't'.code.toByte())
+        @JvmField val BOOLEAN = "tf".map { it.code.toByte() }.toByteArray()
+        @JvmField val BYTE = "i8".map { it.code.toByte() }.toByteArray()
+        @JvmField val I16 = "i16".map { it.code.toByte() }.toByteArray()
+        @JvmField val I32 = "i32".map { it.code.toByte() }.toByteArray()
+        @JvmField val I64 = "i64".map { it.code.toByte() }.toByteArray()
+        @JvmField val DOUBLE = "dbl".map { it.code.toByte() }.toByteArray()
+        @JvmField val STRUCT = "rec".map { it.code.toByte() }.toByteArray()
+        @JvmField val STRING = "str".map { it.code.toByte() }.toByteArray()
+        @JvmField val MAP = "map".map { it.code.toByte() }.toByteArray()
+        @JvmField val LIST = "lst".map { it.code.toByte() }.toByteArray()
+        @JvmField val SET = "set".map { it.code.toByte() }.toByteArray()
 
         @JvmStatic
         fun ttypeToJson(typeId: Byte): ByteArray {
@@ -698,8 +701,7 @@ class JsonProtocol @JvmOverloads constructor(
                 TType.MAP -> MAP
                 TType.SET -> SET
                 TType.LIST -> LIST
-                else -> throw IllegalArgumentException(
-                        "Unknown TType ID: $typeId")
+                else -> throw IllegalArgumentException("Unknown TType ID: $typeId")
             }
         }
 
@@ -726,7 +728,7 @@ class JsonProtocol @JvmOverloads constructor(
                     't' -> result = TType.BOOL
                 }
             }
-            require(result != TType.STOP) { "Unknown json type ID: " + jsonId.contentToString() }
+            require(result != TType.STOP) { "Unknown json type ID: ${jsonId.contentToString()}" }
             return result
         }
     }
@@ -752,6 +754,7 @@ class JsonProtocol @JvmOverloads constructor(
     // for the first one
     private inner class JsonListContext : JsonBaseContext() {
         private var first = true
+
         @Throws(IOException::class)
         override fun write() {
             if (first) {
@@ -778,6 +781,7 @@ class JsonProtocol @JvmOverloads constructor(
     private inner class JsonPairContext : JsonBaseContext() {
         private var first = true
         private var colon = true
+
         @Throws(IOException::class)
         override fun write() {
             if (first) {
@@ -814,15 +818,15 @@ class JsonProtocol @JvmOverloads constructor(
         private val RBRACKET = byteArrayOf(']'.code.toByte())
         private val QUOTE = byteArrayOf('"'.code.toByte())
         private val BACKSLASH = byteArrayOf('\\'.code.toByte())
-        private val ESCSEQ = byteArrayOf('\\'.code.toByte(), 'u'.code.toByte(), '0'.code.toByte(), '0'.code.toByte())
+        private val ESCSEQ = charArrayOf('\\', 'u', '0', '0').map { it.code.toByte() }.toByteArray()
         private const val VERSION: Long = 1
         private val JSON_CHAR_TABLE = byteArrayOf( /*  0 1 2 3 4 5 6 7 8 9 A B C D E F */
                 0, 0, 0, 0, 0, 0, 0, 0, 'b'.code.toByte(), 't'.code.toByte(), 'n'.code.toByte(), 0, 'f'.code.toByte(), 'r'.code.toByte(), 0, 0,  // 0
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 1
                 1, 1, '"'.code.toByte(), 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
         private const val ESCAPE_CHARS = "\"\\/bfnrt"
-        private val ESCAPE_CHAR_VALS = byteArrayOf(
-                '"'.code.toByte(), '\\'.code.toByte(), '/'.code.toByte(), '\b'.code.toByte(), '\u000C'.code.toByte(), '\n'.code.toByte(), '\r'.code.toByte(), '\t'.code.toByte())
+        private val ESCAPE_CHAR_VALS = charArrayOf('"', '\\', '/', '\b', '\u000C', '\n', '\r', '\t')
+            .map { it.code.toByte() }.toByteArray()
 
         // Convert a byte containing a hex char ('0'-'9' or 'a'-'f') into its
         // corresponding hex value

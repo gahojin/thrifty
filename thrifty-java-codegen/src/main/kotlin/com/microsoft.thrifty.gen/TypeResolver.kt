@@ -36,8 +36,6 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 
-import java.util.LinkedHashMap
-
 /**
  * Utility for getting JavaPoet [TypeName] and [TType] codes from
  * [ThriftType] instances.
@@ -76,7 +74,7 @@ internal class TypeResolver {
  * A Visitor that converts a [ThriftType] into a [TypeName].
  */
 private object TypeNameVisitor : ThriftType.Visitor<TypeName> {
-    private val nameCache = LinkedHashMap<String, ClassName>()
+    private val nameCache = hashMapOf<String, ClassName>()
 
     override fun visitVoid(voidType: BuiltinType): TypeName {
         return TypeNames.VOID

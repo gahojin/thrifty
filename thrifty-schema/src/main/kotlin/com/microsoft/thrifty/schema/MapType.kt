@@ -27,14 +27,14 @@ package com.microsoft.thrifty.schema
  * @property valueType The type of values contained in maps of this type.
  */
 class MapType internal constructor(
-        val keyType: ThriftType,
-        val valueType: ThriftType,
-        override val annotations: Map<String, String> = emptyMap()
-) : ThriftType("map<" + keyType.name + ", " + valueType.name + ">") {
+    val keyType: ThriftType,
+    val valueType: ThriftType,
+    override val annotations: Map<String, String> = emptyMap(),
+) : ThriftType("map<${keyType.name}, ${valueType.name}>") {
 
     override val isMap: Boolean = true
 
-    override fun <T> accept(visitor: ThriftType.Visitor<T>): T = visitor.visitMap(this)
+    override fun <T> accept(visitor: Visitor<T>): T = visitor.visitMap(this)
 
     override fun withAnnotations(annotations: Map<String, String>): ThriftType {
         return MapType(keyType, valueType, mergeAnnotations(this.annotations, annotations))
@@ -51,9 +51,13 @@ class MapType internal constructor(
     class Builder(
         private var keyType: ThriftType,
         private var valueType: ThriftType,
-        private var annotations: Map<String, String>
+        private var annotations: Map<String, String>,
     ) {
-        internal constructor(type: MapType) : this(type.keyType, type.valueType, type.annotations)
+        internal constructor(type: MapType) : this(
+            keyType = type.keyType,
+            valueType = type.valueType,
+            annotations = type.annotations,
+        )
 
         /**
          * Use the given [keyType] for the [MapType] under construction.

@@ -109,6 +109,7 @@ fun Schema.multiFileRender(
                                         .unpack()
                                 }
                         }
+
                         is ServiceType -> {
                             element.methods
                                 .flatMap { method ->
@@ -119,6 +120,7 @@ fun Schema.multiFileRender(
                                         } + method.returnType.unpack()
                                 }
                         }
+
                         is TypedefType -> element.oldType.unpack()
                         else -> emptySet()
                     }
@@ -174,13 +176,13 @@ fun <A : Appendable> Schema.renderTo(buffer: A) = buffer.apply {
     if (typedefs.isNotEmpty()) {
         typedefs
             .sortedWith(Comparator { o1, o2 ->
-              // Sort by the type first, then the name. This way we can group types together
-              val typeComparison = o1.oldType.name.compareTo(o2.oldType.name)
-              return@Comparator if (typeComparison != 0) {
-                typeComparison
-              } else {
-                o1.name.compareTo(o2.name)
-              }
+                // Sort by the type first, then the name. This way we can group types together
+                val typeComparison = o1.oldType.name.compareTo(o2.oldType.name)
+                return@Comparator if (typeComparison != 0) {
+                    typeComparison
+                } else {
+                    o1.name.compareTo(o2.name)
+                }
             })
             .joinEachTo(
                 buffer = buffer,
@@ -420,6 +422,7 @@ private fun <A : Appendable> ThriftType.renderTypeTo(buffer: A, source: Location
                 append(name)
             }
         }
+
         this is SetType -> {
             buffer.apply {
                 append("set<")
@@ -427,6 +430,7 @@ private fun <A : Appendable> ThriftType.renderTypeTo(buffer: A, source: Location
                 append(">")
             }
         }
+
         this is ListType -> {
             buffer.apply {
                 append("list<")
@@ -434,6 +438,7 @@ private fun <A : Appendable> ThriftType.renderTypeTo(buffer: A, source: Location
                 append(">")
             }
         }
+
         this is MapType -> {
             buffer.apply {
                 append("map<")
@@ -443,6 +448,7 @@ private fun <A : Appendable> ThriftType.renderTypeTo(buffer: A, source: Location
                 append(">")
             }
         }
+
         else -> buffer.append(name)
     }
     return buffer
@@ -499,6 +505,7 @@ private fun <A : Appendable> Map<String, String>.renderTo(
             append("\"")
             append(")")
         }
+
         size > 1 -> {
             append(prefix)
             appendLine("(")

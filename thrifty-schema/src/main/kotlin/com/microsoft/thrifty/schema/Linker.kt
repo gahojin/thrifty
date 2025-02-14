@@ -21,17 +21,9 @@
 package com.microsoft.thrifty.schema
 
 import com.google.common.collect.HashMultimap
-import com.microsoft.thrifty.schema.parser.ListTypeElement
-import com.microsoft.thrifty.schema.parser.MapTypeElement
-import com.microsoft.thrifty.schema.parser.ScalarTypeElement
-import com.microsoft.thrifty.schema.parser.SetTypeElement
-import com.microsoft.thrifty.schema.parser.TypeElement
+import com.microsoft.thrifty.schema.parser.*
 import java.io.File
-import java.util.ArrayDeque
-import java.util.ArrayList
-import java.util.LinkedHashMap
-import java.util.LinkedHashSet
-import java.util.LinkedList
+import java.util.*
 
 internal interface SymbolTable {
     fun lookupConst(symbol: String): Constant?
@@ -45,12 +37,12 @@ internal interface SymbolTable {
  * In other words, a type-checker.
  */
 internal class Linker(
-        private val environment: LinkEnvironment,
-        private val program: Program,
-        private val reporter: ErrorReporter
+    private val environment: LinkEnvironment,
+    private val program: Program,
+    private val reporter: ErrorReporter
 ) : SymbolTable {
 
-    private val typesByName = LinkedHashMap<String, ThriftType>()
+    private val typesByName = linkedMapOf<String, ThriftType>()
 
     private var linking = false
     private var linked = false
@@ -99,7 +91,7 @@ internal class Linker(
             }
 
             linked = !environment.hasErrors
-        } catch (ignored: LinkFailureException) {
+        } catch (_: LinkFailureException) {
             // The relevant errors will have already been
             // added to the environment; just let the caller
             // handle them.
@@ -118,9 +110,7 @@ internal class Linker(
             val name = included.name
             val ix = name.indexOf('.')
             if (ix == -1) {
-                throw AssertionError(
-                        "No extension found for included file " + included.absolutePath + ", "
-                                + "invalid include statement")
+                throw AssertionError("No extension found for included file ${included.absolutePath}, invalid include statement")
             }
             val prefix = name.substring(0, ix)
 
@@ -186,14 +176,14 @@ internal class Linker(
                     register(typedef)
                     atLeastOneResolved = true
                     iter.remove()
-                } catch (ignored: LinkFailureException) {
+                } catch (_: LinkFailureException) {
                 }
 
             }
 
             if (!atLeastOneResolved) {
                 for (typedef in typedefs) {
-                    reporter.error(typedef.location, "Unresolvable typedef '" + typedef.name + "'")
+                    reporter.error(typedef.location, "Unresolvable typedef '${typedef.name}'")
                 }
                 break
             }
@@ -209,7 +199,7 @@ internal class Linker(
             try {
                 constant.link(this)
             } catch (e: LinkFailureException) {
-                reporter.error(constant.location, "Failed to resolve type '" + e.message + "'")
+                reporter.error(constant.location, "Failed to resolve type '${e.message}'")
             }
 
         }
@@ -220,7 +210,7 @@ internal class Linker(
             try {
                 structType.link(this)
             } catch (e: LinkFailureException) {
-                reporter.error(structType.location, "Failed to resolve type '" + e.message + "'")
+                reporter.error(structType.location, "Failed to resolve type '${e.message}'")
             }
 
         }
@@ -231,7 +221,7 @@ internal class Linker(
             try {
                 union.link(this)
             } catch (e: LinkFailureException) {
-                reporter.error(union.location, "Failed to resolve type " + e.message + "'")
+                reporter.error(union.location, "Failed to resolve type ${e.message}'")
             }
 
         }
@@ -242,7 +232,7 @@ internal class Linker(
             try {
                 exception.link(this)
             } catch (e: LinkFailureException) {
-                reporter.error(exception.location, "Failed to resolve type " + e.message + "'")
+                reporter.error(exception.location, "Failed to resolve type ${e.message}'")
             }
 
         }
@@ -253,7 +243,7 @@ internal class Linker(
             try {
                 service.link(this)
             } catch (e: LinkFailureException) {
-                reporter.error(service.location, "Failed to resolve type " + e.message + "'")
+                reporter.error(service.location, "Failed to resolve type ${e.message}'")
             }
 
         }
@@ -313,16 +303,15 @@ internal class Linker(
         for (service in program.services) {
             // If this service extends another, add the parent -> child relationship to the multimap.
             // Otherwise, this is a root node, and should be added to the processing queue.
-            val baseType = service.extendsService
-            if (baseType != null) {
-                if (baseType.isService) {
-                    parentToChildren.put(baseType as ServiceType, service)
+            service.extendsService?.also {
+                if (it.isService) {
+                    parentToChildren.put(it as ServiceType, service)
                 } else {
                     // We know that this is an error condition; queue this type up for validation anyways
                     // so that any other errors lurking here can be reported.
                     servicesToValidate.add(service)
                 }
-            } else {
+            } ?: run {
                 // Root node - add it to the queue
                 servicesToValidate.add(service)
             }
@@ -409,12 +398,14 @@ internal class Linker(
                 typesByName[type.name] = listType
                 listType.withAnnotations(annotations)
             }
+
             is SetTypeElement -> {
                 val elementType = resolveType(type.elementType)
                 val setType = SetType(elementType)
                 typesByName[type.name] = setType
                 setType.withAnnotations(annotations)
             }
+
             is MapTypeElement -> {
                 val keyType = resolveType(type.keyType)
                 val valueType = resolveType(type.valueType)
@@ -422,12 +413,13 @@ internal class Linker(
                 typesByName[type.name] = mapType
                 mapType.withAnnotations(annotations)
             }
+
             is ScalarTypeElement -> {
                 // At this point, all user-defined types should have been registered.
                 // If we are resolving a built-in type, then that's fine.  If not, then
                 // we have an error.
                 val builtinType = BuiltinType.get(type.name)
-                        ?: throw LinkFailureException(type.name)
+                    ?: throw LinkFailureException(type.name)
 
                 builtinType.withAnnotations(annotations)
             }
@@ -435,22 +427,20 @@ internal class Linker(
     }
 
     override fun lookupConst(symbol: String): Constant? {
-        var constant = program.constantMap[symbol]
-        if (constant == null) {
-            // As above, 'symbol' may be a reference to an included
-            // constant.
+        return program.constantMap[symbol] ?: run {
+            // As above, 'symbol' may be a reference to an included constant.
             val ix = symbol.indexOf('.')
-            if (ix != -1) {
+            if (ix == -1) {
+                null
+            } else {
                 val includeName = symbol.substring(0, ix)
                 val qualifiedName = symbol.substring(ix + 1)
-                constant = program.includes
-                        .asSequence()
-                        .filter { p -> p.location.programName == includeName }
-                        .mapNotNull { p -> p.constantMap[qualifiedName] }
-                        .firstOrNull()
+                program.includes.asSequence()
+                    .filter { it.location.programName == includeName }
+                    .mapNotNull { it.constantMap[qualifiedName] }
+                    .firstOrNull()
             }
         }
-        return constant
     }
 
     fun addError(location: Location, error: String) {
@@ -458,8 +448,8 @@ internal class Linker(
     }
 
     private class LinkFailureException : RuntimeException {
-        internal constructor()
+        constructor()
 
-        internal constructor(message: String) : super(message)
+        constructor(message: String) : super(message)
     }
 }

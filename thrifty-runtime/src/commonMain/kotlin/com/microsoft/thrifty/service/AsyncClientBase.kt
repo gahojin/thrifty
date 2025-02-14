@@ -38,7 +38,7 @@ import okio.Closeable
  */
 expect open class AsyncClientBase protected constructor(
     protocol: Protocol,
-    listener: Listener
+    listener: Listener,
 ) : ClientBase, Closeable {
     /**
      * Exposes important events in the client's lifecycle.

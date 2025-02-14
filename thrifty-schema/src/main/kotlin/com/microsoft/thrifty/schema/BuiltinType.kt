@@ -20,13 +20,16 @@
  */
 package com.microsoft.thrifty.schema
 
+import com.microsoft.thrifty.schema.BuiltinType.Companion.BYTE
+
+
 /**
  * Represents types defined by the Thrift IDL, such as the numeric types,
  * strings, binaries, and void.
  */
 class BuiltinType internal constructor(
-        name: String,
-        override val annotations: Map<String, String> = emptyMap()
+    name: String,
+    override val annotations: Map<String, String> = emptyMap()
 ) : ThriftType(name) {
 
     /**
@@ -41,7 +44,7 @@ class BuiltinType internal constructor(
 
     override val isBuiltin: Boolean = true
 
-    override fun <T> accept(visitor: ThriftType.Visitor<T>): T {
+    override fun <T> accept(visitor: Visitor<T>): T {
         return when (this) {
             VOID -> visitor.visitVoid(this)
             BOOL -> visitor.visitBool(this)
@@ -141,8 +144,8 @@ class BuiltinType internal constructor(
         val VOID: ThriftType = BuiltinType("void")
 
         private val BUILTINS = listOf(BOOL, BYTE, I8, I16, I32, I64, DOUBLE, STRING, BINARY, VOID)
-                .map { it.name to it }
-                .toMap()
+            .map { it.name to it }
+            .toMap()
 
         /**
          * Returns the builtin type corresponding to the given [name], or null

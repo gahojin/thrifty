@@ -112,7 +112,6 @@ abstract class KotlinConformanceTest {
             this.protocol = createProtocol(this.transport)
             this.client = ThriftTestClient(protocol, object : AsyncClientBase.Listener {
                 override fun onTransportClosed() {
-
                 }
 
                 override fun onError(error: Throwable) {
@@ -145,7 +144,7 @@ abstract class KotlinConformanceTest {
         }
 
         private fun createProtocol(transport: Transport): Protocol {
-            return when (testServer.protocol!!) {
+            return when (testServer.protocol) {
                 ServerProtocol.BINARY -> transport.binaryProtocol()
                 ServerProtocol.COMPACT -> transport.compactProtocol()
                 ServerProtocol.JSON -> transport.jsonProtocol()

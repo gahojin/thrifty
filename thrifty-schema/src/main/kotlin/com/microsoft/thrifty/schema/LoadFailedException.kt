@@ -27,6 +27,6 @@ package com.microsoft.thrifty.schema
  * An object containing warnings and errors encountered during loading.
  */
 class LoadFailedException(
-        cause: Throwable,
-        val errorReporter: ErrorReporter
+    cause: Throwable,
+    val errorReporter: ErrorReporter
 ) : Exception(errorReporter.formattedReports().joinToString("\n"), cause)

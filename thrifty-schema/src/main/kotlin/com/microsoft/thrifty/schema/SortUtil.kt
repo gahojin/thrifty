@@ -25,7 +25,7 @@ internal object SortUtil {
         // KAAAAAAAAAAAAAAHHHHHHNNNNNNNNNNNN!!!!!!!!! ('s algorithm)
 
         // A mapping of nodes to the number of other nodes referencing them
-        val references = LinkedHashMap<T, Int>()
+        val references = linkedMapOf<T, Int>()
         val roots = ArrayDeque<T>()
 
         // ArrayDeque implements List and allows efficient insertion at the head,

@@ -36,7 +36,6 @@ import org.apache.thrift.TException
 
 class ThriftTestHandler : ThriftTest {
     override suspend fun testVoid() {
-
     }
 
     override suspend fun testString(thing: String): String {
@@ -103,56 +102,53 @@ class ThriftTestHandler : ThriftTest {
         // {-4 => {-4 => -4, -3 => -3, -2 => -2, -1 => -1, }, 4 => {1 => 1, 2 => 2, 3 => 3, 4 => 4, }, }
 
         // {-4 => {-4 => -4, -3 => -3, -2 => -2, -1 => -1, }, 4 => {1 => 1, 2 => 2, 3 => 3, 4 => 4, }, }
-        val result: MutableMap<Int, Map<Int, Int>> = LinkedHashMap()
-        val first: MutableMap<Int, Int> = LinkedHashMap()
-        val second: MutableMap<Int, Int> = LinkedHashMap()
+        val first = mapOf(
+            -4 to -4,
+            -3 to -3,
+            -2 to -2,
+            -1 to -1,
+        )
+        val second = mapOf(
+            1 to 1,
+            2 to 2,
+            3 to 3,
+            4 to 4,
+        )
 
-        first[-4] = -4
-        first[-3] = -3
-        first[-2] = -2
-        first[-1] = -1
-
-        second[1] = 1
-        second[2] = 2
-        second[3] = 3
-        second[4] = 4
-
-        result[-4] = first
-        result[4] = second
-
-        return result
+        return mapOf(
+            -4 to first,
+            4 to second,
+        )
     }
 
     override suspend fun testInsanity(argument: Insanity): Map<UserId, Map<Numberz, Insanity>> {
         /*
-     *   { 1 => { 2 => argument,
-     *            3 => argument,
-     *          },
-     *     2 => { 6 => <empty Insanity struct>, },
-     *   }
-     */
-
+         *   { 1 => { 2 => argument,
+         *            3 => argument,
+         *          },
+         *     2 => { 6 => <empty Insanity struct>, },
+         *   }
+         */
 
         /*
-     *   { 1 => { 2 => argument,
-     *            3 => argument,
-     *          },
-     *     2 => { 6 => <empty Insanity struct>, },
-     *   }
-     */
-        val result: MutableMap<Long, Map<Numberz, Insanity>> = LinkedHashMap()
-        val first: MutableMap<Numberz, Insanity> = LinkedHashMap()
-        val second: MutableMap<Numberz, Insanity> = LinkedHashMap()
+         *   { 1 => { 2 => argument,
+         *            3 => argument,
+         *          },
+         *     2 => { 6 => <empty Insanity struct>, },
+         *   }
+         */
+        val first = mapOf<Numberz, Insanity>(
+            Numberz.TWO to argument,
+            Numberz.THREE to argument,
+        )
+        val second = mapOf<Numberz, Insanity>(
+            Numberz.SIX to Insanity(null, null),
+        )
 
-        first[Numberz.TWO] = argument
-        first[Numberz.THREE] = argument
-
-        second[Numberz.SIX] = Insanity(null, null)
-
-        result[1L] = first
-        result[2L] = second
-
-        return result
+        return mapOf(
+            1L to first,
+            2L to second,
+        )
     }
 
     override suspend fun testMulti(
@@ -161,7 +157,7 @@ class ThriftTestHandler : ThriftTest {
         arg2: Long,
         arg3: Map<Short, String>,
         arg4: Numberz,
-        arg5: UserId
+        arg5: UserId,
     ): Xtruct {
         return Xtruct("Hello2", arg0, arg1, arg2, null, null)
     }
@@ -184,7 +180,7 @@ class ThriftTestHandler : ThriftTest {
                 i32_thing = null,
                 i64_thing = null,
                 double_thing = null,
-                bool_thing = null
+                bool_thing = null,
             )
             throw Xception2(2002, xtruct)
         }
@@ -195,7 +191,7 @@ class ThriftTestHandler : ThriftTest {
             i32_thing = null,
             i64_thing = null,
             double_thing = null,
-            bool_thing = null
+            bool_thing = null,
         )
     }
 

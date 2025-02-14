@@ -48,20 +48,19 @@ import java.util.NoSuchElementException
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class ConstantBuilder(
-        private val typeResolver: TypeResolver,
-        private val fieldNamer: FieldNamer,
-        private val schema: Schema
+    private val typeResolver: TypeResolver,
+    private val fieldNamer: FieldNamer,
+    private val schema: Schema,
 ) {
-
     fun generateFieldInitializer(
-            initializer: CodeBlock.Builder,
-            allocator: NameAllocator,
-            scope: AtomicInteger,
-            name: String,
-            tt: ThriftType,
-            value: ConstValueElement,
-            needsDeclaration: Boolean) {
-
+        initializer: CodeBlock.Builder,
+        allocator: NameAllocator,
+        scope: AtomicInteger,
+        name: String,
+        tt: ThriftType,
+        value: ConstValueElement,
+        needsDeclaration: Boolean,
+    ) {
         tt.trueType.accept(object : SimpleVisitor<Unit>() {
             override fun visitBuiltin(builtinType: ThriftType) {
                 val init = renderConstValue(initializer, allocator, scope, tt, value)
@@ -93,13 +92,13 @@ internal class ConstantBuilder(
             }
 
             private fun generateSingleElementCollection(
-                    elementType: ThriftType,
-                    genericName: TypeName,
-                    collectionImplName: TypeName,
-                    values: List<ConstValueElement>) {
+                elementType: ThriftType,
+                genericName: TypeName,
+                collectionImplName: TypeName,
+                values: List<ConstValueElement>,
+            ) {
                 if (needsDeclaration) {
-                    initializer.addStatement("\$T \$N = new \$T()",
-                            genericName, name, collectionImplName)
+                    initializer.addStatement("\$T \$N = new \$T()", genericName, name, collectionImplName)
                 } else {
                     initializer.addStatement("\$N = new \$T()", name, collectionImplName)
                 }
@@ -120,10 +119,12 @@ internal class ConstantBuilder(
                 val mapImplName = typeResolver.mapOf(keyTypeName, valueTypeName)
 
                 if (needsDeclaration) {
-                    initializer.addStatement("\$T \$N = new \$T()",
-                            ParameterizedTypeName.get(TypeNames.MAP, keyTypeName, valueTypeName),
-                            name,
-                            mapImplName)
+                    initializer.addStatement(
+                        "\$T \$N = new \$T()",
+                        ParameterizedTypeName.get(TypeNames.MAP, keyTypeName, valueTypeName),
+                        name,
+                        mapImplName,
+                    )
                 } else {
                     initializer.addStatement("\$N = new \$T()", name, mapImplName)
                 }
@@ -148,7 +149,7 @@ internal class ConstantBuilder(
                 val map = (value as MapValueElement).value
                 for ((keyElement, valueElement) in map) {
                     val key = (keyElement as LiteralValueElement).value
-                    val field = fieldsByName[key] ?: error("Struct ${structType.name} has no field named '$key'")
+                    val field = checkNotNull(fieldsByName[key]) { "Struct ${structType.name} has no field named '$key'" }
                     val setterName = fieldNamer.getName(field)
                     val valueName = renderConstValue(initializer, allocator, scope, field.type, valueElement)
                     initializer.addStatement("\$N.\$N(\$L)", builderName, setterName, valueName)
@@ -176,25 +177,25 @@ internal class ConstantBuilder(
     }
 
     fun renderConstValue(
-            block: CodeBlock.Builder,
-            allocator: NameAllocator,
-            scope: AtomicInteger,
-            type: ThriftType,
-            value: ConstValueElement): CodeBlock {
+        block: CodeBlock.Builder,
+        allocator: NameAllocator,
+        scope: AtomicInteger,
+        type: ThriftType,
+        value: ConstValueElement,
+    ): CodeBlock {
         return type.accept(ConstRenderingVisitor(block, allocator, scope, type, value))
     }
 
     private inner class ConstRenderingVisitor(
-            internal val block: CodeBlock.Builder,
-            internal val allocator: NameAllocator,
-            internal val scope: AtomicInteger,
-            internal val type: ThriftType,
-            internal val value: ConstValueElement
+        val block: CodeBlock.Builder,
+        val allocator: NameAllocator,
+        val scope: AtomicInteger,
+        val type: ThriftType,
+        val value: ConstValueElement,
     ) : ThriftType.Visitor<CodeBlock> {
-
         private fun getNumberLiteral(element: ConstValueElement): Any {
             if (element !is IntValueElement) {
-                throw AssertionError("Expected an int or double, got: " + element)
+                throw AssertionError("Expected an int or double, got: $element")
             }
 
             return if (element.thriftText.startsWith("0x") || element.thriftText.startsWith("0X")) {
@@ -279,7 +280,7 @@ internal class ConstantBuilder(
                     is IdentifierValueElement -> {
                         try {
                             return constantOrError("this is gross, sorry")
-                        } catch (e: IllegalStateException) {
+                        } catch (_: IllegalStateException) {
                             // Not a constant
                         }
 
@@ -287,11 +288,11 @@ internal class ConstantBuilder(
                         val name = value.value.split(".").last()
                         enumType.findMemberByName(name)
                     }
+
                     else -> throw AssertionError("Constant value $value is not possibly an enum; validation bug")
                 }
-            } catch (e: NoSuchElementException) {
-                throw IllegalStateException(
-                        "No enum member in ${enumType.name} with value $value")
+            } catch (_: NoSuchElementException) {
+                throw IllegalStateException("No enum member in ${enumType.name} with value $value")
             }
 
             return CodeBlock.of("\$T.\$L", typeResolver.getJavaClass(enumType), member.name)
@@ -338,9 +339,10 @@ internal class ConstantBuilder(
         }
 
         private fun visitCollection(
-                type: ThriftType,
-                tempName: String,
-                method: String): CodeBlock {
+            type: ThriftType,
+            tempName: String,
+            method: String,
+        ): CodeBlock {
             val name = allocator.newName(tempName, scope.getAndIncrement())
             generateFieldInitializer(block, allocator, scope, name, type, value, true)
             return CodeBlock.of("\$T.\$L(\$N)", TypeNames.COLLECTIONS, method, name)
@@ -380,21 +382,14 @@ internal class ConstantBuilder(
 
             // TODO(ben): Think of a more systematic way to know what [Program] owns a thrift element
             val c = schema.constants
-                    .asSequence()
-                    .filter { it.name == name }
-                    .filter { it.type.trueType == expectedType }
-                    .filter { expectedProgram == null || it.location.programName == expectedProgram }
-                    .firstOrNull() ?: throw IllegalStateException(message)
+                .asSequence()
+                .filter { it.name == name }
+                .filter { it.type.trueType == expectedType }
+                .filter { expectedProgram == null || it.location.programName == expectedProgram }
+                .firstOrNull() ?: error(message)
 
             val packageName = c.getNamespaceFor(NamespaceScope.JAVA)
             return CodeBlock.of("$packageName.Constants.$name")
-        }
-
-        private inline fun buildCodeBlock(fn: CodeBlock.Builder.() -> Unit): CodeBlock {
-            return CodeBlock.builder().let { builder ->
-                builder.fn()
-                builder.build()
-            }
         }
     }
 }

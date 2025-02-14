@@ -23,5 +23,5 @@ package com.microsoft.thrifty.protocol
 import kotlin.jvm.JvmField
 
 class StructMetadata(
-        @JvmField val name: String,
+    @JvmField val name: String,
 )

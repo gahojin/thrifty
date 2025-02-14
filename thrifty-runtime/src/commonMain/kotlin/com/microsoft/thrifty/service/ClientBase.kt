@@ -37,7 +37,9 @@ import okio.IOException
  * configure your [Protocol] and [com.microsoft.thrifty.transport.Transport]
  * objects appropriately.
  */
-open class ClientBase protected constructor(private val protocol: Protocol) : Closeable {
+open class ClientBase protected constructor(
+    private val protocol: Protocol,
+) : Closeable {
     /**
      * A sequence ID generator; contains the most-recently-used
      * sequence ID (or zero, if no calls have been made).
@@ -81,7 +83,7 @@ open class ClientBase protected constructor(private val protocol: Protocol) : Cl
     fun closeProtocol() {
         try {
             protocol.close()
-        } catch (ignored: IOException) {
+        } catch (_: IOException) {
             // nope
         }
     }
@@ -109,29 +111,23 @@ open class ClientBase protected constructor(private val protocol: Protocol) : Cl
         }
         val metadata = protocol.readMessageBegin()
         if (metadata.seqId != sid) {
-            throw ThriftException(
-                    ThriftException.Kind.BAD_SEQUENCE_ID,
-                    "Unrecognized sequence ID")
+            throw ThriftException(ThriftException.Kind.BAD_SEQUENCE_ID, "Unrecognized sequence ID")
         }
         if (metadata.type == TMessageType.EXCEPTION) {
             val e = read(protocol)
             protocol.readMessageEnd()
             throw ServerException(e)
         } else if (metadata.type != TMessageType.REPLY) {
-            throw ThriftException(
-                    ThriftException.Kind.INVALID_MESSAGE_TYPE,
-                    "Invalid message type: " + metadata.type)
+            throw ThriftException(ThriftException.Kind.INVALID_MESSAGE_TYPE, "Invalid message type: ${metadata.type}")
         }
         if (metadata.seqId != seqId.get()) {
-            throw ThriftException(
-                    ThriftException.Kind.BAD_SEQUENCE_ID,
-                    "Out-of-order response")
+            throw ThriftException(ThriftException.Kind.BAD_SEQUENCE_ID, "Out-of-order response")
         }
         if (metadata.name != call.name) {
             throw ThriftException(
-                    ThriftException.Kind.WRONG_METHOD_NAME,
-                    "Unexpected method name in reply; expected " + call.name
-                            + " but received " + metadata.name)
+                ThriftException.Kind.WRONG_METHOD_NAME,
+                "Unexpected method name in reply; expected ${call.name} but received ${metadata.name}",
+            )
         }
         return try {
             val result = call.receive(protocol, metadata)

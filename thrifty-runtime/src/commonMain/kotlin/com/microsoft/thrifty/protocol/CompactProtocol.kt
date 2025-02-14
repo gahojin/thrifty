@@ -50,6 +50,7 @@ import okio.ByteString
 import okio.ByteString.Companion.toByteString
 import okio.EOFException
 import okio.IOException
+import kotlin.experimental.and
 
 /**
  * An implementation of the Thrift compact binary protocol.
@@ -69,8 +70,7 @@ class CompactProtocol(transport: Transport) : BaseProtocol(transport) {
     private var booleanFieldType: Byte = -1
     private val buffer = ByteArray(16)
 
-    // Keep track of the most-recently-written fields,
-    // used for delta-encoding.
+    // Keep track of the most-recently-written fields, used for delta-encoding.
     private val writingFields = ShortStack()
     private var lastWritingField: Short = 0
     private val readingFields = ShortStack()
@@ -174,15 +174,15 @@ class CompactProtocol(transport: Transport) : BaseProtocol(transport) {
     @Throws(IOException::class)
     override fun writeBool(b: Boolean) {
         val compactValue = if (b) CompactTypes.BOOLEAN_TRUE else CompactTypes.BOOLEAN_FALSE
-        if (booleanFieldId != -1) {
+        if (booleanFieldId == -1) {
+            // We are not writing a field - just write the value directly.
+            writeByte(compactValue)
+        } else {
             // We are writing a boolean field, and need to write the
             // deferred field header.  In this case we encode the value
             // directly in the header's type field.
             writeFieldBegin(booleanFieldId, compactValue)
             booleanFieldId = -1
-        } else {
-            // We are not writing a field - just write the value directly.
-            writeByte(compactValue)
         }
     }
 
@@ -283,16 +283,12 @@ class CompactProtocol(transport: Transport) : BaseProtocol(transport) {
     override fun readMessageBegin(): MessageMetadata {
         val protocolId = readByte()
         if (protocolId != PROTOCOL_ID) {
-            throw ProtocolException(
-                    "Expected protocol ID " + PROTOCOL_ID.toInt()
-                            + " but got " + protocolId.toInt().toString(radix = 16))
+            throw ProtocolException("Expected protocol ID ${PROTOCOL_ID.toInt()} but got ${protocolId.toInt().toString(radix = 16)}")
         }
         val versionAndType = readByte()
         val version = (VERSION_MASK.toInt() and versionAndType.toInt()).toByte()
         if (version != VERSION) {
-            throw ProtocolException(
-                    "Version mismatch; expected version " + VERSION
-                            + " but got " + version)
+            throw ProtocolException("Version mismatch; expected version $VERSION but got $version")
         }
         val typeId = ((versionAndType.toInt() shr TYPE_SHIFT_AMOUNT) and TYPE_BITS.toInt()).toByte()
         val seqId = readVarint32()
@@ -499,69 +495,63 @@ class CompactProtocol(transport: Transport) : BaseProtocol(transport) {
         }
     }
 
-    private class CompactTypes private constructor() {
-        companion object {
-            const val BOOLEAN_TRUE: Byte = 0x01
-            const val BOOLEAN_FALSE: Byte = 0x02
-            const val BYTE: Byte = 0x03
-            const val I16: Byte = 0x04
-            const val I32: Byte = 0x05
-            const val I64: Byte = 0x06
-            const val DOUBLE: Byte = 0x07
-            const val BINARY: Byte = 0x08
-            const val LIST: Byte = 0x09
-            const val SET: Byte = 0x0A
-            const val MAP: Byte = 0x0B
-            const val STRUCT: Byte = 0x0C
-            fun ttypeToCompact(typeId: Byte): Byte {
-                return when (typeId) {
-                    TType.STOP -> TType.STOP
-                    TType.VOID -> throw IllegalArgumentException("Unexpected VOID type")
-                    TType.BOOL -> BOOLEAN_TRUE
-                    TType.BYTE -> BYTE
-                    TType.DOUBLE -> DOUBLE
-                    TType.I16 -> I16
-                    TType.I32 -> I32
-                    TType.I64 -> I64
-                    TType.STRING -> BINARY
-                    TType.STRUCT -> STRUCT
-                    TType.MAP -> MAP
-                    TType.SET -> SET
-                    TType.LIST -> LIST
-                    else -> throw IllegalArgumentException(
-                            "Unknown TType ID: $typeId")
-                }
-            }
+    object CompactTypes {
+        const val BOOLEAN_TRUE: Byte = 0x01
+        const val BOOLEAN_FALSE: Byte = 0x02
+        const val BYTE: Byte = 0x03
+        const val I16: Byte = 0x04
+        const val I32: Byte = 0x05
+        const val I64: Byte = 0x06
+        const val DOUBLE: Byte = 0x07
+        const val BINARY: Byte = 0x08
+        const val LIST: Byte = 0x09
+        const val SET: Byte = 0x0A
+        const val MAP: Byte = 0x0B
+        const val STRUCT: Byte = 0x0C
 
-            fun compactToTtype(compactId: Byte): Byte {
-                return when (compactId) {
-                    TType.STOP -> TType.STOP
-                    BOOLEAN_TRUE -> TType.BOOL
-                    BOOLEAN_FALSE -> TType.BOOL
-                    BYTE -> TType.BYTE
-                    I16 -> TType.I16
-                    I32 -> TType.I32
-                    I64 -> TType.I64
-                    DOUBLE -> TType.DOUBLE
-                    BINARY -> TType.STRING
-                    LIST -> TType.LIST
-                    SET -> TType.SET
-                    MAP -> TType.MAP
-                    STRUCT -> TType.STRUCT
-                    else -> throw IllegalArgumentException(
-                            "Unknown compact type ID: $compactId")
-                }
+        fun ttypeToCompact(typeId: Byte): Byte {
+            return when (typeId) {
+                TType.STOP -> TType.STOP
+                TType.VOID -> throw IllegalArgumentException("Unexpected VOID type")
+                TType.BOOL -> BOOLEAN_TRUE
+                TType.BYTE -> BYTE
+                TType.DOUBLE -> DOUBLE
+                TType.I16 -> I16
+                TType.I32 -> I32
+                TType.I64 -> I64
+                TType.STRING -> BINARY
+                TType.STRUCT -> STRUCT
+                TType.MAP -> MAP
+                TType.SET -> SET
+                TType.LIST -> LIST
+                else -> throw IllegalArgumentException("Unknown TType ID: $typeId")
             }
         }
 
-        init {
-            throw AssertionError("no instances")
+        fun compactToTtype(compactId: Byte): Byte {
+            return when (compactId) {
+                TType.STOP -> TType.STOP
+                BOOLEAN_TRUE -> TType.BOOL
+                BOOLEAN_FALSE -> TType.BOOL
+                BYTE -> TType.BYTE
+                I16 -> TType.I16
+                I32 -> TType.I32
+                I64 -> TType.I64
+                DOUBLE -> TType.DOUBLE
+                BINARY -> TType.STRING
+                LIST -> TType.LIST
+                SET -> TType.SET
+                MAP -> TType.MAP
+                STRUCT -> TType.STRUCT
+                else -> throw IllegalArgumentException("Unknown compact type ID: $compactId")
+            }
         }
     }
 
     private class ShortStack {
-        private var stack: ShortArray
-        private var top: Int
+        private var stack = ShortArray(16)
+        private var top = -1
+
         fun push(value: Short) {
             if (top + 1 == stack.size) {
                 stack = stack.copyOf(stack.size shl 1)
@@ -571,11 +561,6 @@ class CompactProtocol(transport: Transport) : BaseProtocol(transport) {
 
         fun pop(): Short {
             return stack[top--]
-        }
-
-        init {
-            stack = ShortArray(16)
-            top = -1
         }
     }
 
@@ -592,7 +577,7 @@ class CompactProtocol(transport: Transport) : BaseProtocol(transport) {
 
         /**
          * Convert a twos-complement int to zigzag encoding,
-         * allowing negative values to be written as varints.
+         * allowing negative values to be written as variants.
          */
         private fun intToZigZag(n: Int): Int {
             return n shl 1 xor (n shr 31)

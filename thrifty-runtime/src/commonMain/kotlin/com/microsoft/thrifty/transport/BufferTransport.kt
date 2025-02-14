@@ -24,7 +24,7 @@ import okio.Buffer
 import kotlin.jvm.JvmOverloads
 
 class BufferTransport @JvmOverloads constructor(
-        private val b: Buffer = Buffer()
+    private val b: Buffer = Buffer(),
 ) : Transport {
 
     override fun read(buffer: ByteArray, offset: Int, count: Int) = b.read(buffer, offset, count)

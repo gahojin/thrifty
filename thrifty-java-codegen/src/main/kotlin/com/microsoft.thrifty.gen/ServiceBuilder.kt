@@ -40,14 +40,14 @@ import javax.lang.model.element.Modifier
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class ServiceBuilder(
-        private val typeResolver: TypeResolver,
-        private val constantBuilder: ConstantBuilder,
-        private val fieldNamer: FieldNamer
+    private val typeResolver: TypeResolver,
+    private val constantBuilder: ConstantBuilder,
+    private val fieldNamer: FieldNamer,
 ) {
 
     fun buildServiceInterface(service: ServiceType): TypeSpec {
         val serviceSpec = TypeSpec.interfaceBuilder(service.name)
-                .addModifiers(Modifier.PUBLIC)
+            .addModifiers(Modifier.PUBLIC)
 
         service.documentation.let {
             if (it.isNotEmpty()) {
@@ -70,7 +70,7 @@ internal class ServiceBuilder(
             var tag = 0
 
             val methodBuilder = MethodSpec.methodBuilder(method.name)
-                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
 
             if (method.hasJavadoc) {
                 methodBuilder.addJavadoc(method.documentation)
@@ -96,7 +96,8 @@ internal class ServiceBuilder(
             }
 
             val callbackInterfaceName = ParameterizedTypeName.get(
-                    TypeNames.SERVICE_CALLBACK, returnTypeName)
+                TypeNames.SERVICE_CALLBACK, returnTypeName
+            )
 
             methodBuilder.addParameter(callbackInterfaceName, callbackName)
 
@@ -110,8 +111,8 @@ internal class ServiceBuilder(
         val packageName = service.getNamespaceFor(NamespaceScope.JAVA)
         val interfaceTypeName = ClassName.get(packageName, serviceInterface.name)
         val builder = TypeSpec.classBuilder(service.name + "Client")
-                .addModifiers(Modifier.PUBLIC)
-                .addSuperinterface(interfaceTypeName)
+            .addModifiers(Modifier.PUBLIC)
+            .addSuperinterface(interfaceTypeName)
 
         val extendsServiceType = service.extendsService
         if (extendsServiceType is ServiceType) {
@@ -123,12 +124,14 @@ internal class ServiceBuilder(
             builder.superclass(TypeNames.SERVICE_CLIENT_BASE)
         }
 
-        builder.addMethod(MethodSpec.constructorBuilder()
+        builder.addMethod(
+            MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(TypeNames.PROTOCOL, "protocol")
                 .addParameter(TypeNames.SERVICE_CLIENT_LISTENER, "listener")
                 .addStatement("super(protocol, listener)")
-                .build())
+                .build()
+        )
 
         for ((i, methodSpec) in serviceInterface.methodSpecs.withIndex()) {
             val serviceMethod = service.methods[i]
@@ -136,13 +139,13 @@ internal class ServiceBuilder(
             builder.addType(call)
 
             val meth = MethodSpec.methodBuilder(methodSpec.name)
-                    .addAnnotation(Override::class.java)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addParameters(methodSpec.parameters)
-                    .addExceptions(methodSpec.exceptions)
+                .addAnnotation(Override::class.java)
+                .addModifiers(Modifier.PUBLIC)
+                .addParameters(methodSpec.parameters)
+                .addExceptions(methodSpec.exceptions)
 
             val body = CodeBlock.builder()
-                    .add("$[this.enqueue(new \$N(", call)
+                .add("$[this.enqueue(new \$N(", call)
 
             for ((index, parameter) in methodSpec.parameters.withIndex()) {
                 if (index == 0) {
@@ -163,7 +166,8 @@ internal class ServiceBuilder(
     }
 
     private fun buildCallSpec(method: ServiceMethod): TypeSpec {
-        val name = "${method.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}Call"
+        val name =
+            "${method.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}Call"
 
         val returnType = method.returnType
         val returnTypeName = if (returnType == BuiltinType.VOID) {
@@ -178,16 +182,18 @@ internal class ServiceBuilder(
         val hasReturnType = returnType != BuiltinType.VOID
 
         val callBuilder = TypeSpec.classBuilder(name)
-                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                .superclass(superclass)
+            .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+            .superclass(superclass)
 
         // Set up fields
         for (field in method.parameters) {
             val javaType = typeResolver.getJavaClass(field.type.trueType)
 
-            callBuilder.addField(FieldSpec.builder(javaType, fieldNamer.getName(field))
+            callBuilder.addField(
+                FieldSpec.builder(javaType, fieldNamer.getName(field))
                     .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-                    .build())
+                    .build()
+            )
         }
 
         // Ctor
@@ -206,11 +212,12 @@ internal class ServiceBuilder(
         val allocator = NameAllocator()
         val scope = AtomicInteger(0)
         val ctor = MethodSpec.constructorBuilder()
-                .addStatement(
-                        "super(\$S, \$T.\$L, callback)",
-                        method.name,
-                        TypeNames.TMESSAGE_TYPE,
-                        if (method.oneWay) "ONEWAY" else "CALL")
+            .addStatement(
+                "super(\$S, \$T.\$L, callback)",
+                method.name,
+                TypeNames.TMESSAGE_TYPE,
+                if (method.oneWay) "ONEWAY" else "CALL"
+            )
 
         for (field in method.parameters) {
             val fieldName = fieldNamer.getName(field)
@@ -228,13 +235,14 @@ internal class ServiceBuilder(
 
                 val init = CodeBlock.builder()
                 constantBuilder.generateFieldInitializer(
-                        init,
-                        allocator,
-                        scope,
-                        "this.$fieldName",
-                        field.type.trueType,
-                        field.defaultValue!!,
-                        false)
+                    init,
+                    allocator,
+                    scope,
+                    "this.$fieldName",
+                    field.type.trueType,
+                    field.defaultValue!!,
+                    false
+                )
                 ctor.addCode(init.build())
 
                 ctor.endControlFlow()
@@ -250,10 +258,10 @@ internal class ServiceBuilder(
 
     private fun buildSendMethod(method: ServiceMethod): MethodSpec {
         val send = MethodSpec.methodBuilder("send")
-                .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(TypeNames.PROTOCOL, "protocol")
-                .addException(TypeNames.IO_EXCEPTION)
+            .addAnnotation(Override::class.java)
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(TypeNames.PROTOCOL, "protocol")
+            .addException(TypeNames.IO_EXCEPTION)
 
         send.addStatement("protocol.writeStructBegin(\$S)", "args")
 
@@ -267,11 +275,13 @@ internal class ServiceBuilder(
                 send.beginControlFlow("if (this.\$L != null)", fieldName)
             }
 
-            send.addStatement("protocol.writeFieldBegin(\$S, \$L, \$T.\$L)",
-                    field.name, // send the Thrift name, not the fieldNamer output
-                    field.id,
-                    TypeNames.TTYPE,
-                    TypeNames.getTypeCodeName(typeCode))
+            send.addStatement(
+                "protocol.writeFieldBegin(\$S, \$L, \$T.\$L)",
+                field.name, // send the Thrift name, not the fieldNamer output
+                field.id,
+                TypeNames.TTYPE,
+                TypeNames.getTypeCodeName(typeCode)
+            )
 
             tt.accept(GenerateWriterVisitor(typeResolver, send, "protocol", "this", fieldName))
 
@@ -290,11 +300,11 @@ internal class ServiceBuilder(
 
     private fun buildReceiveMethod(method: ServiceMethod, hasReturnType: Boolean): MethodSpec {
         val recv = MethodSpec.methodBuilder("receive")
-                .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(TypeNames.PROTOCOL, "protocol")
-                .addParameter(TypeNames.MESSAGE_METADATA, "metadata")
-                .addException(TypeNames.EXCEPTION)
+            .addAnnotation(Override::class.java)
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(TypeNames.PROTOCOL, "protocol")
+            .addParameter(TypeNames.MESSAGE_METADATA, "metadata")
+            .addException(TypeNames.EXCEPTION)
 
         if (hasReturnType) {
             val retTypeName = typeResolver.getJavaClass(method.returnType.trueType)
@@ -311,12 +321,12 @@ internal class ServiceBuilder(
         }
 
         recv.addStatement("protocol.readStructBegin()")
-                .beginControlFlow("while (true)")
-                .addStatement("\$T field = protocol.readFieldBegin()", TypeNames.FIELD_METADATA)
-                .beginControlFlow("if (field.typeId == \$T.STOP)", TypeNames.TTYPE)
-                .addStatement("break")
-                .endControlFlow()
-                .beginControlFlow("switch (field.fieldId)")
+            .beginControlFlow("while (true)")
+            .addStatement("\$T field = protocol.readFieldBegin()", TypeNames.FIELD_METADATA)
+            .beginControlFlow("if (field.typeId == \$T.STOP)", TypeNames.TTYPE)
+            .addStatement("break")
+            .endControlFlow()
+            .beginControlFlow("switch (field.fieldId)")
 
         if (hasReturnType) {
             val type = method.returnType.trueType
@@ -378,11 +388,12 @@ internal class ServiceBuilder(
             // In this branch, no return type was received, nor were
             // any declared exceptions received.  This is a failure.
             recv.addStatement(
-                    "throw new \$T(\$T.\$L, \$S)",
-                    TypeNames.THRIFT_EXCEPTION,
-                    TypeNames.THRIFT_EXCEPTION_KIND,
-                    ThriftException.Kind.MISSING_RESULT.name,
-                    "Missing result")
+                "throw new \$T(\$T.\$L, \$S)",
+                TypeNames.THRIFT_EXCEPTION,
+                TypeNames.THRIFT_EXCEPTION_KIND,
+                ThriftException.Kind.MISSING_RESULT.name,
+                "Missing result"
+            )
         } else {
             // No return is expected, and no exceptions were received.
             // Success!

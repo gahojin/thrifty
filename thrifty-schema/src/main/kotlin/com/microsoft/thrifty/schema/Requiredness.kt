@@ -156,5 +156,5 @@ enum class Requiredness {
     /**
      * Optional fields may be unset at all times.
      */
-    OPTIONAL
+    OPTIONAL,
 }

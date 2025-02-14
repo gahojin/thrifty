@@ -32,7 +32,10 @@ class EnumType : UserType {
      */
     val members: List<EnumMember>
 
-    internal constructor(element: EnumElement, namespaces: Map<NamespaceScope, String>): super(UserElementMixin(element, namespaces)) {
+    internal constructor(
+        element: EnumElement,
+        namespaces: Map<NamespaceScope, String>
+    ) : super(UserElementMixin(element, namespaces)) {
         this.members = element.members.map { EnumMember(it, namespaces) }
     }
 
@@ -60,12 +63,12 @@ class EnumType : UserType {
 
     override val isEnum: Boolean = true
 
-    override fun <T> accept(visitor: ThriftType.Visitor<T>): T = visitor.visitEnum(this)
+    override fun <T> accept(visitor: Visitor<T>): T = visitor.visitEnum(this)
 
     override fun withAnnotations(annotations: Map<String, String>): ThriftType {
         return toBuilder()
-                .annotations(mergeAnnotations(this.annotations, annotations))
-                .build()
+            .annotations(mergeAnnotations(this.annotations, annotations))
+            .build()
     }
 
     /**
@@ -76,7 +79,7 @@ class EnumType : UserType {
     /**
      * An object that can build [EnumType] instances.
      */
-    class Builder internal constructor(enumType: EnumType) : UserType.UserTypeBuilder<EnumType, Builder>(enumType) {
+    class Builder internal constructor(enumType: EnumType) : UserTypeBuilder<EnumType, Builder>(enumType) {
         internal var members: List<EnumMember> = enumType.members
             private set
 

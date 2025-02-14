@@ -29,9 +29,9 @@ import kotlin.jvm.JvmStatic
  * Represents a Thrift protocol-level error.
  */
 class ThriftException(
-        @JvmField
-        val kind: Kind,
-        message: String?) : RuntimeException(message), Struct {
+    @JvmField val kind: Kind,
+    message: String?,
+) : RuntimeException(message), Struct {
     /**
      * Identifies kinds of protocol violation.
      */
@@ -73,21 +73,25 @@ class ThriftException(
         /**
          * The server experienced an unexpected error.
          */
-        INTERNAL_ERROR(6), PROTOCOL_ERROR(7), INVALID_TRANSFORM(8), INVALID_PROTOCOL(9), UNSUPPORTED_CLIENT_TYPE(10);
+        INTERNAL_ERROR(6),
+        PROTOCOL_ERROR(7),
+        INVALID_TRANSFORM(8),
+        INVALID_PROTOCOL(9),
+        UNSUPPORTED_CLIENT_TYPE(10);
 
         companion object {
             @JvmStatic
             fun findByValue(value: Int): Kind {
-                return values().firstOrNull { it.value == value } ?: UNKNOWN
+                return entries.firstOrNull { it.value == value } ?: UNKNOWN
             }
         }
     }
 
     override fun write(protocol: Protocol) {
         protocol.writeStructBegin("TApplicationException")
-        message?.let { message ->
+        message?.let {
             protocol.writeFieldBegin("message", 1, TType.STRING)
-            protocol.writeString(message)
+            protocol.writeString(it)
             protocol.writeFieldEnd()
         }
         protocol.writeFieldBegin("type", 2, TType.I32)
@@ -109,18 +113,18 @@ class ThriftException(
                     break
                 }
                 when (field.fieldId) {
-                    1.toShort() ->
-                        if (field.typeId == TType.STRING) {
-                            message = protocol.readString()
-                        } else {
-                            skip(protocol, field.typeId)
-                        }
-                    2.toShort() ->
-                        if (field.typeId == TType.I32) {
-                            kind = Kind.findByValue(protocol.readI32())
-                        } else {
-                            skip(protocol, field.typeId)
-                        }
+                    1.toShort() -> if (field.typeId == TType.STRING) {
+                        message = protocol.readString()
+                    } else {
+                        skip(protocol, field.typeId)
+                    }
+
+                    2.toShort() -> if (field.typeId == TType.I32) {
+                        kind = Kind.findByValue(protocol.readI32())
+                    } else {
+                        skip(protocol, field.typeId)
+                    }
+
                     else -> skip(protocol, field.typeId)
                 }
                 protocol.readFieldEnd()

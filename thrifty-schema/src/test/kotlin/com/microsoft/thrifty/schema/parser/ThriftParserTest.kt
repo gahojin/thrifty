@@ -999,7 +999,7 @@ class ThriftParserTest {
 
     @Test
     fun annotationsWithEscapedQuotesInValues() {
-        val thrift = "" + "namespace java x (comment = \"what a \\\"mess\\\"\")\n"
+        val thrift = "namespace java x (comment = \"what a \\\"mess\\\"\")\n"
 
         val namespaces = parse(thrift).namespaces
         val annotations = namespaces[0].annotations!!

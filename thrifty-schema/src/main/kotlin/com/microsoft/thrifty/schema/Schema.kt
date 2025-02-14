@@ -122,13 +122,13 @@ class Schema {
      * A builder for [schemas][Schema].
      */
     class Builder internal constructor(
-            internal var structs: List<StructType>,
-            internal var unions: List<StructType>,
-            internal var exceptions: List<StructType>,
-            internal var enums: List<EnumType>,
-            internal var constants: List<Constant>,
-            internal var typedefs: List<TypedefType>,
-            internal var services: List<ServiceType>
+        internal var structs: List<StructType>,
+        internal var unions: List<StructType>,
+        internal var exceptions: List<StructType>,
+        internal var enums: List<EnumType>,
+        internal var constants: List<Constant>,
+        internal var typedefs: List<TypedefType>,
+        internal var services: List<ServiceType>
     ) {
         /**
          * Use the given [structs] for the schema under construction.

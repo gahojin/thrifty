@@ -75,7 +75,8 @@ data class ThriftSpec internal constructor(
         if (includes.isNotEmpty()) {
             includes
                 .sortedBy(Include::path)
-                .joinEachTo(buffer,
+                .joinEachTo(
+                    buffer,
                     NEWLINE, postfix = DOUBLE_NEWLINE
                 ) { _, include ->
                     buffer.append("include \"", include.path, "\"")

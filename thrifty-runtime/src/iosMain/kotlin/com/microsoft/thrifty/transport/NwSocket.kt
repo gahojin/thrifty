@@ -239,7 +239,7 @@ class NwSocket(
             require(connectTimeoutMillis >= 0L) { "negative connect timeouts are not supported" }
             require(sendTimeoutMillis >= 0L) { "negative send timeouts are not supported" }
 
-            val endpoint = nw_endpoint_create_host(host, "$port") ?: error("Invalid host/port: $host:$port")
+            val endpoint = checkNotNull(nw_endpoint_create_host(host, "$port")) { "Invalid host/port: $host:$port" }
 
             val parameters = nw_parameters_create()
             val stack = nw_parameters_copy_default_protocol_stack(parameters)
@@ -259,7 +259,7 @@ class NwSocket(
                 nw_protocol_stack_prepend_application_protocol(stack, tlsOptions)
             }
 
-            val connection = nw_connection_create(endpoint, parameters) ?: error("Unable to create connection")
+            val connection = checkNotNull(nw_connection_create(endpoint, parameters)) { "Unable to create connection" }
             val globalQueue = dispatch_get_global_queue(QOS_CLASS_DEFAULT.convert(), 0.convert())
             nw_connection_set_queue(connection, globalQueue)
 

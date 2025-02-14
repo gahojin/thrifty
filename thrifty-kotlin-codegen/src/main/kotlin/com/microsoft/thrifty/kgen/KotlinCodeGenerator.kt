@@ -354,9 +354,9 @@ class KotlinCodeGenerator(
                     addAll(constantsByNamespace.keys())
                 }
 
-                val fileSpecsByNamespace = namespaces
-                        .map { it to makeFileSpecBuilder(it, "ThriftTypes") }
-                        .toMap()
+                val fileSpecsByNamespace = namespaces.associate {
+                    it to makeFileSpecBuilder(it, "ThriftTypes")
+                }
 
                 fileSpecsByNamespace.map { (ns, fileSpec) ->
                     typedefsByNamespace[ns].forEach { fileSpec.addTypeAlias(it) }
@@ -1739,7 +1739,7 @@ class KotlinCodeGenerator(
                             is IntValueElement -> enumType.findMemberById(value.value.toInt())
                             else -> throw AssertionError("Value kind $value is not possibly an enum")
                         }
-                    } catch (e: NoSuchElementException) {
+                    } catch (_: NoSuchElementException) {
                         null
                     }
 
@@ -1948,23 +1948,23 @@ class KotlinCodeGenerator(
 
                     val text = value.value
                     val ix = text.indexOf(".")
-                    if (ix != -1) {
-                        expectedProgram = text.substring(0, ix)
-                        name = text.substring(ix + 1)
-                    } else {
+                    if (ix == -1) {
                         expectedProgram = null
                         name = text
+                    } else {
+                        expectedProgram = text.substring(0, ix)
+                        name = text.substring(ix + 1)
                     }
 
-                    val c = schema.constants.asSequence()
-                            .firstOrNull {
-                                it.name == name
-                                        && it.type.trueType == type.trueType
-                                        && (expectedProgram == null || expectedProgram == it.location.programName)
-                            } ?: throw IllegalStateException(message)
+                    val c = schema.constants.firstOrNull {
+                        it.name == name
+                                && it.type.trueType == type.trueType
+                                && (expectedProgram == null || expectedProgram == it.location.programName)
+                    } ?: error(message)
 
-                    val packageName = c.getNamespaceFor(NamespaceScope.KOTLIN, NamespaceScope.JAVA, NamespaceScope.ALL)
-                            ?: throw IllegalStateException("No JVM namespace found for ${c.name} at ${c.location}")
+                    val packageName = checkNotNull(c.getNamespaceFor(NamespaceScope.KOTLIN, NamespaceScope.JAVA, NamespaceScope.ALL)) {
+                        "No JVM namespace found for ${c.name} at ${c.location}"
+                    }
 
                     block.add("$packageName.$name")
                 }
@@ -2320,7 +2320,7 @@ class KotlinCodeGenerator(
         for ((index, interfaceFun) in serviceInterface.funSpecs.withIndex()) {
             val method = serviceType.methods[index]
             val call = buildCallType(schema, method)
-            val resultType = interfaceFun.returnType ?: UNIT
+            val resultType = interfaceFun.returnType
             val callbackResultType = if (method.oneWay) UNIT else resultType
             val callbackType = ServiceMethodCallback::class.asTypeName().parameterizedBy(resultType)
             val callback = TypeSpec.anonymousClassBuilder()
@@ -2599,7 +2599,7 @@ class KotlinCodeGenerator(
                 .build()
     }
 
-    private fun makeEmptyConstructorDeprecated(params: MutableList<ParameterSpec>): AnnotationSpec {
+    private fun makeEmptyConstructorDeprecated(params: List<ParameterSpec>): AnnotationSpec {
         val parameterString = params.joinToString(prefix = "Builder(", postfix = ")", separator = ", ") { it.name }
 
         return AnnotationSpec.builder(Deprecated::class)
@@ -2627,7 +2627,9 @@ class KotlinCodeGenerator(
     }
 
     private fun String.capitalize(): String {
-        return this.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString() }
+        return replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString()
+        }
     }
 
     companion object {

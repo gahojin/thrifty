@@ -20,14 +20,14 @@
  */
 package com.microsoft.thrifty.schema
 
-import java.util.Objects
+import java.util.*
 
 /**
  * Base type of all user-defined Thrift IDL types, including structs, unions,
  * exceptions, services, and typedefs.
  */
 abstract class UserType internal constructor(
-        private val mixin: UserElementMixin
+    private val mixin: UserElementMixin
 ) : ThriftType(mixin.name), UserElement by mixin {
 
     override val isDeprecated: Boolean
@@ -35,7 +35,6 @@ abstract class UserType internal constructor(
 
     override val name: String = mixin.name
 
-    /** @inheritdoc */
     override fun equals(other: Any?): Boolean {
         if (!super.equals(other)) return false
         if (other !is UserType) return false
@@ -43,7 +42,6 @@ abstract class UserType internal constructor(
         return this.mixin == other.mixin
     }
 
-    /** @inheritdoc */
     override fun hashCode(): Int {
         return Objects.hash(super.hashCode(), mixin)
     }
@@ -51,10 +49,7 @@ abstract class UserType internal constructor(
     /**
      * A base type for builders of all UserType-derived types.
      */
-    abstract class UserTypeBuilder<
-            TType : UserType,
-            TBuilder : UserType.UserTypeBuilder<TType, TBuilder>
-    > internal constructor(
-            type: TType
+    abstract class UserTypeBuilder<TType : UserType, TBuilder : UserTypeBuilder<TType, TBuilder>> internal constructor(
+        type: TType,
     ) : AbstractUserElementBuilder<TType, TBuilder>(type.mixin)
 }

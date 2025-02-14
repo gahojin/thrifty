@@ -37,4 +37,7 @@ interface Transport : Closeable {
 
     @Throws(IOException::class)
     fun flush()
+
+    @Throws(IOException::class)
+    override fun close()
 }

@@ -28,8 +28,8 @@ import com.microsoft.thrifty.schema.parser.EnumMemberElement
  * @property value The integer constant associated with this enum member.
  */
 class EnumMember private constructor(
-        private val mixin: UserElementMixin,
-        val value: Int
+    private val mixin: UserElementMixin,
+    val value: Int
 ) : UserElement by mixin {
 
     internal constructor(element: EnumMemberElement, namespaces: Map<NamespaceScope, String>)
@@ -53,7 +53,8 @@ class EnumMember private constructor(
     /**
      * An object that can construct [EnumMembers][EnumMember].
      */
-    class Builder internal constructor(member: EnumMember) : AbstractUserElementBuilder<EnumMember, Builder>(member.mixin) {
+    class Builder internal constructor(member: EnumMember) :
+        AbstractUserElementBuilder<EnumMember, Builder>(member.mixin) {
         internal var value: Int = member.value
             private set
 

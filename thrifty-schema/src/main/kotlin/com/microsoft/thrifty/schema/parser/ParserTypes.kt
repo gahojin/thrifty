@@ -23,7 +23,7 @@ package com.microsoft.thrifty.schema.parser
 import com.microsoft.thrifty.schema.Location
 import com.microsoft.thrifty.schema.NamespaceScope
 import com.microsoft.thrifty.schema.Requiredness
-import java.util.UUID
+import java.util.*
 
 /**
  * Represents an instance of one or more Thrift annotations.
@@ -33,8 +33,8 @@ import java.util.UUID
  * @property values The annotation values
  */
 data class AnnotationElement(
-        val location: Location,
-        val values: Map<String, String>
+    val location: Location,
+    val values: Map<String, String>,
 ) {
     /**
      * True if this element contains no annotation values, otherwise false.
@@ -78,9 +78,9 @@ sealed class TypeElement {
  * @property annotations The annotations associated with this element, if any.
  */
 data class ScalarTypeElement(
-        override val location: Location,
-        override val name: String,
-        override val annotations: AnnotationElement? = null
+    override val location: Location,
+    override val name: String,
+    override val annotations: AnnotationElement? = null,
 ) : TypeElement()
 
 /**
@@ -93,10 +93,10 @@ data class ScalarTypeElement(
  * @property name The name of the type referenced by this element.
  */
 data class SetTypeElement(
-        override val location: Location,
-        val elementType: TypeElement,
-        override val annotations: AnnotationElement? = null,
-        override val name: String = "set<${elementType.name}>"
+    override val location: Location,
+    val elementType: TypeElement,
+    override val annotations: AnnotationElement? = null,
+    override val name: String = "set<${elementType.name}>",
 ) : TypeElement()
 
 /**
@@ -109,10 +109,10 @@ data class SetTypeElement(
  * @property name The name of the type referenced by this element.
  */
 data class ListTypeElement(
-        override val location: Location,
-        val elementType: TypeElement,
-        override val annotations: AnnotationElement? = null,
-        override val name: String = "list<${elementType.name}>"
+    override val location: Location,
+    val elementType: TypeElement,
+    override val annotations: AnnotationElement? = null,
+    override val name: String = "list<${elementType.name}>",
 ) : TypeElement()
 
 /**
@@ -129,11 +129,11 @@ data class ListTypeElement(
  * @property name The name of the type referenced by this element.
  */
 data class MapTypeElement(
-        override val location: Location,
-        val keyType: TypeElement,
-        val valueType: TypeElement,
-        override val annotations: AnnotationElement? = null,
-        override val name: String = "map<${keyType.name}, ${valueType.name}>"
+    override val location: Location,
+    val keyType: TypeElement,
+    val valueType: TypeElement,
+    override val annotations: AnnotationElement? = null,
+    override val name: String = "map<${keyType.name}, ${valueType.name}>",
 ) : TypeElement()
 
 /**
@@ -145,9 +145,9 @@ data class MapTypeElement(
  * @property path The path (relative or absolute) of the included program.
  */
 data class IncludeElement(
-        val location: Location,
-        val isCpp: Boolean,
-        val path: String
+    val location: Location,
+    val isCpp: Boolean,
+    val path: String,
 )
 
 /**
@@ -162,12 +162,12 @@ data class IncludeElement(
  * @property annotations The annotations associated with this element, if any.
  */
 data class TypedefElement(
-        val location: Location,
-        val oldType: TypeElement,
-        val newName: String,
-        val documentation: String = "",
-        val uuid: UUID = ThriftyParserPlugins.createUUID(),
-        val annotations: AnnotationElement? = null
+    val location: Location,
+    val oldType: TypeElement,
+    val newName: String,
+    val documentation: String = "",
+    val uuid: UUID = ThriftyParserPlugins.createUUID(),
+    val annotations: AnnotationElement? = null,
 )
 
 /**
@@ -182,10 +182,10 @@ data class TypedefElement(
  * @property annotations The annotations associated with this element, if any.
  */
 data class NamespaceElement(
-        val location: Location,
-        val scope: NamespaceScope,
-        val namespace: String,
-        val annotations: AnnotationElement? = null
+    val location: Location,
+    val scope: NamespaceScope,
+    val namespace: String,
+    val annotations: AnnotationElement? = null,
 )
 
 /**
@@ -201,12 +201,12 @@ data class NamespaceElement(
  * @property uuid A UUID uniquely identifying this element.
  */
 data class ConstElement(
-        val location: Location,
-        val type: TypeElement,
-        val name: String,
-        val value: ConstValueElement,
-        val documentation: String = "",
-        val uuid: UUID = ThriftyParserPlugins.createUUID()
+    val location: Location,
+    val type: TypeElement,
+    val name: String,
+    val value: ConstValueElement,
+    val documentation: String = "",
+    val uuid: UUID = ThriftyParserPlugins.createUUID(),
 )
 
 /**
@@ -221,12 +221,12 @@ data class ConstElement(
  * @property annotations The annotations associated with this element, if any.
  */
 data class EnumMemberElement(
-        val location: Location,
-        val name: String,
-        val value: Int,
-        val documentation: String = "",
-        val annotations: AnnotationElement? = null,
-        val uuid: UUID = ThriftyParserPlugins.createUUID()
+    val location: Location,
+    val name: String,
+    val value: Int,
+    val documentation: String = "",
+    val annotations: AnnotationElement? = null,
+    val uuid: UUID = ThriftyParserPlugins.createUUID(),
 )
 
 /**
@@ -241,12 +241,12 @@ data class EnumMemberElement(
  * @property annotations The annotations associated with this element, if any.
  */
 data class EnumElement(
-        val location: Location,
-        val name: String,
-        val members: List<EnumMemberElement>,
-        val documentation: String = "",
-        val annotations: AnnotationElement? = null,
-        val uuid: UUID = ThriftyParserPlugins.createUUID()
+    val location: Location,
+    val name: String,
+    val members: List<EnumMemberElement>,
+    val documentation: String = "",
+    val annotations: AnnotationElement? = null,
+    val uuid: UUID = ThriftyParserPlugins.createUUID(),
 )
 
 /**
@@ -264,15 +264,15 @@ data class EnumElement(
  * @property uuid A UUID uniquely identifying this element.
  */
 data class FieldElement(
-        val location: Location,
-        val fieldId: Int,
-        val type: TypeElement,
-        val name: String,
-        val requiredness: Requiredness = Requiredness.DEFAULT,
-        val documentation: String = "",
-        val constValue: ConstValueElement? = null,
-        val annotations: AnnotationElement? = null,
-        val uuid: UUID = ThriftyParserPlugins.createUUID()
+    val location: Location,
+    val fieldId: Int,
+    val type: TypeElement,
+    val name: String,
+    val requiredness: Requiredness = Requiredness.DEFAULT,
+    val documentation: String = "",
+    val constValue: ConstValueElement? = null,
+    val annotations: AnnotationElement? = null,
+    val uuid: UUID = ThriftyParserPlugins.createUUID(),
 )
 
 /**
@@ -288,13 +288,13 @@ data class FieldElement(
  * @property annotations The annotations associated with this element, if any.
  */
 data class StructElement(
-        val location: Location,
-        val name: String,
-        val type: Type,
-        val fields: List<FieldElement>,
-        val documentation: String = "",
-        val annotations: AnnotationElement? = null,
-        val uuid: UUID = ThriftyParserPlugins.createUUID()
+    val location: Location,
+    val name: String,
+    val type: Type,
+    val fields: List<FieldElement>,
+    val documentation: String = "",
+    val annotations: AnnotationElement? = null,
+    val uuid: UUID = ThriftyParserPlugins.createUUID(),
 ) {
     /**
      * Defines the different types of structured element in the Thrift language.
@@ -317,7 +317,7 @@ data class StructElement(
          * type that communicates failure from an RPC call.  Declared as part
          * of a [FunctionElement].
          */
-        EXCEPTION
+        EXCEPTION,
     }
 }
 
@@ -343,15 +343,15 @@ data class StructElement(
  * @property annotations The annotations associated with this element, if any.
  */
 data class FunctionElement(
-        val location: Location,
-        val name: String,
-        val returnType: TypeElement,
-        val params: List<FieldElement> = emptyList(),
-        val exceptions: List<FieldElement> = emptyList(),
-        val oneWay: Boolean = false,
-        val documentation: String = "",
-        val annotations: AnnotationElement? = null,
-        val uuid: UUID = ThriftyParserPlugins.createUUID()
+    val location: Location,
+    val name: String,
+    val returnType: TypeElement,
+    val params: List<FieldElement> = emptyList(),
+    val exceptions: List<FieldElement> = emptyList(),
+    val oneWay: Boolean = false,
+    val documentation: String = "",
+    val annotations: AnnotationElement? = null,
+    val uuid: UUID = ThriftyParserPlugins.createUUID(),
 )
 
 /**
@@ -373,13 +373,13 @@ data class FunctionElement(
  * @property annotations The annotations associated with this element, if any.
  */
 data class ServiceElement(
-        val location: Location,
-        val name: String,
-        val functions: List<FunctionElement> = emptyList(),
-        val extendsService: TypeElement? = null,
-        val documentation: String = "",
-        val annotations: AnnotationElement? = null,
-        val uuid: UUID = ThriftyParserPlugins.createUUID()
+    val location: Location,
+    val name: String,
+    val functions: List<FunctionElement> = emptyList(),
+    val extendsService: TypeElement? = null,
+    val documentation: String = "",
+    val annotations: AnnotationElement? = null,
+    val uuid: UUID = ThriftyParserPlugins.createUUID(),
 )
 
 /**
@@ -398,14 +398,14 @@ data class ServiceElement(
  * @property services The list of all services defined within the file.
  */
 data class ThriftFileElement(
-        val location: Location,
-        val namespaces: List<NamespaceElement> = emptyList(),
-        val includes: List<IncludeElement> = emptyList(),
-        val constants: List<ConstElement> = emptyList(),
-        val typedefs: List<TypedefElement> = emptyList(),
-        val enums: List<EnumElement> = emptyList(),
-        val structs: List<StructElement> = emptyList(),
-        val unions: List<StructElement> = emptyList(),
-        val exceptions: List<StructElement> = emptyList(),
-        val services: List<ServiceElement> = emptyList()
+    val location: Location,
+    val namespaces: List<NamespaceElement> = emptyList(),
+    val includes: List<IncludeElement> = emptyList(),
+    val constants: List<ConstElement> = emptyList(),
+    val typedefs: List<TypedefElement> = emptyList(),
+    val enums: List<EnumElement> = emptyList(),
+    val structs: List<StructElement> = emptyList(),
+    val unions: List<StructElement> = emptyList(),
+    val exceptions: List<StructElement> = emptyList(),
+    val services: List<ServiceElement> = emptyList(),
 )

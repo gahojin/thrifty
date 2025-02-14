@@ -21,9 +21,7 @@
 package com.microsoft.thrifty.schema
 
 import com.microsoft.thrifty.schema.parser.StructElement
-
-import java.util.LinkedHashMap
-import java.util.Objects
+import java.util.*
 
 /**
  * Represents a 'structured' type in Thrift.  A StructType could be any of
@@ -62,14 +60,14 @@ class StructType : UserType {
 
     override val isStruct: Boolean = true
 
-    override fun <T> accept(visitor: ThriftType.Visitor<T>): T {
+    override fun <T> accept(visitor: Visitor<T>): T {
         return visitor.visitStruct(this)
     }
 
     override fun withAnnotations(annotations: Map<String, String>): ThriftType {
         return toBuilder()
-                .annotations(mergeAnnotations(this.annotations, annotations))
-                .build()
+            .annotations(mergeAnnotations(this.annotations, annotations))
+            .build()
     }
 
     /**
@@ -92,15 +90,15 @@ class StructType : UserType {
 
         val fieldsById = LinkedHashMap<Int, Field>(fields.size)
         for (field in fields) {
-            val dupe = fieldsById.put(field.id, field)
-            if (dupe != null) {
-                linker.addError(dupe.location,
-                        "Duplicate field IDs: " + field.name + " and " + dupe.name
-                                + " both have the same ID (" + field.id + ")")
+            fieldsById.putIfAbsent(field.id, field)?.also {
+                linker.addError(
+                    it.location,
+                    "Duplicate field IDs: ${field.name} and ${it.name} both have the same ID (${field.id})",
+                )
             }
 
             if (isUnion && field.required) {
-                linker.addError(field.location, "Unions may not have required fields: " + field.name)
+                linker.addError(field.location, "Unions may not have required fields: ${field.name}")
             }
         }
 
@@ -128,7 +126,7 @@ class StructType : UserType {
     /**
      * An object that can create new [StructType] instances.
      */
-    class Builder internal constructor(type: StructType) : UserType.UserTypeBuilder<StructType, Builder>(type) {
+    class Builder internal constructor(type: StructType) : UserTypeBuilder<StructType, Builder>(type) {
         internal var structType: StructElement.Type = type.structType
         internal var fields: List<Field> = type.fields
 

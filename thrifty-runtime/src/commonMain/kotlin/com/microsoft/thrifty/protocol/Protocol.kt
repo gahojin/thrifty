@@ -159,4 +159,7 @@ interface Protocol : Closeable {
     fun reset() {
         // to be implemented by implementations as needed
     }
+
+    @Throws(IOException::class)
+    override fun close()
 }

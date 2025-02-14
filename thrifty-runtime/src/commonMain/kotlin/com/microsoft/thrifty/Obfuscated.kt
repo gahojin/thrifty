@@ -26,11 +26,9 @@ package com.microsoft.thrifty
  * dependent on its type.  Scalar values (byte, short, int, etc) will be hashed
  * using an unspecified digest, and collection types will be summarized.
  *
- *
  * Obfuscated is a suitable choice when one wishes to avoid logging
  * personally-identifiable information, but still wishes to distinguish one
  * value from another.
- *
  *
  * Collection summaries consist of the collection kind (List, Set, or Map),
  * its generic parameter(s), and the number of elements in the collection.

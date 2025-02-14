@@ -31,9 +31,8 @@ import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.Lexer
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.Token
-import org.antlr.v4.runtime.tree.ErrorNode
 import org.antlr.v4.runtime.tree.TerminalNode
-import java.util.BitSet
+import java.util.*
 
 /**
  * A set of callbacks that, when used with a [org.antlr.v4.runtime.tree.ParseTreeWalker],
@@ -49,9 +48,9 @@ import java.util.BitSet
  * @param location a location pointing at the beginning of the file being parsed.
  */
 internal class ThriftListener(
-        private val tokenStream: CommonTokenStream,
-        private val errorReporter: ErrorReporter,
-        private val location: Location
+    private val tokenStream: CommonTokenStream,
+    private val errorReporter: ErrorReporter,
+    private val location: Location,
 ) : AntlrThriftBaseListener() {
 
     // We need to record which comment tokens have been treated as trailing documentation,
@@ -86,7 +85,7 @@ internal class ThriftListener(
             unions = unions,
             exceptions = exceptions,
             constants = consts,
-            services = services
+            services = services,
         )
     }
 
@@ -110,27 +109,28 @@ internal class ThriftListener(
 
         val annotations = annotationsFromAntlr(ctx.annotationList())
 
-        val scope = NamespaceScope.forThriftName(scopeName)
-        if (scope == null) {
+        val scope = NamespaceScope.forThriftName(scopeName) ?: run {
             errorReporter.warn(locationOf(ctx.namespaceScope()), "Unknown namespace scope '$scopeName'")
             return
         }
 
         val element = NamespaceElement(
-                location = locationOf(ctx),
-                scope = scope,
-                namespace = name,
-                annotations = annotations)
+            location = locationOf(ctx),
+            scope = scope,
+            namespace = name,
+            annotations = annotations,
+        )
 
         namespaces.add(element)
     }
 
     override fun exitPhpNamespace(ctx: AntlrThriftParser.PhpNamespaceContext) {
         val element = NamespaceElement(
-                locationOf(ctx),
-                scope = NamespaceScope.PHP,
-                namespace = unquote(locationOf(ctx.LITERAL()), ctx.LITERAL().text),
-                annotations = annotationsFromAntlr(ctx.annotationList()))
+            location = locationOf(ctx),
+            scope = NamespaceScope.PHP,
+            namespace = unquote(locationOf(ctx.LITERAL()), ctx.LITERAL().text),
+            annotations = annotationsFromAntlr(ctx.annotationList()),
+        )
 
         namespaces.add(element)
     }
@@ -166,22 +166,24 @@ internal class ThriftListener(
             nextValue = value + 1
 
             val element = EnumMemberElement(
-                    location = locationOf(memberContext),
-                    name = memberContext.IDENTIFIER().text,
-                    value = value,
-                    documentation = formatJavadoc(memberContext),
-                    annotations = annotationsFromAntlr(memberContext.annotationList()))
+                location = locationOf(memberContext),
+                name = memberContext.IDENTIFIER().text,
+                value = value,
+                documentation = formatJavadoc(memberContext),
+                annotations = annotationsFromAntlr(memberContext.annotationList()),
+            )
 
             members.add(element)
         }
 
         val doc = formatJavadoc(ctx)
         val element = EnumElement(
-                location = locationOf(ctx),
-                name = enumName,
-                documentation = doc,
-                annotations = annotationsFromAntlr(ctx.annotationList()),
-                members = members)
+            location = locationOf(ctx),
+            name = enumName,
+            documentation = doc,
+            annotations = annotationsFromAntlr(ctx.annotationList()),
+            members = members,
+        )
 
         enums.add(element)
     }
@@ -191,12 +193,13 @@ internal class ThriftListener(
         val fields = parseFieldList(ctx.field())
 
         val element = StructElement(
-                location = locationOf(ctx),
-                name = name,
-                fields = fields,
-                type = StructElement.Type.STRUCT,
-                documentation = formatJavadoc(ctx),
-                annotations = annotationsFromAntlr(ctx.annotationList()))
+            location = locationOf(ctx),
+            name = name,
+            fields = fields,
+            type = StructElement.Type.STRUCT,
+            documentation = formatJavadoc(ctx),
+            annotations = annotationsFromAntlr(ctx.annotationList()),
+        )
 
         structs.add(element)
     }
@@ -214,12 +217,13 @@ internal class ThriftListener(
         }
 
         val element = StructElement(
-                location = locationOf(ctx),
-                name = name,
-                fields = fields,
-                type = StructElement.Type.UNION,
-                documentation = formatJavadoc(ctx),
-                annotations = annotationsFromAntlr(ctx.annotationList()))
+            location = locationOf(ctx),
+            name = name,
+            fields = fields,
+            type = StructElement.Type.UNION,
+            documentation = formatJavadoc(ctx),
+            annotations = annotationsFromAntlr(ctx.annotationList()),
+        )
 
         unions.add(element)
     }
@@ -229,19 +233,21 @@ internal class ThriftListener(
         val fields = parseFieldList(ctx.field())
 
         val element = StructElement(
-                location = locationOf(ctx),
-                name = name,
-                fields = fields,
-                type = StructElement.Type.EXCEPTION,
-                documentation = formatJavadoc(ctx),
-                annotations = annotationsFromAntlr(ctx.annotationList()))
+            location = locationOf(ctx),
+            name = name,
+            fields = fields,
+            type = StructElement.Type.EXCEPTION,
+            documentation = formatJavadoc(ctx),
+            annotations = annotationsFromAntlr(ctx.annotationList()),
+        )
 
         exceptions.add(element)
     }
 
     private fun parseFieldList(
-            contexts: List<AntlrThriftParser.FieldContext>,
-            defaultRequiredness: Requiredness = Requiredness.DEFAULT): List<FieldElement> {
+        contexts: List<AntlrThriftParser.FieldContext>,
+        defaultRequiredness: Requiredness = Requiredness.DEFAULT
+    ): List<FieldElement> {
         val fields = mutableListOf<FieldElement>()
         val ids = mutableSetOf<Int>()
 
@@ -272,62 +278,60 @@ internal class ThriftListener(
     }
 
     private fun parseField(
-            defaultValue: Int,
-            ctx: AntlrThriftParser.FieldContext,
-            defaultRequiredness: Requiredness): FieldElement? {
-
+        defaultValue: Int,
+        ctx: AntlrThriftParser.FieldContext,
+        defaultRequiredness: Requiredness
+    ): FieldElement? {
         val fieldId = ctx.INTEGER()?.let { parseInt(it) } ?: defaultValue
         val fieldName = ctx.IDENTIFIER().text
 
-        val requiredness = if (ctx.requiredness() != null) {
-            when {
-                ctx.requiredness().text == "required" -> Requiredness.REQUIRED
-                ctx.requiredness().text == "optional" -> Requiredness.OPTIONAL
-                else -> throw AssertionError("Unexpected requiredness value: " + ctx.requiredness().text)
+        val requiredness = ctx.requiredness()?.let {
+            when (it.text) {
+                "required" -> Requiredness.REQUIRED
+                "optional" -> Requiredness.OPTIONAL
+                else -> throw AssertionError("Unexpected requiredness value: ${it.text}")
             }
-        } else {
-            defaultRequiredness
-        }
+        } ?: defaultRequiredness
 
         return FieldElement(
-                location = locationOf(ctx),
-                documentation = formatJavadoc(ctx),
-                fieldId = fieldId,
-                requiredness = requiredness,
-                type = typeElementOf(ctx.fieldType()),
-                name = fieldName,
-                annotations = annotationsFromAntlr(ctx.annotationList()),
-                constValue = constValueElementOf(ctx.constValue()))
+            location = locationOf(ctx),
+            documentation = formatJavadoc(ctx),
+            fieldId = fieldId,
+            requiredness = requiredness,
+            type = typeElementOf(ctx.fieldType()),
+            name = fieldName,
+            annotations = annotationsFromAntlr(ctx.annotationList()),
+            constValue = constValueElementOf(ctx.constValue()),
+        )
     }
 
     override fun exitTypedef(ctx: AntlrThriftParser.TypedefContext) {
         val oldType = typeElementOf(ctx.fieldType())
 
         val typedef = TypedefElement(
-                location = locationOf(ctx),
-                documentation = formatJavadoc(ctx),
-                annotations = annotationsFromAntlr(ctx.annotationList()),
-                oldType = oldType,
-                newName = ctx.IDENTIFIER().text)
+            location = locationOf(ctx),
+            documentation = formatJavadoc(ctx),
+            annotations = annotationsFromAntlr(ctx.annotationList()),
+            oldType = oldType,
+            newName = ctx.IDENTIFIER().text,
+        )
 
         typedefs.add(typedef)
     }
 
     override fun exitConstDef(ctx: AntlrThriftParser.ConstDefContext) {
-        val constValue = constValueElementOf(ctx.constValue())
-        if (constValue == null) {
-            errorReporter.error(
-                    locationOf(ctx.constValue()),
-                    "Invalid const value")
+        val constValue = constValueElementOf(ctx.constValue()) ?: run {
+            errorReporter.error(locationOf(ctx.constValue()), "Invalid const value")
             return
         }
 
         val element = ConstElement(
-                location = locationOf(ctx),
-                documentation = formatJavadoc(ctx),
-                type = typeElementOf(ctx.fieldType()),
-                name = ctx.IDENTIFIER().text,
-                value = constValue)
+            location = locationOf(ctx),
+            documentation = formatJavadoc(ctx),
+            type = typeElementOf(ctx.fieldType()),
+            name = ctx.IDENTIFIER().text,
+            value = constValue,
+        )
 
         consts.add(element)
     }
@@ -335,8 +339,8 @@ internal class ThriftListener(
     override fun exitServiceDef(ctx: AntlrThriftParser.ServiceDefContext) {
         val name = ctx.name.text
 
-        val extendsService = if (ctx.superType != null) {
-            val superType = typeElementOf(ctx.superType)
+        val extendsService = ctx.superType?.let {
+            val superType = typeElementOf(it)
 
             if (superType !is ScalarTypeElement) {
                 errorReporter.error(locationOf(ctx), "services cannot extend collections")
@@ -344,17 +348,15 @@ internal class ThriftListener(
             }
 
             superType
-        } else {
-            null
         }
 
         val service = ServiceElement(
-                location = locationOf(ctx),
-                name = name,
-                functions = parseFunctionList(ctx.function()),
-                extendsService = extendsService,
-                documentation = formatJavadoc(ctx),
-                annotations = annotationsFromAntlr(ctx.annotationList())
+            location = locationOf(ctx),
+            name = name,
+            functions = parseFunctionList(ctx.function()),
+            extendsService = extendsService,
+            documentation = formatJavadoc(ctx),
+            annotations = annotationsFromAntlr(ctx.annotationList()),
         )
 
         services.add(service)
@@ -366,11 +368,11 @@ internal class ThriftListener(
         for (ctx in functionContexts) {
             val name = ctx.IDENTIFIER().text
 
-            val returnType = if (ctx.fieldType() != null) {
-                typeElementOf(ctx.fieldType())
-            } else {
+            val returnType = ctx.fieldType()?.let {
+                typeElementOf(it)
+            } ?: run {
                 val token = ctx.getToken(AntlrThriftLexer.VOID, 0)
-                        ?: throw AssertionError("Function has no return type, and no VOID token - grammar error")
+                    ?: throw AssertionError("Function has no return type, and no VOID token - grammar error")
                 val loc = locationOf(token)
 
                 // Do people actually annotate 'void'?  We'll find out!
@@ -384,14 +386,14 @@ internal class ThriftListener(
             }
 
             val function = FunctionElement(
-                    location = locationOf(ctx),
-                    oneWay = isOneway,
-                    returnType = returnType,
-                    name = name,
-                    documentation = formatJavadoc(ctx),
-                    annotations = annotationsFromAntlr(ctx.annotationList()),
-                    params = parseFieldList(ctx.fieldList().field(), Requiredness.REQUIRED),
-                    exceptions = maybeThrowsList ?: emptyList()
+                location = locationOf(ctx),
+                oneWay = isOneway,
+                returnType = returnType,
+                name = name,
+                documentation = formatJavadoc(ctx),
+                annotations = annotationsFromAntlr(ctx.annotationList()),
+                params = parseFieldList(ctx.fieldList().field(), Requiredness.REQUIRED),
+                exceptions = maybeThrowsList ?: emptyList(),
             )
 
             functions += function
@@ -410,11 +412,9 @@ internal class ThriftListener(
         val annotations = mutableMapOf<String, String>()
         for (annotationContext in ctx.annotation()) {
             val name = annotationContext.IDENTIFIER().text
-            annotations[name] = if (annotationContext.LITERAL() != null) {
-                unquote(locationOf(annotationContext.LITERAL()), annotationContext.LITERAL().text)
-            } else {
-                "true"
-            }
+            annotations[name] = annotationContext.LITERAL()?.let {
+                unquote(locationOf(it), it.text)
+            } ?: "true"
         }
 
         return AnnotationElement(locationOf(ctx), annotations)
@@ -482,48 +482,50 @@ internal class ThriftListener(
     }
 
     private fun typeElementOf(context: AntlrThriftParser.FieldTypeContext): TypeElement {
-        if (context.baseType() != null) {
-            if (context.baseType().text == "slist") {
+        context.baseType()?.also {
+            if (it.text == "slist") {
                 errorReporter.error(locationOf(context), "slist is unsupported; use list<string> instead")
             }
 
             return ScalarTypeElement(
-                    locationOf(context),
-                    context.baseType().text,
-                    annotationsFromAntlr(context.annotationList()))
+                location = locationOf(context),
+                name = it.text,
+                annotations = annotationsFromAntlr(context.annotationList()),
+            )
         }
 
-        if (context.IDENTIFIER() != null) {
+        context.IDENTIFIER()?.also {
             return ScalarTypeElement(
-                    locationOf(context),
-                    context.IDENTIFIER().text,
-                    annotationsFromAntlr(context.annotationList()))
+                location = locationOf(context),
+                name = it.text,
+                annotations = annotationsFromAntlr(context.annotationList()),
+            )
         }
 
-        if (context.containerType() != null) {
-            val containerContext = context.containerType()
-            if (containerContext.mapType() != null) {
-                val keyType = typeElementOf(containerContext.mapType().key)
-                val valueType = typeElementOf(containerContext.mapType().value)
+        context.containerType()?.also {
+            it.mapType()?.also {
                 return MapTypeElement(
-                        locationOf(containerContext.mapType()),
-                        keyType,
-                        valueType,
-                        annotationsFromAntlr(context.annotationList()))
+                    location = locationOf(it),
+                    keyType = typeElementOf(it.key),
+                    valueType = typeElementOf(it.value),
+                    annotations = annotationsFromAntlr(context.annotationList()),
+                )
             }
 
-            if (containerContext.setType() != null) {
+            it.setType()?.also {
                 return SetTypeElement(
-                        locationOf(containerContext.setType()),
-                        typeElementOf(containerContext.setType().fieldType()),
-                        annotationsFromAntlr(context.annotationList()))
+                    location = locationOf(it),
+                    elementType = typeElementOf(it.fieldType()),
+                    annotations = annotationsFromAntlr(context.annotationList()),
+                )
             }
 
-            if (containerContext.listType() != null) {
+            it.listType()?.also {
                 return ListTypeElement(
-                        locationOf(containerContext.listType()),
-                        typeElementOf(containerContext.listType().fieldType()),
-                        annotationsFromAntlr(context.annotationList()))
+                    location = locationOf(it),
+                    elementType = typeElementOf(it.fieldType()),
+                    annotations = annotationsFromAntlr(context.annotationList()),
+                )
             }
 
             throw AssertionError("Unexpected container type - grammar error!")
@@ -537,55 +539,53 @@ internal class ThriftListener(
             return null
         }
 
-        if (ctx.INTEGER() != null) {
+        ctx.INTEGER()?.also {
+            val text = it.text
             try {
-                val value = parseLong(ctx.INTEGER())
+                val value = parseLong(it)
 
-                return IntValueElement(locationOf(ctx), ctx.INTEGER().text, value)
-            } catch (e: NumberFormatException) {
-                throw AssertionError("Invalid integer accepted by ANTLR grammar: " + ctx.INTEGER().text)
+                return IntValueElement(locationOf(ctx), text, value)
+            } catch (_: NumberFormatException) {
+                throw AssertionError("Invalid integer accepted by ANTLR grammar: $text")
             }
-
         }
 
-        if (ctx.DOUBLE() != null) {
-            val text = ctx.DOUBLE().text
-
+        ctx.DOUBLE()?.also {
+            val text = it.text
             try {
                 val value = java.lang.Double.parseDouble(text)
-                return DoubleValueElement(locationOf(ctx), ctx.DOUBLE().text, value)
-            } catch (e: NumberFormatException) {
+                return DoubleValueElement(locationOf(ctx), text, value)
+            } catch (_: NumberFormatException) {
                 throw AssertionError("Invalid double accepted by ANTLR grammar: $text")
             }
 
         }
 
-        if (ctx.LITERAL() != null) {
-            val text = unquote(locationOf(ctx.LITERAL() as TerminalNode), ctx.LITERAL().text)
-            return LiteralValueElement(locationOf(ctx), ctx.LITERAL().text, text)
+        ctx.LITERAL()?.also {
+            val text = unquote(locationOf(it), it.text)
+            return LiteralValueElement(locationOf(ctx), it.text, text)
         }
 
-        if (ctx.IDENTIFIER() != null) {
-            val id = ctx.IDENTIFIER().text
-            return IdentifierValueElement(locationOf(ctx), ctx.IDENTIFIER().text, id)
+        ctx.IDENTIFIER()?.also {
+            val id = it.text
+            return IdentifierValueElement(locationOf(ctx), id, id)
         }
 
-        if (ctx.constList() != null) {
-            val values = mutableListOf<ConstValueElement>()
-            for (valueContext in ctx.constList().constValue()) {
-                values.add(constValueElementOf(valueContext)!!)
+        ctx.constList()?.also {
+             return ListValueElement(
+                location = locationOf(ctx),
+                thriftText = it.text,
+                value = it.constValue().map { constValueElementOf(it) }.requireNoNulls(),
+            )
+        }
+
+        ctx.constMap()?.also {
+            val values = it.constMapEntry().associate {
+                val key = checkNotNull(constValueElementOf(it.key))
+                val value = checkNotNull(constValueElementOf(it.value))
+                key to value
             }
-            return ListValueElement(locationOf(ctx), ctx.constList().text, values)
-        }
-
-        if (ctx.constMap() != null) {
-            val values = mutableMapOf<ConstValueElement, ConstValueElement>()
-            for (entry in ctx.constMap().constMapEntry()) {
-                val key = constValueElementOf(entry.key)
-                val value = constValueElementOf(entry.value)
-                values.put(key!!, value!!)
-            }
-            return MapValueElement(locationOf(ctx), ctx.constMap().text, values)
+            return MapValueElement(locationOf(ctx), it.text, values)
         }
 
         throw AssertionError("unreachable")
@@ -593,7 +593,8 @@ internal class ThriftListener(
 
     private fun formatJavadoc(context: ParserRuleContext): String {
         return formatJavadoc(
-                getLeadingComments(context.getStart()) + getTrailingComments(context.getStop()))
+            getLeadingComments(context.getStart()) + getTrailingComments(context.getStop())
+        )
     }
 
     private fun getLeadingComments(token: Token): List<Token> {

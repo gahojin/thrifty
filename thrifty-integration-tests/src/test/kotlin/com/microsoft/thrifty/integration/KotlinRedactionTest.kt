@@ -35,10 +35,10 @@ import java.util.Collections
 class KotlinRedactionTest {
     @Test fun redaction() {
         val hr = HasRedaction.Builder()
-                .one("value-one")
-                .two("should-not-appear")
-                .three("value-three")  // expe
-                .build()
+            .one("value-one")
+            .two("should-not-appear")
+            .three("value-three")  // expe
+            .build()
 
         "$hr" should contain("one=value-one")
         "$hr" shouldNot contain("should-not-appear")
@@ -48,10 +48,10 @@ class KotlinRedactionTest {
     @Test
     fun obfuscation() {
         val hr = HasRedaction.Builder()
-                .one("value-one")
-                .two("value-two")
-                .three("value-three")
-                .build()
+            .one("value-one")
+            .two("value-two")
+            .three("value-three")
+            .build()
 
         "$hr" should contain("three=6A39B242")
         hr.three shouldBe "value-three"
@@ -60,8 +60,8 @@ class KotlinRedactionTest {
     @Test
     fun commentBasedRedaction() {
         val hcbr = HasCommentBasedRedaction.Builder()
-                .foo("bar")
-                .build()
+            .foo("bar")
+            .build()
 
         "$hcbr" shouldBe "HasCommentBasedRedaction{foo=<REDACTED>}"
     }
@@ -69,8 +69,8 @@ class KotlinRedactionTest {
     @Test
     fun obfuscatedList() {
         val oc = ObfuscatedCollections.Builder()
-                .numz(Arrays.asList(1, 2, 3))
-                .build()
+            .numz(listOf(1, 2, 3))
+            .build()
 
         "$oc" should contain("numz=list<i32>(size=3)")
     }
@@ -78,8 +78,8 @@ class KotlinRedactionTest {
     @Test
     fun obfuscatedMap() {
         val oc = ObfuscatedCollections.Builder()
-                .stringz(Collections.singletonMap("foo", "bar"))
-                .build()
+            .stringz(Collections.singletonMap("foo", "bar"))
+            .build()
 
         "$oc" should contain("stringz=map<string, string>(size=1)")
     }

@@ -23,11 +23,7 @@ package com.microsoft.thrifty.protocol
 import kotlin.jvm.JvmField
 
 class MessageMetadata(
-        name: String?,
-        @JvmField val type: Byte,
-        @JvmField val seqId: Int,
-) {
-    @JvmField
-    val name: String = name ?: ""
-
-}
+    @JvmField val name: String = "",
+    @JvmField val type: Byte,
+    @JvmField val seqId: Int,
+)

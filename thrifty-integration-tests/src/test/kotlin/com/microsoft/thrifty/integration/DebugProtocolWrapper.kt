@@ -34,7 +34,7 @@ import okio.ByteString
  * helpful when debugging client-server errors from generated code.
  */
 class DebugProtocolWrapper(
-        private val protocol: Protocol
+    private val protocol: Protocol,
 ) : Protocol by protocol {
     override fun writeMessageBegin(name: String, typeId: Byte, seqId: Int) {
         println("writeMessageBegin($name, $typeId, $seqId")

@@ -20,7 +20,6 @@
  */
 package com.microsoft.thrifty.schema
 
-import com.google.common.base.Preconditions
 import com.microsoft.thrifty.schema.parser.ThriftFileElement
 import com.microsoft.thrifty.schema.parser.ThriftParser
 import com.microsoft.thrifty.schema.render.filepath
@@ -32,9 +31,7 @@ import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.ArrayDeque
-import java.util.LinkedHashMap
-import kotlin.jvm.Throws
+import java.util.*
 
 /**
  * Loads a [Schema] from a set of Thrift files and include paths.
@@ -84,8 +81,7 @@ class Loader {
      * if `file` is not a regular file.
      */
     fun addThriftFile(file: Path): Loader = apply {
-        Preconditions.checkNotNull(file, "file")
-        Preconditions.checkArgument(Files.isRegularFile(file), "thrift file must be a regular file")
+        require(Files.isRegularFile(file)) { "thrift file must be a regular file" }
         thriftFiles.add(file.toAbsolutePath().canonicalPath)
     }
 
@@ -104,8 +100,7 @@ class Loader {
      * if `path` is not an existing directory
      */
     fun addIncludePath(path: Path): Loader = apply {
-        Preconditions.checkNotNull(path, "path")
-        Preconditions.checkArgument(Files.isDirectory(path), "path must be a directory")
+        require(Files.isDirectory(path)) { "path must be a directory" }
         includePaths.add(path.toAbsolutePath().canonicalPath)
     }
 
@@ -143,9 +138,9 @@ class Loader {
         if (filesToLoad.isEmpty()) {
             for (path in includePaths) {
                 Files.walk(path)
-                        .filter { p -> p.fileName != null && THRIFT_PATH_MATCHER.matches(p.fileName) }
-                        .map { p -> p.normalize().toAbsolutePath() }
-                        .forEach { filesToLoad.add(it) }
+                    .filter { p -> p.fileName != null && THRIFT_PATH_MATCHER.matches(p.fileName) }
+                    .map { p -> p.normalize().toAbsolutePath() }
+                    .forEach { filesToLoad.add(it) }
             }
         }
 
@@ -153,7 +148,7 @@ class Loader {
             throw IllegalStateException("No files and no include paths containing Thrift files were provided")
         }
 
-        val loadedFiles = LinkedHashMap<Path, ThriftFileElement>()
+        val loadedFiles = linkedMapOf<Path, ThriftFileElement>()
         for (path in filesToLoad) {
             loadFileRecursively(path, loadedFiles)
         }
@@ -163,7 +158,8 @@ class Loader {
             val file = Paths.get(fileElement.location.base, fileElement.location.path)
             if (!Files.exists(file)) {
                 throw AssertionError(
-                        "We have a parsed ThriftFileElement with a non-existing location")
+                    "We have a parsed ThriftFileElement with a non-existing location"
+                )
             }
             if (!file.isAbsolute) {
                 throw AssertionError("We have a non-canonical path")
@@ -187,9 +183,11 @@ class Loader {
      * @param loadedFiles A mapping of absolute paths to parsed Thrift files.
      * @param sourceElement An optional source element for debugging purposes.
      */
-    private fun loadFileRecursively(path: Path,
+    private fun loadFileRecursively(
+        path: Path,
         loadedFiles: MutableMap<Path, ThriftFileElement>,
-        sourceElement: ThriftFileElement? = null) {
+        sourceElement: ThriftFileElement? = null
+    ) {
         val dir: Path?
 
         val element: ThriftFileElement
@@ -286,7 +284,7 @@ class Loader {
     internal fun resolveIncludedProgram(currentLocation: Location, importPath: String): Program {
         val importPathPath = Paths.get(importPath)
         val resolved = findFirstExisting(importPathPath, currentLocation.asPath.parent)
-                ?: throw AssertionError("Included thrift file not found: $importPath")
+            ?: throw AssertionError("Included thrift file not found: $importPath")
         return getProgramForPath(resolved.normalize().toAbsolutePath())
     }
 
@@ -316,8 +314,8 @@ class Loader {
         }
 
         val firstExisting = includePaths
-                .map { it.resolve(path).normalize() }
-                .firstOrNull { Files.exists(it) }
+            .map { it.resolve(path).normalize() }
+            .firstOrNull { Files.exists(it) }
 
         return firstExisting?.canonicalPath
     }
@@ -327,7 +325,7 @@ class Loader {
             "Why are you calling getProgramForPath with a relative path?  path=$absolutePath"
         }
         return loadedPrograms[absolutePath]
-                ?: throw AssertionError("All includes should have been resolved by now: $absolutePath")
+            ?: throw AssertionError("All includes should have been resolved by now: $absolutePath")
     }
 
     private val Path.canonicalPath: Path

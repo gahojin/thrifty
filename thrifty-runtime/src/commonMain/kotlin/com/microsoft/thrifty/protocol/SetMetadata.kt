@@ -23,6 +23,6 @@ package com.microsoft.thrifty.protocol
 import kotlin.jvm.JvmField
 
 class SetMetadata(
-        @JvmField val elementTypeId: Byte,
-        @JvmField val size: Int,
+    @JvmField val elementTypeId: Byte,
+    @JvmField val size: Int,
 )

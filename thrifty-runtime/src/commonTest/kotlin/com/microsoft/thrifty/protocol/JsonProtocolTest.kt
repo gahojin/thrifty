@@ -125,12 +125,12 @@ class JsonProtocolTest {
     @Test
     fun structs() {
         val xtruct = Xtruct.Builder()
-                .byte_thing(1.toByte())
-                .double_thing(2.0)
-                .i32_thing(3)
-                .i64_thing(4L)
-                .string_thing("five")
-                .build()
+            .byte_thing(1.toByte())
+            .double_thing(2.0)
+            .i32_thing(3)
+            .i64_thing(4L)
+            .string_thing("five")
+            .build()
         Xtruct.ADAPTER.write(protocol, xtruct)
         buffer.readUtf8() shouldBe "" +
                 "{" +
@@ -151,13 +151,13 @@ class JsonProtocolTest {
     @Test
     fun roundtrip() {
         val xtruct = Xtruct.Builder()
-                .byte_thing(254.toByte())
-                .i32_thing(0xFFFF)
-                .i64_thing(0xFFFFFFFFL)
-                .string_thing("foo")
-                .double_thing(PI)
-                .bool_thing(true)
-                .build()
+            .byte_thing(254.toByte())
+            .i32_thing(0xFFFF)
+            .i64_thing(0xFFFFFFFFL)
+            .string_thing("foo")
+            .double_thing(PI)
+            .bool_thing(true)
+            .build()
         val buffer = Buffer()
         val transport = BufferTransport(buffer)
         val proto = JsonProtocol(transport)

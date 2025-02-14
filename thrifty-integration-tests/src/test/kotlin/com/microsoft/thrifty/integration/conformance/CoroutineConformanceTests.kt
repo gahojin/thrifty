@@ -112,26 +112,26 @@ abstract class CoroutineConformanceTests {
             this.transport = decorateTransport(transport)
             this.protocol = createProtocol(this.transport)
             this.client = ThriftTestClient(protocol, object : AsyncClientBase.Listener {
-                    override fun onTransportClosed() {
+                override fun onTransportClosed() {
 
-                    }
+                }
 
-                    override fun onError(error: Throwable) {
-                        throw AssertionError(error)
-                    }
-                })
+                override fun onError(error: Throwable) {
+                    throw AssertionError(error)
+                }
+            })
         }
 
         private fun getTransportImpl(): Transport {
-           return when(testServer.transport) {
-               ServerTransport.BLOCKING, ServerTransport.NON_BLOCKING ->
-                   return SocketTransport.Builder("localhost", testServer.port())
-                       .readTimeout(2000)
-                       .build()
-                       .apply { connect() }
+            return when (testServer.transport) {
+                ServerTransport.BLOCKING, ServerTransport.NON_BLOCKING ->
+                    return SocketTransport.Builder("localhost", testServer.port())
+                        .readTimeout(2000)
+                        .build()
+                        .apply { connect() }
 
-               ServerTransport.HTTP -> HttpTransport("http://localhost:${testServer.port()}/test/service")
-           }
+                ServerTransport.HTTP -> HttpTransport("http://localhost:${testServer.port()}/test/service")
+            }
         }
 
         /**
@@ -146,7 +146,7 @@ abstract class CoroutineConformanceTests {
         }
 
         private fun createProtocol(transport: Transport): Protocol {
-            return when (testServer.protocol!!) {
+            return when (testServer.protocol) {
                 ServerProtocol.BINARY -> transport.binaryProtocol()
                 ServerProtocol.COMPACT -> transport.compactProtocol()
                 ServerProtocol.JSON -> transport.jsonProtocol()
@@ -169,180 +169,183 @@ abstract class CoroutineConformanceTests {
     }
 
     @Test
-    fun testBool() = runBlocking {
+    fun testBool(): Unit = runBlocking {
         client.testBool(true) shouldBe true
     }
 
     @Test
-    fun testByte() = runBlocking {
+    fun testByte(): Unit = runBlocking {
         client.testByte(200.toByte()) shouldBe 200.toByte()
     }
 
     @Test
-    fun testI32() = runBlocking {
+    fun testI32(): Unit = runBlocking {
         client.testI32(404) shouldBe 404
     }
 
     @Test
-    fun testI64() = runBlocking {
+    fun testI64(): Unit = runBlocking {
         client.testI64(Long.MAX_VALUE) shouldBe Long.MAX_VALUE
     }
 
     @Test
-    fun testDouble() = runBlocking {
+    fun testDouble(): Unit = runBlocking {
         client.testDouble(Math.PI) shouldBe Math.PI
     }
 
     @Test
-    fun testBinary() = runBlocking {
+    fun testBinary(): Unit = runBlocking {
         val binary = "Peace on Earth and Thrift for all mankind".encodeUtf8()
 
         client.testBinary(binary) shouldBe binary
     }
 
     @Test
-    fun testStruct() = runBlocking {
+    fun testStruct(): Unit = runBlocking {
         val xtruct = Xtruct(
-                byte_thing = 1.toByte(),
-                i32_thing = 2,
-                i64_thing = 3L,
-                string_thing = "foo",
-                bool_thing = null,
-                double_thing = null
+            byte_thing = 1.toByte(),
+            i32_thing = 2,
+            i64_thing = 3L,
+            string_thing = "foo",
+            bool_thing = null,
+            double_thing = null
         )
 
         client.testStruct(xtruct) shouldBe xtruct
     }
 
     @Test
-    fun testNest() = runBlocking {
+    fun testNest(): Unit = runBlocking {
         val xtruct = Xtruct(
-                byte_thing = 1.toByte(),
-                i32_thing = 2,
-                i64_thing = 3L,
-                string_thing = "foo",
-                bool_thing = null,
-                double_thing = null
+            byte_thing = 1.toByte(),
+            i32_thing = 2,
+            i64_thing = 3L,
+            string_thing = "foo",
+            bool_thing = null,
+            double_thing = null
         )
 
         val nest = Xtruct2(
-                byte_thing = 4.toByte(),
-                i32_thing = 5,
-                struct_thing = xtruct
+            byte_thing = 4.toByte(),
+            i32_thing = 5,
+            struct_thing = xtruct
         )
 
         client.testNest(nest) shouldBe nest
     }
 
     @Test
-    fun testMap() = runBlocking {
+    fun testMap(): Unit = runBlocking {
         val argument = mapOf(1 to 2, 3 to 4, 7 to 8)
 
         client.testMap(argument) shouldBe argument
     }
 
     @Test
-    fun testStringMap() = runBlocking {
+    fun testStringMap(): Unit = runBlocking {
         val argument = mapOf(
-                "foo\no" to "bar",
-                "baz" to "qu\rux",
-                "one" to "more"
+            "foo\no" to "bar",
+            "baz" to "qu\rux",
+            "one" to "more"
         )
 
         client.testStringMap(argument) shouldBe argument
     }
 
     @Test
-    fun testSet() = runBlocking {
+    fun testSet(): Unit = runBlocking {
         val set = setOf(1, 2, 3, 4, 5)
 
         client.testSet(set) shouldBe set
     }
 
     @Test
-    fun testList() = runBlocking {
+    fun testList(): Unit = runBlocking {
         val list = listOf(10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
 
         client.testList(list) shouldBe list
     }
 
     @Test
-    fun testEnum() = runBlocking {
+    fun testEnum(): Unit = runBlocking {
         val argument = Numberz.EIGHT
 
         client.testEnum(argument) shouldBe argument
     }
 
     @Test
-    fun testTypedef() = runBlocking {
+    fun testTypedef(): Unit = runBlocking {
         client.testTypedef(Long.MIN_VALUE) shouldBe Long.MIN_VALUE
     }
 
     @Test
-    fun testMapMap() = runBlocking {
+    fun testMapMap(): Unit = runBlocking {
         client.testMapMap(Integer.MAX_VALUE) shouldBe mapOf(
-                -4 to mapOf(
-                        -4 to -4,
-                        -3 to -3,
-                        -2 to -2,
-                        -1 to -1
-                ),
-
-                4 to mapOf(
-                        1 to 1,
-                        2 to 2,
-                        3 to 3,
-                        4 to 4
-                )
+            -4 to mapOf(
+                -4 to -4,
+                -3 to -3,
+                -2 to -2,
+                -1 to -1
+            ),
+            4 to mapOf(
+                1 to 1,
+                2 to 2,
+                3 to 3,
+                4 to 4
+            ),
         )
     }
 
     @Test
-    fun testInsanity() = runBlocking {
+    fun testInsanity(): Unit = runBlocking {
         val empty = Insanity(null, null)
         val argument = Insanity(
-                userMap = mapOf(Numberz.ONE to 10L, Numberz.TWO to 20L, Numberz.THREE to 40L),
-                xtructs = listOf(
-                        Xtruct(
-                                byte_thing = 18.toByte(),
-                                i32_thing = 37,
-                                i64_thing = 101L,
-                                string_thing = "what",
-                                bool_thing = null,
-                                double_thing = null)))
+            userMap = mapOf(Numberz.ONE to 10L, Numberz.TWO to 20L, Numberz.THREE to 40L),
+            xtructs = listOf(
+                Xtruct(
+                    byte_thing = 18.toByte(),
+                    i32_thing = 37,
+                    i64_thing = 101L,
+                    string_thing = "what",
+                    bool_thing = null,
+                    double_thing = null,
+                ),
+            ),
+        )
 
         val expected = mapOf(
-                1L to mapOf(Numberz.TWO to argument, Numberz.THREE to argument),
-                2L to mapOf(Numberz.SIX to empty)
+            1L to mapOf(Numberz.TWO to argument, Numberz.THREE to argument),
+            2L to mapOf(Numberz.SIX to empty),
         )
 
         client.testInsanity(argument) shouldBe expected
     }
 
     @Test
-    fun testMulti() = runBlocking {
+    fun testMulti(): Unit = runBlocking {
         val expected = Xtruct(
-                string_thing = "Hello2",
-                byte_thing = 9.toByte(),
-                i32_thing = 11,
-                i64_thing = 13L,
-                bool_thing = null,
-                double_thing = null
+            string_thing = "Hello2",
+            byte_thing = 9.toByte(),
+            i32_thing = 11,
+            i64_thing = 13L,
+            bool_thing = null,
+            double_thing = null,
         )
 
         val result = client.testMulti(
-                arg0 = 9.toByte(),
-                arg1 = 11,
-                arg2 = 13L,
-                arg3 = mapOf(10.toShort() to "Hello"),
-                arg4 = Numberz.THREE,
-                arg5 = 5L)
+            arg0 = 9.toByte(),
+            arg1 = 11,
+            arg2 = 13L,
+            arg3 = mapOf(10.toShort() to "Hello"),
+            arg4 = Numberz.THREE,
+            arg5 = 5L,
+        )
 
         result shouldBe expected
     }
 
     @Test
-    fun testExceptionNormalError() = runBlocking {
+    fun testExceptionNormalError(): Unit = runBlocking {
         try {
             client.testException("Xception")
             fail("Expected an Xception")
@@ -353,7 +356,7 @@ abstract class CoroutineConformanceTests {
     }
 
     @Test
-    fun testExceptionInternalError() = runBlocking {
+    fun testExceptionInternalError(): Unit = runBlocking {
         try {
             client.testException("TException")
             fail("Expected a ThriftException")
@@ -363,21 +366,22 @@ abstract class CoroutineConformanceTests {
     }
 
     @Test
-    fun testMultiExceptionNoError() = runBlocking {
-        val (string_thing) = client.testMultiException("Normal", "Hi there")
+    fun testMultiExceptionNoError(): Unit = runBlocking {
+        val (stringThing) = client.testMultiException("Normal", "Hi there")
 
         // Note: We aren't asserting against an expected value because the members
         //       of the result are unspecified besides 'string_thing', and Thrift
         //       implementations differ on whether to return unset primitive values,
         //       depending on options set during codegen.
-        string_thing shouldBe "Hi there"
+        stringThing shouldBe "Hi there"
     }
 
     @Test
-    fun testMultiExceptionErrorOne() = runBlocking {
+    fun testMultiExceptionErrorOne(): Unit = runBlocking {
         val expected = Xception(
-                errorCode = 1001,
-                message_ = "This is an Xception")
+            errorCode = 1001,
+            message_ = "This is an Xception",
+        )
 
         try {
             client.testMultiException("Xception", "nope")
@@ -388,7 +392,7 @@ abstract class CoroutineConformanceTests {
     }
 
     @Test
-    fun testMultiExceptionErrorTwo() = runBlocking {
+    fun testMultiExceptionErrorTwo(): Unit = runBlocking {
         try {
             client.testMultiException("Xception2", "nope")
             fail("Expected an Xception2")
@@ -403,7 +407,7 @@ abstract class CoroutineConformanceTests {
     }
 
     @Test
-    fun testUnionArguments() = runBlocking {
+    fun testUnionArguments(): Unit = runBlocking {
         val bonk = Bonk(message = "foo", type = 42)
         val union = NonEmptyUnion.ABonk(bonk)
         val expected = HasUnion(union)
@@ -412,7 +416,7 @@ abstract class CoroutineConformanceTests {
     }
 
     @Test
-    fun testUnionWithDefault() = runBlocking {
+    fun testUnionWithDefault(): Unit = runBlocking {
         val expected = UnionWithDefault.DEFAULT
         client.testUnionWithDefault(UnionWithDefault.DEFAULT) shouldBe expected
     }

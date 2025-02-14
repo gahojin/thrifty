@@ -30,8 +30,8 @@ package com.microsoft.thrifty.schema
 abstract class AbstractUserElementBuilder<
         TElement : UserElement,
         TBuilder : AbstractUserElementBuilder<TElement, TBuilder>
-> internal constructor(
-        internal var mixin: UserElementMixin
+        > internal constructor(
+    internal var mixin: UserElementMixin
 ) {
 
     /**
@@ -82,12 +82,12 @@ abstract class AbstractUserElementBuilder<
      */
     fun type(type: TElement): TBuilder {
         mixin = mixin.toBuilder()
-                .name(type.name)
-                .location(type.location)
-                .documentation(type.documentation)
-                .annotations(type.annotations)
-                .namespaces(type.namespaces)
-                .build()
+            .name(type.name)
+            .location(type.location)
+            .documentation(type.documentation)
+            .annotations(type.annotations)
+            .namespaces(type.namespaces)
+            .build()
         return this as TBuilder
     }
 

@@ -23,7 +23,7 @@ package com.microsoft.thrifty.protocol
 import kotlin.jvm.JvmField
 
 class FieldMetadata(
-        @JvmField val name: String,
-        @JvmField val typeId: Byte,
-        @JvmField val fieldId: Short,
+    @JvmField val name: String,
+    @JvmField val typeId: Byte,
+    @JvmField val fieldId: Short,
 )

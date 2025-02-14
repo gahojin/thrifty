@@ -35,14 +35,11 @@ object DefaultErrorHandler : ErrorHandler {
         msg: MessageMetadata,
         input: Protocol,
         output: Protocol,
-        oneWay: Boolean
+        oneWay: Boolean,
     ) {
         if (!oneWay) {
             msg.reply(output, TMessageType.EXCEPTION) {
-                val err = ThriftException(
-                    ThriftException.Kind.INTERNAL_ERROR,
-                    "Internal error processing ${msg.name}"
-                )
+                val err = ThriftException(ThriftException.Kind.INTERNAL_ERROR, "Internal error processing ${msg.name}")
                 err.write(output)
             }
         }

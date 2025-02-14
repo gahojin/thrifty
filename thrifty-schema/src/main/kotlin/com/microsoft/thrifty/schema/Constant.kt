@@ -21,22 +21,15 @@
 package com.microsoft.thrifty.schema
 
 import com.google.common.annotations.VisibleForTesting
-import com.microsoft.thrifty.schema.parser.ConstElement
-import com.microsoft.thrifty.schema.parser.ConstValueElement
-import com.microsoft.thrifty.schema.parser.DoubleValueElement
-import com.microsoft.thrifty.schema.parser.IdentifierValueElement
-import com.microsoft.thrifty.schema.parser.IntValueElement
-import com.microsoft.thrifty.schema.parser.ListValueElement
-import com.microsoft.thrifty.schema.parser.LiteralValueElement
-import com.microsoft.thrifty.schema.parser.MapValueElement
+import com.microsoft.thrifty.schema.parser.*
 
 /**
  * Represents a Thrift const definition.
  */
-class Constant private constructor (
-        private val element: ConstElement,
-        private val mixin: UserElementMixin,
-        private var type_: ThriftType? = null
+class Constant private constructor(
+    private val element: ConstElement,
+    private val mixin: UserElementMixin,
+    private var type_: ThriftType? = null
 ) : UserElement by mixin {
 
     /**
@@ -76,12 +69,17 @@ class Constant private constructor (
         detectCycles(linker, mutableMapOf(), mutableListOf(this))
     }
 
-    private fun detectCycles(linker: Linker, visitStates: MutableMap<Constant, VisitState>, path: MutableList<Constant>) {
+    private fun detectCycles(
+        linker: Linker,
+        visitStates: MutableMap<Constant, VisitState>,
+        path: MutableList<Constant>
+    ) {
         if (visitStates[this] == VisitState.VISITING) {
             val message = path.joinToString(
                 separator = "\n\t -> ",
-                prefix = "Cycle detected while validating Thrift constants: \n\t") { elem ->
-                    "${elem.name} (${elem.location.path}:${elem.location.line})"
+                prefix = "Cycle detected while validating Thrift constants: \n\t"
+            ) { elem ->
+                "${elem.name} (${elem.location.path}:${elem.location.line})"
             }
             throw IllegalStateException(message)
         }
@@ -124,7 +122,7 @@ class Constant private constructor (
      * An object that can build [Constants][Constant].
      */
     class Builder internal constructor(
-            constant: Constant
+        constant: Constant
     ) : AbstractUserElementBuilder<Constant, Builder>(constant.mixin) {
 
         internal val element: ConstElement = constant.element
@@ -193,8 +191,10 @@ class Constant private constructor (
                 return STRUCT
             }
 
-            throw IllegalStateException("Illegal const definition. " +
-                    "Const must be of type [bool, byte, i16, i32, i64, double, string, enum, list, set, map, struct]")
+            throw IllegalStateException(
+                "Illegal const definition. " +
+                        "Const must be of type [bool, byte, i16, i32, i64, double, string, enum, list, set, map, struct]"
+            )
         }
     }
 
@@ -223,41 +223,40 @@ class Constant private constructor (
             }
 
             throw IllegalStateException(
-                    "Expected 'true', 'false', '1', '0', or a bool constant; got: $valueElement at ${valueElement.location}")
+                "Expected 'true', 'false', '1', '0', or a bool constant; got: $valueElement at ${valueElement.location}"
+            )
         }
     }
 
     private open class BaseValidator : ConstValueValidator {
         override fun validate(symbolTable: SymbolTable, expected: ThriftType, valueElement: ConstValueElement) {
-            if (valueElement is IdentifierValueElement) {
-                val id = valueElement.value
-                val constant = symbolTable.lookupConst(id)
-                        ?: throw IllegalStateException("Unrecognized const identifier: $id")
+            check(valueElement is IdentifierValueElement) {
+                "Expected a value of type ${expected.name.lowercase()} but got $valueElement"
+            }
 
-                if (constant.type.trueType != expected) {
-                    throw IllegalStateException(
-                            "Expected a value of type ${expected.name}, but got ${constant.type.name}")
-                }
-            } else {
-                throw IllegalStateException(
-                        "Expected a value of type ${expected.name.lowercase()} but got $valueElement")
+            val id = valueElement.value
+            val constant = checkNotNull(symbolTable.lookupConst(id)) {
+                "Unrecognized const identifier: $id"
+            }
+
+            check (constant.type.trueType == expected) {
+                "Expected a value of type ${expected.name}, but got ${constant.type.name}"
             }
         }
     }
 
     private class IntegerValidator(
-            private val minValue: Long,
-            private val maxValue: Long
+        private val minValue: Long,
+        private val maxValue: Long
     ) : BaseValidator() {
         override fun validate(symbolTable: SymbolTable, expected: ThriftType, valueElement: ConstValueElement) {
             when (valueElement) {
                 is IntValueElement -> {
                     val lv = valueElement.value
-                    if (lv < minValue || lv > maxValue) {
-                        throw IllegalStateException("value '$lv' is out of range for type ${expected.name}")
+                    check(lv >= minValue && lv <= maxValue) {
+                        "value '$lv' is out of range for type ${expected.name}"
                     }
                 }
-
                 else -> super.validate(symbolTable, expected, valueElement)
             }
         }
@@ -271,16 +270,15 @@ class Constant private constructor (
                 is IdentifierValueElement -> {
                     // maybe a const?
                     val id = valueElement.value
-                    val constant = symbolTable.lookupConst(id)
-                            ?: throw IllegalStateException("Unrecognized const identifier: $id")
+                    val constant = checkNotNull(symbolTable.lookupConst(id)) {
+                        "Unrecognized const identifier: $id"
+                    }
 
-                    if (constant.type.trueType != expected) {
-                        throw IllegalStateException(
-                                "Expected a value of type ${expected.name}, but got ${constant.type.name}")
+                    check(constant.type.trueType == expected) {
+                        "Expected a value of type ${expected.name}, but got ${constant.type.name}"
                     }
                 }
-
-                else -> throw IllegalStateException("Expected a value of type DOUBLE but got $valueElement")
+                else -> error("Expected a value of type DOUBLE but got $valueElement")
             }
         }
     }
@@ -302,10 +300,9 @@ class Constant private constructor (
             when (valueElement) {
                 is IntValueElement -> {
                     val id = valueElement.value
-                    if (expected.members.any { it.value.toLong() == id }) {
-                        return
+                    check (expected.members.any { it.value.toLong() == id }) {
+                        "'$id' is not a valid value for ${expected.name}"
                     }
-                    throw IllegalStateException("'$id' is not a valid value for ${expected.name}")
                 }
 
                 is IdentifierValueElement -> {
@@ -327,9 +324,8 @@ class Constant private constructor (
                     }
 
                     var ix = id.lastIndexOf('.')
-                    if (ix == -1) {
-                        throw IllegalStateException(
-                                "Unqualified name '$id' is not a valid enum constant value: (${valueElement.location})")
+                    check(ix >= 0) {
+                        "Unqualified name '$id' is not a valid enum constant value: (${valueElement.location})"
                     }
 
                     val typeName = id.substring(0, ix) // possibly qualified
@@ -355,15 +351,12 @@ class Constant private constructor (
                         }
                     }
 
-                    if (typeNameMatches && expected.members.any { it.name == memberName }) {
-                        return
+                    check(typeNameMatches && expected.members.any { it.name == memberName }) {
+                        "'$id' is not a member of enum type ${expected.name}: members=${expected.members}"
                     }
-
-                    throw IllegalStateException(
-                            "'$id' is not a member of enum type ${expected.name}: members=${expected.members}")
                 }
 
-                else -> throw IllegalStateException("bad enum literal: $valueElement")
+                else -> error("bad enum literal: $valueElement")
             }
         }
     }
@@ -380,7 +373,7 @@ class Constant private constructor (
                     }
 
                     for (element in list) {
-                        Constant.validate(symbolTable, element, elementType)
+                        validate(symbolTable, element, elementType)
                     }
                 }
 
@@ -388,14 +381,12 @@ class Constant private constructor (
                     val id = valueElement.value
                     val named = symbolTable.lookupConst(id)
 
-                    val isConstantOfCorrectType = named != null && named.type.trueType == expected
-
-                    if (!isConstantOfCorrectType) {
-                        throw IllegalStateException("Expected a value with type ${expected.name}")
+                    check(named != null && named.type.trueType == expected) {
+                        "Expected a value with type ${expected.name}"
                     }
                 }
 
-                else -> throw IllegalStateException("Expected a list literal, got: $valueElement")
+                else -> error("Expected a list literal, got: $valueElement")
             }
         }
     }
@@ -411,8 +402,8 @@ class Constant private constructor (
                     val valueType = mapType.valueType.trueType
 
                     for ((key, value1) in map) {
-                        Constant.validate(symbolTable, key, keyType)
-                        Constant.validate(symbolTable, value1, valueType)
+                        validate(symbolTable, key, keyType)
+                        validate(symbolTable, value1, valueType)
                     }
                 }
 
@@ -420,14 +411,12 @@ class Constant private constructor (
                     val id = valueElement.value
                     val named = symbolTable.lookupConst(id)
 
-                    val isConstantOfCorrectType = named != null && named.type.trueType == expected
-
-                    if (!isConstantOfCorrectType) {
-                        throw IllegalStateException("Expected a value with type ${expected.name}")
+                    check(named != null && named.type.trueType == expected) {
+                        "Expected a value with type ${expected.name}"
                     }
                 }
 
-                else -> throw IllegalStateException("Expected a map literal, got: $valueElement")
+                else -> error("Expected a map literal, got: $valueElement")
             }
         }
     }
@@ -439,17 +428,18 @@ class Constant private constructor (
                 val fields = struct.fields
                 val map = valueElement.value
 
-                val allFields = fields.associateByTo(LinkedHashMap()) { it.name }
+                val allFields = fields.associateByTo(mutableMapOf()) { it.name }
                 for ((key, value) in map) {
-                    if (key !is LiteralValueElement) {
-                        throw IllegalStateException("${expected.name} struct const keys must be string")
+                    check(key is LiteralValueElement) {
+                        "${expected.name} struct const keys must be string"
                     }
                     // validate the struct defined fields are listed in the const valued struct map
                     // field name must match the map key
-                    val field = allFields.remove(key.value)
-                            ?: throw IllegalStateException("${expected.name} struct has no field ${key.value}")
+                    val field = checkNotNull(allFields.remove(key.value)) {
+                        "${expected.name} struct has no field ${key.value}"
+                    }
 
-                    Constant.validate(symbolTable, value, field.type)
+                    validate(symbolTable, value, field.type)
                 }
 
                 val missingFields = allFields.values.filter { it.required && it.defaultValue == null }
@@ -474,8 +464,9 @@ class Constant private constructor (
                 return emptyList()
             }
 
-            val ref = linker.lookupConst(cve.value)
-                ?: throw IllegalStateException("Unrecognized const identifier: ${cve.value}")
+            val ref = checkNotNull(linker.lookupConst(cve.value)) {
+                "Unrecognized const identifier: ${cve.value}"
+            }
 
             return listOf(ref)
         }
@@ -491,6 +482,7 @@ class Constant private constructor (
             }
             return emptyList()
         }
+
         override fun visitByte(byteType: BuiltinType) = getScalarConstantReference()
         override fun visitI16(i16Type: BuiltinType) = getScalarConstantReference()
         override fun visitI32(i32Type: BuiltinType) = getScalarConstantReference()
@@ -551,19 +543,19 @@ class Constant private constructor (
                 return getScalarConstantReference()
             }
 
-            if (cve !is MapValueElement) {
-                error("unpossible")
+            check(cve is MapValueElement) {
+                "unpossible"
             }
 
             val fieldsByName = structType.fields.associateBy { it.name }
 
             return cve.value.flatMap { (key, value) ->
-                if (key !is LiteralValueElement) {
-                    error("wtf")
+                check(key is LiteralValueElement) {
+                    "wtf"
                 }
 
                 val fieldName = key.value
-                val field = fieldsByName[fieldName] ?: error("nope")
+                val field = checkNotNull(fieldsByName[fieldName]) { "nope" }
                 val visitor = ConstantReferenceVisitor(value, linker)
                 field.type.accept(visitor)
             }

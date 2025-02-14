@@ -22,22 +22,22 @@ package com.microsoft.thrifty.schema
 
 import com.microsoft.thrifty.schema.parser.TypeElement
 import com.microsoft.thrifty.schema.parser.TypedefElement
-import java.util.Objects
+import java.util.*
 
 /**
  * Represents a `typedef` alias defined in a .thrift file.
  */
 class TypedefType internal constructor(
-        mixin: UserElementMixin,
-        private val oldTypeElement: TypeElement,
-        private var oldType_: ThriftType? = null
+    mixin: UserElementMixin,
+    private val oldTypeElement: TypeElement,
+    private var oldType_: ThriftType? = null
 ) : UserType(mixin) {
 
     /**
      * The aliased type
      */
     val oldType: ThriftType
-        get() = oldType_!!
+        get() = checkNotNull(oldType_)
 
     internal constructor(element: TypedefElement, namespaces: Map<NamespaceScope, String>, oldType: ThriftType? = null)
             : this(UserElementMixin(element, namespaces), element.oldType, oldType)
@@ -46,7 +46,7 @@ class TypedefType internal constructor(
             : this(builder.mixin, builder.oldTypeElement, builder.oldType)
 
     internal fun link(linker: Linker) {
-        this.oldType_ = linker.resolveType(oldTypeElement)
+        oldType_ = linker.resolveType(oldTypeElement)
     }
 
     internal fun validate(linker: Linker) {
@@ -68,12 +68,12 @@ class TypedefType internal constructor(
     override val trueType: ThriftType
         get() = oldType.trueType
 
-    override fun <T> accept(visitor: ThriftType.Visitor<T>): T = visitor.visitTypedef(this)
+    override fun <T> accept(visitor: Visitor<T>): T = visitor.visitTypedef(this)
 
     override fun withAnnotations(annotations: Map<String, String>): ThriftType {
         return toBuilder()
-                .annotations(mergeAnnotations(this.annotations, annotations))
-                .build()
+            .annotations(mergeAnnotations(this.annotations, annotations))
+            .build()
     }
 
     /**
@@ -96,10 +96,10 @@ class TypedefType internal constructor(
      * An object that can create new [TypedefType] instances
      */
     class Builder internal constructor(
-            typedef: TypedefType
-    ) : UserType.UserTypeBuilder<TypedefType, Builder>(typedef) {
+        typedef: TypedefType
+    ) : UserTypeBuilder<TypedefType, Builder>(typedef) {
         internal var oldTypeElement: TypeElement = typedef.oldTypeElement
-        internal var oldType: ThriftType? = typedef.oldType
+        internal var oldType: ThriftType = typedef.oldType
 
         /**
          * Use the given [oldTypeElement] for the typedef under construction.

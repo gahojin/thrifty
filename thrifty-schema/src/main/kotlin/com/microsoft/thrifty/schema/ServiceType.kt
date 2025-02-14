@@ -22,9 +22,7 @@ package com.microsoft.thrifty.schema
 
 import com.microsoft.thrifty.schema.parser.ServiceElement
 import com.microsoft.thrifty.schema.parser.TypeElement
-
-import java.util.ArrayDeque
-import java.util.LinkedHashMap
+import java.util.*
 
 /**
  * Represents a `service` defined in a .thrift file.
@@ -46,7 +44,9 @@ class ServiceType : UserType {
     var extendsService: ThriftType? = null
         private set
 
-    internal constructor(element: ServiceElement, namespaces: Map<NamespaceScope, String>) : super(UserElementMixin(element, namespaces)) {
+    internal constructor(element: ServiceElement, namespaces: Map<NamespaceScope, String>) : super(
+        mixin = UserElementMixin(element, namespaces),
+    ) {
         this.extendsServiceType = element.extendsService
         this.methods = element.functions.map { ServiceMethod(it, namespaces) }
     }
@@ -59,12 +59,12 @@ class ServiceType : UserType {
 
     override val isService: Boolean = true
 
-    override fun <T> accept(visitor: ThriftType.Visitor<T>): T = visitor.visitService(this)
+    override fun <T> accept(visitor: Visitor<T>): T = visitor.visitService(this)
 
     override fun withAnnotations(annotations: Map<String, String>): ThriftType {
         return toBuilder()
-                .annotations(mergeAnnotations(this.annotations, annotations))
-                .build()
+            .annotations(mergeAnnotations(this.annotations, annotations))
+            .build()
     }
 
     /**
@@ -88,13 +88,13 @@ class ServiceType : UserType {
         // 2. The service contains no duplicate methods, including those inherited from base types.
         // 3. All service methods themselves are valid.
 
-        val methodsByName = LinkedHashMap<String, ServiceMethod>()
+        val methodsByName = linkedMapOf<String, ServiceMethod>()
 
         val hierarchy = ArrayDeque<ServiceType>()
 
-        if (extendsService != null) {
-            if (!extendsService!!.isService) {
-                linker.addError(location, "Base type '" + extendsService!!.name + "' is not a service")
+        extendsService?.also {
+            if (!it.isService) {
+                linker.addError(location, "Base type '${it.name}' is not a service")
             }
         }
 
@@ -126,12 +126,11 @@ class ServiceType : UserType {
         }
 
         for (method in methods) {
-            val conflictingMethod = methodsByName.put(method.name, method)
-            if (conflictingMethod != null) {
-                methodsByName[conflictingMethod.name] = conflictingMethod
-
-                linker.addError(method.location, "Duplicate method; '" + method.name
-                        + "' conflicts with another method declared at " + conflictingMethod.location)
+            methodsByName.putIfAbsent(method.name, method)?.also {
+                linker.addError(
+                    method.location,
+                    "Duplicate method; '${method.name}' conflicts with another method declared at ${it.location}",
+                )
             }
         }
 
@@ -143,15 +142,10 @@ class ServiceType : UserType {
     /**
      * An object that can create new [ServiceType] instances.
      */
-    class Builder internal constructor(type: ServiceType) : UserType.UserTypeBuilder<ServiceType, Builder>(type) {
+    class Builder internal constructor(type: ServiceType) : UserTypeBuilder<ServiceType, Builder>(type) {
         internal var methods: List<ServiceMethod> = type.methods
         internal val extendsServiceType: TypeElement? = type.extendsServiceType
         internal var extendsService: ThriftType? = type.extendsService
-
-        init {
-            this.methods = type.methods
-            this.extendsService = type.extendsService
-        }
 
         /**
          * Use the given [methods] for the service under construction.

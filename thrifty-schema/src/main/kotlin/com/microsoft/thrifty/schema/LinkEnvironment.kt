@@ -21,7 +21,7 @@
 package com.microsoft.thrifty.schema
 
 internal class LinkEnvironment(
-        private val errorReporter: ErrorReporter
+    private val errorReporter: ErrorReporter
 ) {
     /**
      * A mapping of files to their corresponding [Linker] instances.

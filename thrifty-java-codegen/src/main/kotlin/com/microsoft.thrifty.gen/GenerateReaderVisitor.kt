@@ -34,8 +34,6 @@ import com.microsoft.thrifty.schema.TypedefType
 import com.microsoft.thrifty.schema.UserType
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterizedTypeName
-
-import java.util.ArrayDeque
 import java.util.Deque
 
 /**
@@ -52,10 +50,10 @@ internal open class GenerateReaderVisitor(
         private val read: MethodSpec.Builder,
         private val fieldName: String,
         private val fieldType: ThriftType,
-        private val failOnUnknownEnumValues: Boolean = true
+        private val failOnUnknownEnumValues: Boolean = true,
 ) : ThriftType.Visitor<Unit> {
 
-    private val nameStack: Deque<String> = ArrayDeque<String>()
+    private val nameStack = ArrayDeque<String>()
 
     private var scope: Int = 0
 
@@ -64,11 +62,11 @@ internal open class GenerateReaderVisitor(
         val codeName = TypeNames.getTypeCodeName(fieldTypeCode)
         read.beginControlFlow("if (field.typeId == \$T.\$L)", TypeNames.TTYPE, codeName)
 
-        nameStack.push("value")
+        nameStack.addLast("value")
         fieldType.accept(this)
-        nameStack.pop()
+        nameStack.removeLast()
 
-        useReadValue("value")
+        useReadValue()
 
         read.nextControlFlow("else")
         read.addStatement("\$T.skip(protocol, field.typeId)", TypeNames.PROTO_UTIL)
@@ -76,7 +74,7 @@ internal open class GenerateReaderVisitor(
 
     }
 
-    protected open fun useReadValue(localName: String) {
+    protected open fun useReadValue(localName: String = "value") {
         if (failOnUnknownEnumValues || !fieldType.isEnum) {
             read.addStatement("builder.\$N(\$N)", fieldName, localName)
         } else {
@@ -87,35 +85,35 @@ internal open class GenerateReaderVisitor(
     }
 
     override fun visitBool(boolType: BuiltinType) {
-        read.addStatement("\$T \$N = protocol.readBool()", TypeNames.BOOLEAN.unbox(), nameStack.peek())
+        read.addStatement("\$T \$N = protocol.readBool()", TypeNames.BOOLEAN.unbox(), nameStack.last())
     }
 
     override fun visitByte(byteType: BuiltinType) {
-        read.addStatement("\$T \$N = protocol.readByte()", TypeNames.BYTE.unbox(), nameStack.peek())
+        read.addStatement("\$T \$N = protocol.readByte()", TypeNames.BYTE.unbox(), nameStack.last())
     }
 
     override fun visitI16(i16Type: BuiltinType) {
-        read.addStatement("\$T \$N = protocol.readI16()", TypeNames.SHORT.unbox(), nameStack.peek())
+        read.addStatement("\$T \$N = protocol.readI16()", TypeNames.SHORT.unbox(), nameStack.last())
     }
 
     override fun visitI32(i32Type: BuiltinType) {
-        read.addStatement("\$T \$N = protocol.readI32()", TypeNames.INTEGER.unbox(), nameStack.peek())
+        read.addStatement("\$T \$N = protocol.readI32()", TypeNames.INTEGER.unbox(), nameStack.last())
     }
 
     override fun visitI64(i64Type: BuiltinType) {
-        read.addStatement("\$T \$N = protocol.readI64()", TypeNames.LONG.unbox(), nameStack.peek())
+        read.addStatement("\$T \$N = protocol.readI64()", TypeNames.LONG.unbox(), nameStack.last())
     }
 
     override fun visitDouble(doubleType: BuiltinType) {
-        read.addStatement("\$T \$N = protocol.readDouble()", TypeNames.DOUBLE.unbox(), nameStack.peek())
+        read.addStatement("\$T \$N = protocol.readDouble()", TypeNames.DOUBLE.unbox(), nameStack.last())
     }
 
     override fun visitString(stringType: BuiltinType) {
-        read.addStatement("\$T \$N = protocol.readString()", TypeNames.STRING, nameStack.peek())
+        read.addStatement("\$T \$N = protocol.readString()", TypeNames.STRING, nameStack.last())
     }
 
     override fun visitBinary(binaryType: BuiltinType) {
-        read.addStatement("\$T \$N = protocol.readBinary()", TypeNames.BYTE_STRING, nameStack.peek())
+        read.addStatement("\$T \$N = protocol.readBinary()", TypeNames.BYTE_STRING, nameStack.last())
     }
 
     override fun visitVoid(voidType: BuiltinType) {
@@ -123,20 +121,21 @@ internal open class GenerateReaderVisitor(
     }
 
     override fun visitEnum(enumType: EnumType) {
-        val target = nameStack.peek()
+        val target = nameStack.last()
         val qualifiedJavaName = getFullyQualifiedJavaName(enumType)
         val intName = "i32_$scope"
 
         read.addStatement("int \$L = protocol.readI32()", intName)
         read.addStatement("$1L $2N = $1L.findByValue($3L)", qualifiedJavaName, target, intName)
         if (failOnUnknownEnumValues) {
-            read.beginControlFlow("if (\$N == null)", target!!)
+            read.beginControlFlow("if (\$N == null)", target)
             read.addStatement(
-                    "throw new $1T($2T.PROTOCOL_ERROR, $3S + $4L)",
-                    TypeNames.THRIFT_EXCEPTION,
-                    TypeNames.THRIFT_EXCEPTION_KIND,
-                    "Unexpected value for enum-type " + enumType.name + ": ",
-                    intName)
+                "throw new $1T($2T.PROTOCOL_ERROR, $3S + $4L)",
+                TypeNames.THRIFT_EXCEPTION,
+                TypeNames.THRIFT_EXCEPTION_KIND,
+                "Unexpected value for enum-type ${enumType.name}: ",
+                intName,
+            )
             read.endControlFlow()
         }
     }
@@ -151,18 +150,18 @@ internal open class GenerateReaderVisitor(
         val item = "item$scope"
 
         read.addStatement("\$T \$N = protocol.readListBegin()", TypeNames.LIST_META, listInfo)
-        read.addStatement("\$T \$N = new \$T(\$N.size)", genericListType, nameStack.peek(), listImplType, listInfo)
+        read.addStatement("\$T \$N = new \$T(\$N.size)", genericListType, nameStack.last(), listImplType, listInfo)
         read.beginControlFlow("for (int $1N = 0; $1N < $2N.size; ++$1N)", idx, listInfo)
 
         pushScope {
-            nameStack.push(item)
+            nameStack.addLast(item)
 
             listType.elementType.trueType.accept(this)
 
-            nameStack.pop()
+            nameStack.removeLast()
         }
 
-        read.addStatement("\$N.add(\$N)", nameStack.peek(), item)
+        read.addStatement("\$N.add(\$N)", nameStack.last(), item)
         read.endControlFlow()
         read.addStatement("protocol.readListEnd()")
     }
@@ -177,18 +176,18 @@ internal open class GenerateReaderVisitor(
         val item = "item$scope"
 
         read.addStatement("\$T \$N = protocol.readSetBegin()", TypeNames.SET_META, setInfo)
-        read.addStatement("\$T \$N = new \$T(\$N.size)", genericSetType, nameStack.peek(), setImplType, setInfo)
+        read.addStatement("\$T \$N = new \$T(\$N.size)", genericSetType, nameStack.last(), setImplType, setInfo)
         read.beginControlFlow("for (int $1N = 0; $1N < $2N.size; ++$1N)", idx, setInfo)
 
         pushScope {
-            nameStack.push(item)
+            nameStack.addLast(item)
 
             setType.elementType.accept(this)
 
-            nameStack.pop()
+            nameStack.removeLast()
         }
 
-        read.addStatement("\$N.add(\$N)", nameStack.peek(), item)
+        read.addStatement("\$N.add(\$N)", nameStack.last(), item)
         read.endControlFlow()
         read.addStatement("protocol.readSetEnd()")
     }
@@ -206,20 +205,20 @@ internal open class GenerateReaderVisitor(
 
         pushScope {
             read.addStatement("\$T \$N = protocol.readMapBegin()", TypeNames.MAP_META, mapInfo)
-            read.addStatement("\$T \$N = new \$T(\$N.size)", genericMapType, nameStack.peek(), mapImplType, mapInfo)
+            read.addStatement("\$T \$N = new \$T(\$N.size)", genericMapType, nameStack.last(), mapImplType, mapInfo)
             read.beginControlFlow("for (int $1N = 0; $1N < $2N.size; ++$1N)", idx, mapInfo)
 
-            nameStack.push(key)
+            nameStack.addLast(key)
             mapType.keyType.accept(this)
-            nameStack.pop()
+            nameStack.removeLast()
 
             pushScope {
-                nameStack.push(value)
+                nameStack.addLast(value)
                 mapType.valueType.accept(this)
-                nameStack.pop()
+                nameStack.removeLast()
             }
 
-            read.addStatement("\$N.put(\$N, \$N)", nameStack.peek(), key, value)
+            read.addStatement("\$N.put(\$N, \$N)", nameStack.last(), key, value)
 
             read.endControlFlow()
             read.addStatement("protocol.readMapEnd()")
@@ -228,7 +227,7 @@ internal open class GenerateReaderVisitor(
 
     override fun visitStruct(structType: StructType) {
         val qualifiedJavaName = getFullyQualifiedJavaName(structType)
-        read.addStatement("$1L $2N = $1L.ADAPTER.read(protocol)", qualifiedJavaName, nameStack.peek())
+        read.addStatement("$1L $2N = $1L.ADAPTER.read(protocol)", qualifiedJavaName, nameStack.last())
     }
 
     override fun visitTypedef(typedefType: TypedefType) {
@@ -246,7 +245,7 @@ internal open class GenerateReaderVisitor(
         }
 
         val packageName = type.getNamespaceFor(NamespaceScope.JAVA)
-        return packageName + "." + type.name
+        return "${packageName}.${type.name}"
     }
 
     private inline fun pushScope(fn: () -> Unit) {

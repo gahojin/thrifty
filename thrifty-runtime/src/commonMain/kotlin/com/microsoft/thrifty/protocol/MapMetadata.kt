@@ -23,7 +23,7 @@ package com.microsoft.thrifty.protocol
 import kotlin.jvm.JvmField
 
 class MapMetadata(
-        @JvmField val keyTypeId: Byte,
-        @JvmField val valueTypeId: Byte,
-        @JvmField val size: Int,
+    @JvmField val keyTypeId: Byte,
+    @JvmField val valueTypeId: Byte,
+    @JvmField val size: Int,
 )

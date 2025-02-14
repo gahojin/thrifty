@@ -28,7 +28,7 @@ import okio.EOFException
  * implementation, which currently requires such framing.
  */
 class FramedTransport(
-        private val inner: Transport
+    private val inner: Transport,
 ) : Transport {
     // Read state
     private var remainingBytes = 0
@@ -101,10 +101,11 @@ class FramedTransport(
                 buf = buf.copyOf(nextPowerOfTwo(size + count))
             }
             buffer.copyInto(
-                    destination = buf,
-                    destinationOffset = size,
-                    startIndex = offset,
-                    endIndex = offset + count)
+                destination = buf,
+                destinationOffset = size,
+                startIndex = offset,
+                endIndex = offset + count,
+            )
             size += count
         }
 

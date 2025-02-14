@@ -45,7 +45,6 @@ import okio.ByteString
 import java.io.IOException
 import java.net.ProtocolException
 import java.util.Collections
-import java.util.NoSuchElementException
 
 /**
  * JavaPoet type names used for code generation.

@@ -20,6 +20,9 @@
  */
 package com.microsoft.thrifty.schema
 
+import com.microsoft.thrifty.schema.NamespaceScope.*
+
+
 /**
  * An enumeration of all namespace-having programming languages recognized by
  * Thrifty.
@@ -148,12 +151,7 @@ enum class NamespaceScope(internal val thriftName: String) {
          * if no such scope exists.
          */
         fun forThriftName(name: String): NamespaceScope? {
-            for (scope in values()) {
-                if (scope.thriftName == name) {
-                    return scope
-                }
-            }
-            return null
+            return entries.firstOrNull { it.thriftName == name }
         }
 
         /**

@@ -20,7 +20,7 @@
  */
 package com.microsoft.thrifty.schema
 
-import java.util.UUID
+import java.util.*
 
 /**
  * Represents data common to user-defined elements of a Thrift program.
@@ -107,12 +107,11 @@ interface UserElement {
 }
 
 /**
- * Returns `true` if `doc` is non-empty Javadoc, otherwise
- * `false`.
+ * Returns `true` if `doc` is non-empty Javadoc, otherwise `false`.
  */
 fun isNonEmptyJavadoc(doc: String?): Boolean {
     if (doc == null) return false
     if (doc.isEmpty()) return false
 
-    return doc.any { !Character.isWhitespace(it) }
+    return doc.any { !it.isWhitespace() }
 }

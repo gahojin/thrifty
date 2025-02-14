@@ -27,8 +27,8 @@ package com.microsoft.thrifty
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.SOURCE)
 annotation class ThriftField(
-        val fieldId: Short,
-        val isRequired: Boolean = false,
-        val isOptional: Boolean = false,
-        val typedefName: String = "",
+    val fieldId: Short,
+    val isRequired: Boolean = false,
+    val isOptional: Boolean = false,
+    val typedefName: String = "",
 )

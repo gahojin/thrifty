@@ -24,10 +24,12 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.help
 import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.deprecated
 import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
@@ -153,113 +155,116 @@ import kotlin.system.exitProcess
  * will be implicitly included; otherwise only the given files (and those included by them)
  * will be compiled.
  */
-class ThriftyCompiler {
-
+object ThriftyCompiler {
     enum class Language {
         JAVA,
-        KOTLIN
+        KOTLIN,
     }
 
     enum class ServiceInterfaceType {
         CALLBACK,
-        COROUTINE
+        COROUTINE,
     }
 
     private val cli = object : CliktCommand(name = "thrifty-compiler") {
-        val outputDirectory: Path by option("-o", "--out", help = "the output directory for generated files")
-                .path(canBeFile = false, canBeDir = true)
-                .required()
-                .validate { Files.isDirectory(it) || !Files.exists(it) }
+        val outputDirectory: Path by option("-o", "--out")
+            .help("the output directory for generated files")
+            .path(canBeFile = false, canBeDir = true)
+            .required()
+            .validate { Files.isDirectory(it) || !Files.exists(it) }
 
-        val searchPath: List<Path> by option("-p", "--path", help = "the search path for .thrift includes")
-                .path(mustExist = true, canBeDir = true, canBeFile = false)
-                .multiple()
+        val searchPath: List<Path> by option("-p", "--path")
+            .help("the search path for .thrift includes")
+            .path(mustExist = true, canBeDir = true, canBeFile = false)
+            .multiple()
 
-        val language: Language? by option(
-                        "-l", "--lang", help = "the target language for generated code.  Default is kotlin.")
-                .choice("java" to Language.JAVA, "kotlin" to Language.KOTLIN)
+        val language: Language? by option("-l", "--lang")
+            .help("the target language for generated code.  Default is kotlin.")
+            .choice("java" to Language.JAVA, "kotlin" to Language.KOTLIN)
 
-        val nameStyle: FieldNamingPolicy by option(
-                        "--name-style",
-                        help = "Format style for generated names.  Default is to leave names unaltered.")
-                .choice("default" to FieldNamingPolicy.DEFAULT, "java" to FieldNamingPolicy.JAVA)
-                .default(FieldNamingPolicy.DEFAULT)
+        val nameStyle: FieldNamingPolicy by option("--name-style")
+            .help("Format style for generated names.  Default is to leave names unaltered.")
+            .choice("default" to FieldNamingPolicy.DEFAULT, "java" to FieldNamingPolicy.JAVA)
+            .default(FieldNamingPolicy.DEFAULT)
 
-        val listTypeName: String? by option("--list-type", help = "when specified, the concrete type to use for lists")
-        val setTypeName: String? by option("--set-type", help =  "when specified, the concrete type to use for sets")
-        val mapTypeName: String? by option("--map-type", help = "when specified, the concrete type to use for maps")
+        val listTypeName: String? by option("--list-type")
+            .help("when specified, the concrete type to use for lists")
+        val setTypeName: String? by option("--set-type")
+            .help("when specified, the concrete type to use for sets")
+        val mapTypeName: String? by option("--map-type")
+            .help("when specified, the concrete type to use for maps")
 
         val emitNullabilityAnnotations: Boolean by option("--use-android-annotations", hidden = true)
-                .flag(default = false)
-                .deprecated("Equivalent to --nullability-annotation-type=android-support")
+            .flag(default = false)
+            .deprecated("Equivalent to --nullability-annotation-type=android-support")
 
-        val nullabilityAnnotationType: NullabilityAnnotationType by option(
-                        "--nullability-annotation-type",
-                        help = "the type of nullability annotations, if any, to add to fields.  Default is none.  Implies --lang=java.")
-                .choice(
-                        "none" to NullabilityAnnotationType.NONE,
-                        "android-support" to NullabilityAnnotationType.ANDROID_SUPPORT,
-                        "androidx" to NullabilityAnnotationType.ANDROIDX)
-                .transformAll {
-                    it.lastOrNull() ?: if (emitNullabilityAnnotations) {
-                        NullabilityAnnotationType.ANDROID_SUPPORT
-                    } else {
-                        NullabilityAnnotationType.NONE
-                    }
+        val nullabilityAnnotationType: NullabilityAnnotationType by option("--nullability-annotation-type")
+            .help("the type of nullability annotations, if any, to add to fields.  Default is none.  Implies --lang=java.")
+            .choice(
+                "none" to NullabilityAnnotationType.NONE,
+                "android-support" to NullabilityAnnotationType.ANDROID_SUPPORT,
+                "androidx" to NullabilityAnnotationType.ANDROIDX,
+            )
+            .transformAll {
+                it.lastOrNull() ?: if (emitNullabilityAnnotations) {
+                    NullabilityAnnotationType.ANDROID_SUPPORT
+                } else {
+                    NullabilityAnnotationType.NONE
                 }
+            }
 
-        val emitParcelable: Boolean by option("--parcelable",
-                    help = "When set, generates Parcelable implementations for structs")
-                .flag(default = false)
+        val emitParcelable: Boolean by option("--parcelable")
+            .help("When set, generates Parcelable implementations for structs")
+            .flag(default = false)
 
-        val omitServiceClients: Boolean by option("--omit-service-clients",
-                    help = "When set, don't generate service clients")
-                .flag(default = false)
+        val omitServiceClients: Boolean by option("--omit-service-clients")
+            .help("When set, don't generate service clients")
+            .flag(default = false)
 
-        val generateServer: Boolean by option("--experimental-kt-generate-server",
-                help = "When set, generate kotlin server implementation (EXPERIMENTAL)")
-                .flag(default = false)
+        val generateServer: Boolean by option("--experimental-kt-generate-server")
+            .help("When set, generate kotlin server implementation (EXPERIMENTAL)")
+            .flag(default = false)
 
-        val omitFileComments: Boolean by option("--omit-file-comments",
-                    help = "When set, don't add file comments to generated files")
-                .flag(default = false)
+        val omitFileComments: Boolean by option("--omit-file-comments")
+            .help("When set, don't add file comments to generated files")
+            .flag(default = false)
 
-        val kotlinEmitJvmName: Boolean by option("--kt-emit-jvmname",
-                    help = "When set, emit @JvmName annotations")
-                .flag(default = false)
+        val kotlinEmitJvmName: Boolean by option("--kt-emit-jvmname")
+            .help("When set, emit @JvmName annotations")
+            .flag(default = false)
 
-        val kotlinFilePerType: Boolean by option(
-                    "--kt-file-per-type", help = "Generate one .kt file per type; default is one per namespace.")
-                .flag(default = false)
+        val kotlinFilePerType: Boolean by option("--kt-file-per-type")
+            .help("Generate one .kt file per type; default is one per namespace.")
+            .flag(default = false)
 
-        val kotlinBuilderRequiredConstructor: Boolean by option("--experimental-kt-builder-required-ctor",
-                    help = "Generate struct Builder constructor with required parameters, and mark empty Builder constructor as deprecated")
-                .flag(default = false)
+        val kotlinBuilderRequiredConstructor: Boolean by option("--experimental-kt-builder-required-ctor")
+            .help("Generate struct Builder constructor with required parameters, and mark empty Builder constructor as deprecated")
+            .flag(default = false)
 
-        val kotlinStructBuilders: Boolean by option("--kt-struct-builders",
-                    help = "Generate builders for struct types.  This is deprecated and for compatibility with existing code only.")
-                .flag("--kt-no-struct-builders", default = false)
+        val kotlinStructBuilders: Boolean by option("--kt-struct-builders")
+            .help("Generate builders for struct types.  This is deprecated and for compatibility with existing code only.")
+            .flag("--kt-no-struct-builders", default = false)
 
-        val kotlinEmitJvmStatic: Boolean by option("--kt-jvm-static",
-                    help = "Add @JvmStatic annotations to companion-object functions.  For ease-of-use with Java code.")
-                .flag("--kt-no-jvm-static", default = false)
+        val kotlinEmitJvmStatic: Boolean by option("--kt-jvm-static")
+            .help("Add @JvmStatic annotations to companion-object functions.  For ease-of-use with Java code.")
+            .flag("--kt-no-jvm-static", default = false)
 
         val kotlinBigEnums: Boolean by option("--kt-big-enums")
-                .flag("--kt-no-big-enums", default = false)
+            .flag("--kt-no-big-enums", default = false)
 
-        val serviceType: ServiceInterfaceType by option(
-                "--service-type",
-                help = "The style of interface for generated service clients; default is callbacks.")
+        val serviceType: ServiceInterfaceType by option("--service-type")
+            .help("The style of interface for generated service clients; default is callbacks.")
             .choice("callback" to ServiceInterfaceType.CALLBACK, "coroutine" to ServiceInterfaceType.COROUTINE)
             .default(ServiceInterfaceType.CALLBACK)
 
-        val thriftFiles: List<Path> by argument(help = "All .thrift files to compile")
-                .path(mustExist = true, canBeFile = true, canBeDir = false, mustBeReadable = true)
-                .multiple()
+        val thriftFiles: List<Path> by argument()
+            .help("All .thrift files to compile")
+            .path(mustExist = true, canBeFile = true, canBeDir = false, mustBeReadable = true)
+            .multiple()
 
-        val failOnUnknownEnumValues by option("--fail-on-unknown-enum-values",
-                    help = "When set, unknown values found when decoding will throw an exception. Otherwise, it uses null/default values.")
-                .flag("--no-fail-on-unknown-enum-values", default = true)
+        val failOnUnknownEnumValues by option("--fail-on-unknown-enum-values")
+            .help("When set, unknown values found when decoding will throw an exception. Otherwise, it uses null/default values.")
+            .flag("--no-fail-on-unknown-enum-values", default = true)
 
         override fun help(context: Context) = "Generate Java or Kotlin code from .thrift files"
 
@@ -284,8 +289,7 @@ class ThriftyCompiler {
                 for (report in e.errorReporter.formattedReports()) {
                     println(report)
                 }
-
-                Runtime.getRuntime().exit(1)
+                exitProcess(1)
                 return
             }
 
@@ -302,7 +306,10 @@ class ThriftyCompiler {
             }
 
             if (language != null && impliedLanguage != null && impliedLanguage != language) {
-                echo("You specified $language, but provided options implying $impliedLanguage (which will be ignored).", err = true)
+                echo(
+                    "You specified $language, but provided options implying $impliedLanguage (which will be ignored).",
+                    err = true,
+                )
             }
 
             if (emitNullabilityAnnotations) {
@@ -310,8 +317,7 @@ class ThriftyCompiler {
             }
 
             when (language ?: impliedLanguage) {
-                null,
-                Language.KOTLIN -> generateKotlin(schema)
+                null, Language.KOTLIN -> generateKotlin(schema)
                 Language.JAVA -> generateJava(schema)
             }
         }
@@ -322,8 +328,7 @@ class ThriftyCompiler {
             setTypeName?.let { gen = gen.withSetType(it) }
             mapTypeName?.let { gen = gen.withMapType(it) }
 
-            val svc = TypeProcessorService.getInstance()
-            val processor = svc.javaProcessor
+            val processor = TypeProcessorService.javaProcessor
             if (processor != null) {
                 gen = gen.usingTypeProcessor(processor)
             }
@@ -393,8 +398,7 @@ class ThriftyCompiler {
                 gen.coroutineServiceClients()
             }
 
-            val svc = TypeProcessorService.getInstance()
-            svc.kotlinProcessor?.let {
+            TypeProcessorService.kotlinProcessor?.let {
                 gen.processor = it
             }
 
@@ -404,19 +408,14 @@ class ThriftyCompiler {
         }
     }
 
-    fun compile(args: Array<String>) {
+    @JvmStatic
+    fun main(args: Array<String>) {
         try {
             cli.main(args)
         } catch (e: Exception) {
             cli.echo("Unhandled exception", err = true)
             e.printStackTrace(System.err)
             exitProcess(1)
-        }
-    }
-
-    companion object {
-        @JvmStatic fun main(args: Array<String>) {
-            ThriftyCompiler().compile(args)
         }
     }
 }

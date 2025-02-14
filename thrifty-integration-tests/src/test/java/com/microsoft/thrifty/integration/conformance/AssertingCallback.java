@@ -35,7 +35,7 @@ public class AssertingCallback<T> implements ServiceMethodCallback<T> {
     private T result;
     private Throwable error;
 
-    private CountDownLatch latch = new CountDownLatch(1);
+    private final CountDownLatch latch = new CountDownLatch(1);
 
     @Override
     public void onSuccess(T result) {

@@ -31,60 +31,54 @@ class Program internal constructor(element: ThriftFileElement) {
     /**
      * All namespaces defined for this [Program].
      */
-    val namespaces: Map<NamespaceScope, String> = element.namespaces
-            .map { it.scope to it.namespace }
-            .toMap()
+    val namespaces = element.namespaces.associate { it.scope to it.namespace }
 
     /**
      * All `cpp_include` statements in this [Program].
      */
-    val cppIncludes: List<String> = element.includes
-            .filter { it.isCpp }
-            .map { it.path }
+    val cppIncludes = element.includes.filter { it.isCpp }.map { it.path }
 
-    private val thriftIncludes: List<String> = element.includes
-            .filter { !it.isCpp }
-            .map { it.path }
+    private val thriftIncludes = element.includes.filter { !it.isCpp }.map { it.path }
 
     /**
      * All [constants][Constant] contained within this [Program]
      */
-    val constants: List<Constant> = element.constants.map { Constant(it, namespaces) }
+    val constants = element.constants.map { Constant(it, namespaces) }
 
     /**
      * All [enums][EnumType] contained within this [Program].
      */
-    val enums: List<EnumType> = element.enums.map { EnumType(it, namespaces) }
+    val enums = element.enums.map { EnumType(it, namespaces) }
 
     /**
      * All [structs][StructType] contained within this [Program].
      */
-    val structs: List<StructType> = element.structs.map { StructType(it, namespaces) }
+    val structs = element.structs.map { StructType(it, namespaces) }
 
     /**
      * All [unions][StructType] contained within this [Program].
      */
-    val unions: List<StructType> = element.unions.map { StructType(it, namespaces) }
+    val unions = element.unions.map { StructType(it, namespaces) }
 
     /**
      * All [exceptions][StructType] contained within this [Program].
      */
-    val exceptions: List<StructType> = element.exceptions.map { StructType(it, namespaces) }
+    val exceptions = element.exceptions.map { StructType(it, namespaces) }
 
     /**
      * All [typedefs][TypedefType] contained within this [Program].
      */
-    val typedefs: List<TypedefType> = element.typedefs.map { TypedefType(it, namespaces) }
+    val typedefs = element.typedefs.map { TypedefType(it, namespaces) }
 
     /**
      * All [services][ServiceType] contained within this [Program].
      */
-    val services: List<ServiceType> = element.services.map { ServiceType(it, namespaces) }
+    val services = element.services.map { ServiceType(it, namespaces) }
 
     /**
      * The location of this [Program], possibly relative (if it was loaded from the search path).
      */
-    val location: Location = element.location
+    val location = element.location
 
     private var includedPrograms: List<Program>? = null
     private var constSymbols: Map<String, Constant>? = null
@@ -111,7 +105,7 @@ class Program internal constructor(element: ThriftFileElement) {
      */
     fun allUserTypes(): Iterable<UserType> {
         return listOf(enums, structs, unions, exceptions, services, typedefs)
-                .flatMapTo(mutableListOf()) { it }
+            .flatMapTo(mutableListOf()) { it }
     }
 
     /**
@@ -124,7 +118,7 @@ class Program internal constructor(element: ThriftFileElement) {
     internal fun loadIncludedPrograms(loader: Loader, visited: MutableMap<Program, Program?>, parent: Program?) {
         if (visited.containsKey(this)) {
             if (includedPrograms == null) {
-                val includeChain = StringBuilder(this.location.programName);
+                val includeChain = StringBuilder(this.location.programName)
                 var current: Program? = parent
                 while (current != null) {
                     includeChain.append(" -> ")
@@ -134,50 +128,48 @@ class Program internal constructor(element: ThriftFileElement) {
                     }
                     current = visited[current]
                 }
-                loader.errorReporter().error(location, "Circular include; file includes itself transitively $includeChain")
-                throw IllegalStateException("Circular include: " + location.path
-                        + " includes itself transitively " + includeChain)
+                loader.errorReporter()
+                    .error(location, "Circular include; file includes itself transitively $includeChain")
+                error("Circular include: ${location.path} includes itself transitively $includeChain")
             }
             return
         }
         visited[this] = parent
 
-        check(this.includedPrograms == null) { "Included programs already resolved" }
+        checkNotNull(includedPrograms == null) { "Included programs already resolved" }
 
-        val includes = mutableListOf<Program>()
-        for (thriftImport in thriftIncludes) {
-            val included = loader.resolveIncludedProgram(location, thriftImport)
-            included.loadIncludedPrograms(loader, visited, this)
-            includes.add(included)
+        includedPrograms = thriftIncludes.map {
+            loader.resolveIncludedProgram(location, it).also {
+                it.loadIncludedPrograms(loader, visited, this)
+            }
         }
-
-        this.includedPrograms = includes
 
         val symbolMap = mutableMapOf<String, UserType>()
         for (userType in allUserTypes()) {
-            val oldValue = symbolMap.put(userType.name, userType)
-            if (oldValue != null) {
-                reportDuplicateSymbol(loader.errorReporter(), oldValue, userType)
+            symbolMap.putIfAbsent(userType.name, userType)?.also {
+                reportDuplicateSymbol(loader.errorReporter(), it, userType)
             }
         }
 
         val constSymbolMap = mutableMapOf<String, Constant>()
         for (constant in constants) {
-            val oldValue = constSymbolMap.put(constant.name, constant)
-            if (oldValue != null) {
-                reportDuplicateSymbol(loader.errorReporter(), oldValue, constant)
+            constSymbolMap.putIfAbsent(constant.name, constant)?.also {
+                reportDuplicateSymbol(loader.errorReporter(), it, constant)
             }
         }
 
-        this.constSymbols = constSymbolMap
+        constSymbols = constSymbolMap
     }
 
     private fun reportDuplicateSymbol(
-            reporter: ErrorReporter,
-            oldValue: UserElement,
-            newValue: UserElement) {
-        val message = "Duplicate symbols: ${oldValue.name} defined at ${oldValue.location} and at ${newValue.location}"
-        reporter.error(newValue.location, message)
+        reporter: ErrorReporter,
+        oldValue: UserElement,
+        newValue: UserElement,
+    ) {
+        reporter.error(
+            newValue.location,
+            "Duplicate symbols: ${oldValue.name} defined at ${oldValue.location} and at ${newValue.location}",
+        )
     }
 
     /** @inheritdoc */

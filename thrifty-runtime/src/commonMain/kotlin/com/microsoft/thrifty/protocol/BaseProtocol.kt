@@ -25,15 +25,12 @@ import okio.IOException
 import kotlin.jvm.JvmField
 
 abstract class BaseProtocol(
-        @JvmField
-        protected val transport: Transport
+    @JvmField
+    protected val transport: Transport
 ) : Protocol {
-    override fun close() {
-        transport.close()
-    }
+    @Throws(IOException::class)
+    override fun close() = transport.close()
 
     @Throws(IOException::class)
-    override fun flush() {
-        transport.flush()
-    }
+    override fun flush() = transport.flush()
 }

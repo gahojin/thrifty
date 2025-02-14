@@ -1311,7 +1311,7 @@ class LoaderTest {
 
         val schema = load(thrift)
         val consts = schema.constants
-        val theContainer = consts.find { it.name == "THE_CONTAINER" } ?: error("Expected a constant named THE_CONTAINER")
+        val theContainer = checkNotNull(consts.find { it.name == "THE_CONTAINER" }) { "Expected a constant named THE_CONTAINER" }
 
         val elements = (theContainer.value as MapValueElement).value
         val singleValue = elements.values.single()

@@ -286,37 +286,31 @@ class BinaryProtocolTest {
                 break
             }
             when (field.fieldId.toInt()) {
-                1 -> {
-                    if (field.typeId == TType.BYTE) {
-                        protocol.readByte()
-                    } else {
-                        skip(protocol, field.typeId)
-                    }
-                }
-                2 -> {
-                    if (field.typeId == TType.I16) {
-                        protocol.readI16()
-                    } else {
-                        skip(protocol, field.typeId)
-                    }
-                }
-                3 -> {
-                    if (field.typeId == TType.I16) {
-                        protocol.readI16()
-                    } else {
-                        skip(protocol, field.typeId)
-                    }
-                }
-                4 -> {
-                    if (field.typeId == TType.STRING) {
-                        protocol.readBinary()
-                    } else {
-                        skip(protocol, field.typeId)
-                    }
-                }
-                else -> {
+                1 -> if (field.typeId == TType.BYTE) {
+                    protocol.readByte()
+                } else {
                     skip(protocol, field.typeId)
                 }
+
+                2 -> if (field.typeId == TType.I16) {
+                    protocol.readI16()
+                } else {
+                    skip(protocol, field.typeId)
+                }
+
+                3 -> if (field.typeId == TType.I16) {
+                    protocol.readI16()
+                } else {
+                    skip(protocol, field.typeId)
+                }
+
+                4 -> if (field.typeId == TType.STRING) {
+                    protocol.readBinary()
+                } else {
+                    skip(protocol, field.typeId)
+                }
+
+                else -> skip(protocol, field.typeId)
             }
             protocol.readFieldEnd()
         }

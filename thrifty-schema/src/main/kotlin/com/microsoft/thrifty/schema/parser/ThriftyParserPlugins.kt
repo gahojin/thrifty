@@ -20,7 +20,7 @@
  */
 package com.microsoft.thrifty.schema.parser
 
-import java.util.UUID
+import java.util.*
 
 /**
  * An extension point for controlling UUID assignment to parsed Thrift entities

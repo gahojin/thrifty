@@ -134,9 +134,9 @@ class FieldTest {
         val thriftType = BuiltinType.DOUBLE
 
         val builderField = field.toBuilder()
-                .annotations(annotations)
-                .type(thriftType)
-                .build()
+            .annotations(annotations)
+            .type(thriftType)
+            .build()
 
         builderField.annotations shouldBe annotations
         builderField.type shouldBe thriftType
@@ -148,13 +148,14 @@ class FieldTest {
 
     private fun field(): FieldElement {
         return FieldElement(
-                location = location,
-                fieldId = fieldId,
-                type = fieldType,
-                name = fieldName,
-                requiredness = requiredness,
-                documentation = documentation,
-                constValue = null,
-                annotations = annotations)
+            location = location,
+            fieldId = fieldId,
+            type = fieldType,
+            name = fieldName,
+            requiredness = requiredness,
+            documentation = documentation,
+            constValue = null,
+            annotations = annotations,
+        )
     }
 }

@@ -20,92 +20,128 @@
  */
 package com.microsoft.thrifty.schema
 
-import com.microsoft.thrifty.schema.parser.AnnotationElement
-import com.microsoft.thrifty.schema.parser.ConstElement
-import com.microsoft.thrifty.schema.parser.EnumElement
-import com.microsoft.thrifty.schema.parser.EnumMemberElement
-import com.microsoft.thrifty.schema.parser.FieldElement
-import com.microsoft.thrifty.schema.parser.FunctionElement
-import com.microsoft.thrifty.schema.parser.ServiceElement
-import com.microsoft.thrifty.schema.parser.StructElement
-import com.microsoft.thrifty.schema.parser.TypedefElement
-
-import java.util.Locale
-import java.util.UUID
+import com.microsoft.thrifty.schema.parser.*
+import java.util.*
 
 /**
  * A mixin encapsulating a common implementation of [UserElement],
  * which does not conveniently fit in a single base class.
  */
 internal data class UserElementMixin(
-        override val uuid: UUID,
-        override val name: String,
-        override val location: Location,
-        override val documentation: String,
-        override val annotations: Map<String, String>,
-        override val namespaces: Map<NamespaceScope, String>
+    override val uuid: UUID,
+    override val name: String,
+    override val location: Location,
+    override val documentation: String,
+    override val annotations: Map<String, String>,
+    override val namespaces: Map<NamespaceScope, String>,
 ) : UserElement {
     override val isDeprecated: Boolean
         get() = hasThriftOrJavadocAnnotation("deprecated")
 
-    constructor(struct: StructElement, namespaces: Map<NamespaceScope, String>)
-            : this(struct.uuid, struct.name, struct.location, struct.documentation, struct.annotations, namespaces)
+    constructor(struct: StructElement, namespaces: Map<NamespaceScope, String>) : this(
+        uuid = struct.uuid,
+        name = struct.name,
+        location = struct.location,
+        documentation = struct.documentation,
+        annotationElement = struct.annotations,
+        namespaces = namespaces,
+    )
 
-    constructor(field: FieldElement, namespaces: Map<NamespaceScope, String>)
-            : this(field.uuid, field.name, field.location, field.documentation, field.annotations, namespaces)
+    constructor(field: FieldElement, namespaces: Map<NamespaceScope, String>) : this(
+        uuid = field.uuid,
+        name = field.name,
+        location = field.location,
+        documentation = field.documentation,
+        annotationElement = field.annotations,
+        namespaces = namespaces,
+    )
 
-    constructor(enumElement: EnumElement, namespaces: Map<NamespaceScope, String>)
-            : this(enumElement.uuid, enumElement.name, enumElement.location, enumElement.documentation, enumElement.annotations, namespaces)
+    constructor(enumElement: EnumElement, namespaces: Map<NamespaceScope, String>) : this(
+        uuid = enumElement.uuid,
+        name = enumElement.name,
+        location = enumElement.location,
+        documentation = enumElement.documentation,
+        annotationElement = enumElement.annotations,
+        namespaces = namespaces,
+    )
 
-    constructor(member: EnumMemberElement, namespaces: Map<NamespaceScope, String>)
-            : this(member.uuid, member.name, member.location, member.documentation, member.annotations, namespaces)
+    constructor(member: EnumMemberElement, namespaces: Map<NamespaceScope, String>) : this(
+        uuid = member.uuid,
+        name = member.name,
+        location = member.location,
+        documentation = member.documentation,
+        annotationElement = member.annotations,
+        namespaces = namespaces,
+    )
 
-    constructor(element: TypedefElement, namespaces: Map<NamespaceScope, String>)
-            : this(element.uuid, element.newName, element.location, element.documentation, element.annotations, namespaces)
+    constructor(element: TypedefElement, namespaces: Map<NamespaceScope, String>) : this(
+        uuid = element.uuid,
+        name = element.newName,
+        location = element.location,
+        documentation = element.documentation,
+        annotationElement = element.annotations,
+        namespaces = namespaces,
+    )
 
-    constructor(element: ServiceElement, namespaces: Map<NamespaceScope, String>)
-            : this(element.uuid, element.name, element.location, element.documentation, element.annotations, namespaces)
+    constructor(element: ServiceElement, namespaces: Map<NamespaceScope, String>) : this(
+        uuid = element.uuid,
+        name = element.name,
+        location = element.location,
+        documentation = element.documentation,
+        annotationElement = element.annotations,
+        namespaces = namespaces,
+    )
 
-    constructor(element: FunctionElement, namespaces: Map<NamespaceScope, String>)
-            : this(element.uuid, element.name, element.location, element.documentation, element.annotations, namespaces)
+    constructor(element: FunctionElement, namespaces: Map<NamespaceScope, String>) : this(
+        uuid = element.uuid,
+        name = element.name,
+        location = element.location,
+        documentation = element.documentation,
+        annotationElement = element.annotations,
+        namespaces = namespaces,
+    )
 
-    constructor(element: ConstElement, namespaces: Map<NamespaceScope, String>)
-            : this(element.uuid, element.name, element.location, element.documentation, emptyMap(), namespaces)
+    constructor(element: ConstElement, namespaces: Map<NamespaceScope, String>) : this(
+        uuid = element.uuid,
+        name = element.name,
+        location = element.location,
+        documentation = element.documentation,
+        annotations = emptyMap(),
+        namespaces = namespaces,
+    )
 
     constructor(
-            uuid: UUID,
-            name: String,
-            location: Location,
-            documentation: String,
-            annotationElement: AnnotationElement?,
-            namespaces: Map<NamespaceScope, String>) : this(
-
-            uuid,
-            name,
-            location,
-            documentation,
-            annotationElement?.values?.toMap() ?: emptyMap(),
-            namespaces
+        uuid: UUID,
+        name: String,
+        location: Location,
+        documentation: String,
+        annotationElement: AnnotationElement?,
+        namespaces: Map<NamespaceScope, String>,
+    ) : this(
+        uuid = uuid,
+        name = name,
+        location = location,
+        documentation = documentation,
+        annotations = annotationElement?.values?.toMap() ?: emptyMap(),
+        namespaces = namespaces,
     )
 
     private constructor(builder: Builder) : this(
-            uuid = builder.uuid,
-            name = builder.name,
-            location = builder.location,
-            documentation = builder.documentation,
-            annotations = builder.annotations,
-            namespaces = builder.namespaces
+        uuid = builder.uuid,
+        name = builder.name,
+        location = builder.location,
+        documentation = builder.documentation,
+        annotations = builder.annotations,
+        namespaces = builder.namespaces,
     )
 
     /**
      * Checks for the presence of the given annotation name, in several possible
      * varieties.  Returns true if:
      *
-     *
      *  * A Thrift annotation matching the exact name is present
      *  * A Thrift annotation equal to the string "thrifty." plus the name is present
      *  * The Javadoc contains "@" plus the annotation name
-     *
      *
      * The latter two conditions are officially undocumented, but are present for
      * legacy use.  This behavior is subject to change without notice!
@@ -118,13 +154,13 @@ internal data class UserElementMixin(
 
     override fun toString(): String {
         return ("UserElementMixin{"
-                + "uuid='" + uuid + "'"
-                + ", name='" + name + "'"
-                + ", location=" + location
-                + ", documentation='" + documentation + "'"
-                + ", annotations=" + annotations
-                + ", namespaces=" + namespaces
-                + '}'.toString())
+                + "uuid='$uuid'"
+                + ", name='$name'"
+                + ", location=$location"
+                + ", documentation='$documentation'"
+                + ", annotations=$annotations"
+                + ", namespaces=$namespaces"
+                + "}")
     }
 
     fun toBuilder(): Builder {
@@ -132,12 +168,12 @@ internal data class UserElementMixin(
     }
 
     internal class Builder internal constructor(userElement: UserElement) {
-        var uuid: UUID = userElement.uuid
-        var name: String = userElement.name
-        var location: Location = userElement.location
-        var documentation: String = userElement.documentation
-        var annotations: Map<String, String> = userElement.annotations
-        var namespaces: Map<NamespaceScope, String> = userElement.namespaces
+        var uuid = userElement.uuid
+        var name = userElement.name
+        var location = userElement.location
+        var documentation = userElement.documentation
+        var annotations = userElement.annotations
+        var namespaces = userElement.namespaces
 
         fun uuid(uuid: UUID): Builder = apply {
             this.uuid = uuid

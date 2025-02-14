@@ -126,12 +126,12 @@ class SimpleJsonProtocolTest {
     @Test
     fun structs() {
         val xtruct = Xtruct.Builder()
-                .byte_thing(1.toByte())
-                .double_thing(2.0)
-                .i32_thing(3)
-                .i64_thing(4L)
-                .string_thing("five")
-                .build()
+            .byte_thing(1.toByte())
+            .double_thing(2.0)
+            .i32_thing(3)
+            .i64_thing(4L)
+            .string_thing("five")
+            .build()
         Xtruct.ADAPTER.write(protocol, xtruct)
         buffer.readUtf8() shouldBe "" +
                 "{\"__thriftStruct\":\"Xtruct\"," +
@@ -145,14 +145,14 @@ class SimpleJsonProtocolTest {
     @Test
     fun hexBinaryOutputMode() {
         protocol.withBinaryOutputMode(SimpleJsonProtocol.BinaryOutputMode.HEX)
-                .writeBinary(byteArrayOf(0, 127, -1).toByteString())
+            .writeBinary(byteArrayOf(0, 127, -1).toByteString())
         buffer.readUtf8() shouldBe "\"007fff\""
     }
 
     @Test
     fun b64BinaryOutputMode() {
         protocol.withBinaryOutputMode(SimpleJsonProtocol.BinaryOutputMode.BASE_64)
-                .writeBinary("foobar".encodeUtf8())
+            .writeBinary("foobar".encodeUtf8())
         buffer.readUtf8() shouldBe "\"Zm9vYmFy\""
     }
 

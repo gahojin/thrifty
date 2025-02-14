@@ -57,12 +57,12 @@ abstract class KotlinServerConformanceTest(
             ServerProtocol.JSON -> "json"
         }
 
-        TestClient.main(arrayOf(
+        TestClient.main(
             "--host=localhost",
             "--port=$port",
             "--transport=http",
-            "--protocol=$protocol"
-        ))
+            "--protocol=$protocol",
+        )
     }
 }
 

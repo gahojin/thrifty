@@ -63,8 +63,8 @@ class ErrorReporter {
         val sb = StringBuilder()
         for (report in reports_) {
             when (report.level) {
-                ErrorReporter.Level.WARNING -> sb.append("W: ")
-                ErrorReporter.Level.ERROR -> sb.append("E: ")
+                Level.WARNING -> sb.append("W: ")
+                Level.ERROR -> sb.append("E: ")
             }
 
             sb.append(report.message)
@@ -87,9 +87,9 @@ class ErrorReporter {
      * @property message A description of the warning or error condition.
      */
     data class Report(
-            val level: Level,
-            val location: Location,
-            val message: String
+        val level: Level,
+        val location: Location,
+        val message: String
     )
 
     /**

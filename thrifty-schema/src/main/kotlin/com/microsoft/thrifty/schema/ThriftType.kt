@@ -56,7 +56,7 @@ package com.microsoft.thrifty.schema
  * @property name The name of this type.
  */
 abstract class ThriftType internal constructor(
-        open val name: String
+    open val name: String
 ) {
     /**
      * @return true if this type is a built-in type, e.g. i32, bool, etc.
@@ -304,8 +304,9 @@ abstract class ThriftType internal constructor(
 }
 
 internal fun mergeAnnotations(
-        baseAnnotations: Map<String, String>,
-        newAnnotations: Map<String, String>): Map<String, String> {
+    baseAnnotations: Map<String, String>,
+    newAnnotations: Map<String, String>,
+): Map<String, String> {
     return linkedMapOf<String, String>().apply {
         putAll(baseAnnotations)
         putAll(newAnnotations)

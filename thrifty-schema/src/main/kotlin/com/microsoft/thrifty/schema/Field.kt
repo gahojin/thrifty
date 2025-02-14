@@ -28,9 +28,9 @@ import com.microsoft.thrifty.schema.parser.FieldElement
  * represents parameters accepted by or exceptions thrown by service methods.
  */
 class Field private constructor(
-        private val element: FieldElement,
-        private val mixin: UserElementMixin,
-        private var type_: ThriftType? = null
+    private val element: FieldElement,
+    private val mixin: UserElementMixin,
+    private var type_: ThriftType? = null
 ) : UserElement by mixin {
 
     /**

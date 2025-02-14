@@ -26,13 +26,13 @@ package com.microsoft.thrifty.schema
  * @property elementType The type of value contained by instances of this type.
  */
 class SetType internal constructor(
-        val elementType: ThriftType,
-        override val annotations: Map<String, String> = emptyMap()
-) : ThriftType("set<" + elementType.name + ">") {
+    val elementType: ThriftType,
+    override val annotations: Map<String, String> = emptyMap(),
+) : ThriftType("set<${elementType.name}>") {
 
     override val isSet: Boolean = true
 
-    override fun <T> accept(visitor: ThriftType.Visitor<T>): T = visitor.visitSet(this)
+    override fun <T> accept(visitor: Visitor<T>): T = visitor.visitSet(this)
 
     override fun withAnnotations(annotations: Map<String, String>): ThriftType {
         return SetType(elementType, mergeAnnotations(this.annotations, annotations))
@@ -48,12 +48,9 @@ class SetType internal constructor(
      */
     class Builder(
         private var elementType: ThriftType,
-        private var annotations: Map<String, String>
+        private var annotations: Map<String, String>,
     ) {
-        internal constructor(type: SetType) : this(type, type.annotations) {
-            this.elementType = type
-            this.annotations = type.annotations
-        }
+        internal constructor(type: SetType) : this(type, type.annotations)
 
         /**
          * Use the given [elementType] with the set type under construction.

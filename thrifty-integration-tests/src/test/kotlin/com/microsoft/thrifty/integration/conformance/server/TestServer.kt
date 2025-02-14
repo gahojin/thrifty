@@ -88,7 +88,7 @@ class TestServer(private val protocol: ServerProtocol = ServerProtocol.BINARY) :
     }
 
     fun port(): Int {
-        return server!!.address.port
+        return checkNotNull(server).address.port
     }
 
     override fun beforeEach(context: ExtensionContext) {
@@ -104,17 +104,13 @@ class TestServer(private val protocol: ServerProtocol = ServerProtocol.BINARY) :
     }
 
     private fun cleanupServer() {
-        server?.let {
-            it.stop(0)
-            server = null
-        }
+        server?.stop(0)
+        server = null
     }
 
     private fun protocolFactory(transport: Transport): Protocol = when (protocol) {
         ServerProtocol.BINARY -> BinaryProtocol(transport)
         ServerProtocol.COMPACT -> CompactProtocol(transport)
         ServerProtocol.JSON -> JsonProtocol(transport)
-        else -> throw AssertionError("Invalid protocol value: $protocol")
     }
-
 }

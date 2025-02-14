@@ -23,7 +23,6 @@ package com.microsoft.thrifty.schema
 import com.microsoft.thrifty.schema.parser.FieldElement
 import com.microsoft.thrifty.schema.parser.FunctionElement
 import com.microsoft.thrifty.schema.parser.StructElement
-import java.util.LinkedHashMap
 
 /**
  * Represents a method defined by a Thrift service.
@@ -32,30 +31,38 @@ import java.util.LinkedHashMap
  * @property exceptions The exceptions thrown by this method.
  */
 class ServiceMethod private constructor(
-        private val element: FunctionElement,
-        private val mixin: UserElementMixin,
-        val parameters: List<Field> = element.params.map { Field(it, mixin.namespaces) },
-        val exceptions: List<Field> = element.exceptions.map { Field(it, mixin.namespaces) },
-        private var returnType_: ThriftType? = null
+    private val element: FunctionElement,
+    private val mixin: UserElementMixin,
+    val parameters: List<Field> = element.params.map { Field(it, mixin.namespaces) },
+    val exceptions: List<Field> = element.exceptions.map { Field(it, mixin.namespaces) },
+    private var returnType_: ThriftType? = null
 ) : UserElement by mixin {
-    val argsStruct = StructType(StructElement(
-            element.location,
-            FieldNamingPolicy.PASCAL.apply("${element.name}_Args"),
-            StructElement.Type.STRUCT,
-            element.params
-    ), mixin.namespaces)
+    val argsStruct = StructType(
+        element = StructElement(
+            location = element.location,
+            name = FieldNamingPolicy.PASCAL.apply("${element.name}_Args"),
+            type = StructElement.Type.STRUCT,
+            fields = element.params,
+        ),
+        namespaces = mixin.namespaces,
+    )
 
-    val resultStruct = StructType(StructElement(
-            element.location,
-            FieldNamingPolicy.PASCAL.apply("${element.name}_Result"),
-            StructElement.Type.UNION,
-            element.exceptions + if (element.returnType.name == BuiltinType.VOID.name) emptyList() else listOf(FieldElement(
-                    element.location,
-                    0,
-                    element.returnType,
-                    "success"
-            ))
-    ), mixin.namespaces)
+    val resultStruct = StructType(
+        element = StructElement(
+            location = element.location,
+            name = FieldNamingPolicy.PASCAL.apply("${element.name}_Result"),
+            type = StructElement.Type.UNION,
+            fields = element.exceptions + if (element.returnType.name == BuiltinType.VOID.name) emptyList() else listOf(
+                FieldElement(
+                    location = element.location,
+                    fieldId = 0,
+                    type = element.returnType,
+                    name = "success",
+                ),
+            ),
+        ),
+        namespaces = mixin.namespaces,
+    )
 
     /**
      * The type of value returned by this method, or [BuiltinType.VOID].
@@ -69,8 +76,10 @@ class ServiceMethod private constructor(
     val oneWay: Boolean
         get() = element.oneWay
 
-    internal constructor(element: FunctionElement, namespaces: Map<NamespaceScope, String>)
-            : this(element, UserElementMixin(element, namespaces))
+    internal constructor(element: FunctionElement, namespaces: Map<NamespaceScope, String>) : this(
+        element = element,
+        mixin = UserElementMixin(element, namespaces),
+    )
 
     /**
      * Creates a new [Builder] initialized with this method's values.
@@ -102,33 +111,27 @@ class ServiceMethod private constructor(
             linker.addError(location, "oneway methods may not throw exceptions")
         }
 
-        val fieldsById = LinkedHashMap<Int, Field>()
+        val fieldsById = linkedMapOf<Int, Field>()
         for (param in parameters) {
-            val oldParam = fieldsById.put(param.id, param)
-            if (oldParam != null) {
+            fieldsById.putIfAbsent(param.id, param)?.also {
                 val fmt = "Duplicate parameters; param '%s' has the same ID (%s) as param '%s'"
-                linker.addError(param.location, String.format(fmt, param.name, param.id, oldParam.name))
-
-                fieldsById[oldParam.id] = oldParam
+                linker.addError(param.location, String.format(fmt, param.name, param.id, it.name))
             }
         }
 
         fieldsById.clear()
         for (exn in exceptions) {
-            val oldExn = fieldsById.put(exn.id, exn)
-            if (oldExn != null) {
+            fieldsById.putIfAbsent(exn.id, exn)?.also {
                 val fmt = "Duplicate exceptions; exception '%s' has the same ID (%s) as exception '%s'"
-                linker.addError(exn.location, String.format(fmt, exn.name, exn.id, oldExn.name))
-
-                fieldsById[oldExn.id] = oldExn
+                linker.addError(exn.location, String.format(fmt, exn.name, exn.id, it.name))
             }
         }
 
         for (field in exceptions) {
             val type = field.type
             if (type.isStruct) {
-                val struct = type as StructType?
-                if (struct!!.isException) {
+                val struct = type as StructType
+                if (struct.isException) {
                     continue
                 }
             }
@@ -141,7 +144,7 @@ class ServiceMethod private constructor(
      * An object that can create new [ServiceMethod] instances.
      */
     class Builder internal constructor(
-            method: ServiceMethod
+        method: ServiceMethod
     ) : AbstractUserElementBuilder<ServiceMethod, Builder>(method.mixin) {
 
         private val element: FunctionElement = method.element

@@ -29,14 +29,14 @@ import java.nio.file.Paths
  * @property column The column identified by this object, starting with 1.
  */
 class Location private constructor(
-        val base: String,
-        val path: String,
-        val line: Int,
-        val column: Int
+    val base: String,
+    val path: String,
+    val line: Int,
+    val column: Int
 ) {
     init {
         require(line > 0 || line == -1) { "line: $line" }
-        require(column > 0 || column == -1) { "column: $column"}
+        require(column > 0 || column == -1) { "column: $column" }
     }
 
     /**

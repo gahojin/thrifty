@@ -26,13 +26,13 @@ package com.microsoft.thrifty.schema
  * @property elementType The type of value contained within lists of this type.
  */
 class ListType internal constructor(
-        val elementType: ThriftType,
-        override val annotations: Map<String, String> = emptyMap()
-) : ThriftType("list<" + elementType.name + ">") {
+    val elementType: ThriftType,
+    override val annotations: Map<String, String> = emptyMap()
+) : ThriftType("list<${elementType.name}>") {
 
     override val isList: Boolean = true
 
-    override fun <T> accept(visitor: ThriftType.Visitor<T>): T = visitor.visitList(this)
+    override fun <T> accept(visitor: Visitor<T>): T = visitor.visitList(this)
 
     override fun withAnnotations(annotations: Map<String, String>): ThriftType {
         return ListType(elementType, mergeAnnotations(this.annotations, annotations))
@@ -49,8 +49,8 @@ class ListType internal constructor(
      * An object that can build new [ListType] instances.
      */
     class Builder(
-            private var elementType: ThriftType,
-            private var annotations: Map<String, String>
+        private var elementType: ThriftType,
+        private var annotations: Map<String, String>
     ) {
 
         internal constructor(type: ListType) : this(type.elementType, type.annotations)

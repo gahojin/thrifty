@@ -31,8 +31,7 @@ interface ServiceMethodCallback<T> {
      * Invoked upon successful return from a service call with the result, if
      * any.
      *
-     * @param result The method result.  Will be `null` only if [T]
-     * is [Unit].
+     * @param result The method result. Will be `null` only if [T] is [Unit].
      */
     fun onSuccess(result: T)
 
