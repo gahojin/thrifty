@@ -33,7 +33,6 @@ open class KotlinThriftOptions : ThriftOptions(), Serializable {
     enum class ClientStyle {
         NONE,
         DEFAULT,
-        COROUTINE,
     }
 
     override var generateServiceClients: Boolean = true

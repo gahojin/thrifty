@@ -62,7 +62,6 @@ import kotlin.system.exitProcess
  * [--set-type=java.util.HashSet]
  * [--map-type=java.util.HashMap]
  * [--lang=[java|kotlin]]
- * [--service-type=[callback|coroutine]
  * [--kt-file-per-type]
  * [--kt-jvm-static]
  * [--kt-big-enums]
@@ -95,13 +94,6 @@ import kotlin.system.exitProcess
  *
  * `--lang=[java|kotlin]` is optional, defaulting to Kotlin.  When provided, the
  * compiler will generate code in the specified language.
- *
- * `--service-type=[coroutine|callback]` is optional, defaulting to `callback`.  When
- * provided, controls the style of interface generated for Thrift services.  `callback`
- * will result in services whose methods accept a callback object, to which their results
- * will be delivered.  `coroutine` will result in services whose methods are suspend
- * functions, and whose results are returned normally.  `coroutine` implies `--lang=kotlin`
- * and has no effect when Java code is being generated.
  *
  * `--kt-file-per-type` is optional.  When specified, one Kotlin file will be generated
  * for each top-level generated Thrift type.  When absent (the default), all generated
@@ -149,11 +141,6 @@ object ThriftyCompiler {
     enum class Language {
         JAVA,
         KOTLIN,
-    }
-
-    enum class ServiceInterfaceType {
-        CALLBACK,
-        COROUTINE,
     }
 
     private val cli = object : CliktCommand(name = "thrifty-compiler") {
@@ -238,11 +225,6 @@ object ThriftyCompiler {
         val kotlinBigEnums: Boolean by option("--kt-big-enums")
             .flag("--kt-no-big-enums", default = false)
 
-        val serviceType: ServiceInterfaceType by option("--service-type")
-            .help("The style of interface for generated service clients; default is callbacks.")
-            .choice("callback" to ServiceInterfaceType.CALLBACK, "coroutine" to ServiceInterfaceType.COROUTINE)
-            .default(ServiceInterfaceType.CALLBACK)
-
         val thriftFiles: List<Path> by argument()
             .help("All .thrift files to compile")
             .path(mustExist = true, canBeFile = true, canBeDir = false, mustBeReadable = true)
@@ -284,7 +266,6 @@ object ThriftyCompiler {
                 kotlinEmitJvmName -> Language.KOTLIN
                 kotlinEmitJvmStatic -> Language.KOTLIN
                 kotlinBigEnums -> Language.KOTLIN
-                serviceType == ServiceInterfaceType.COROUTINE -> Language.KOTLIN
                 nullabilityAnnotationType != NullabilityAnnotationType.NONE -> Language.JAVA
                 else -> null
             }
@@ -377,10 +358,6 @@ object ThriftyCompiler {
             listTypeName?.let { gen.listClassName(it) }
             setTypeName?.let { gen.setClassName(it) }
             mapTypeName?.let { gen.mapClassName(it) }
-
-            if (serviceType == ServiceInterfaceType.COROUTINE) {
-                gen.coroutineServiceClients()
-            }
 
             TypeProcessorService.kotlinProcessor?.let {
                 gen.processor = it

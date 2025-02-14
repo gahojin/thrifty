@@ -130,9 +130,8 @@ abstract class GenerateThriftSourcesWorkAction : WorkAction<GenerateThriftSource
 
         if (opts.isGenerateServiceClients) {
             when (kopt.serviceClientStyle) {
-                ClientStyle.DEFAULT -> {}
+                ClientStyle.DEFAULT -> Unit
                 ClientStyle.NONE -> gen.omitServiceClients()
-                ClientStyle.COROUTINE -> gen.coroutineServiceClients()
             }
         } else {
             gen.omitServiceClients()

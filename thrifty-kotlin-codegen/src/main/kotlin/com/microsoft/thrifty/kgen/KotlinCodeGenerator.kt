@@ -141,7 +141,6 @@ class KotlinCodeGenerator(
     private var shouldImplementStruct: Boolean = true
     private var parcelize: Boolean = false
     private var omitServiceClients: Boolean = false
-    private var coroutineServiceClients: Boolean = false
     private var emitJvmName: Boolean = false
     private var emitJvmStatic: Boolean = false
     private var emitBigEnums: Boolean = false
@@ -241,10 +240,6 @@ class KotlinCodeGenerator(
         shouldImplementStruct = false
     }
 
-    fun coroutineServiceClients(): KotlinCodeGenerator = apply {
-        coroutineServiceClients = true
-    }
-
     fun generateServer(): KotlinCodeGenerator = apply {
         generateServer = true
     }
@@ -306,15 +301,8 @@ class KotlinCodeGenerator(
 
         if (!omitServiceClients) {
             schema.services.forEach {
-                val iface: TypeSpec
-                val impl: TypeSpec
-                if (coroutineServiceClients) {
-                    iface = generateCoroServiceInterface(it)
-                    impl = generateCoroServiceImplementation(schema, it, iface)
-                } else {
-                    iface = generateServiceInterface(it)
-                    impl = generateServiceImplementation(schema, it, iface)
-                }
+                val iface = generateCoroServiceInterface(it)
+                val impl = generateCoroServiceImplementation(schema, it, iface)
                 specsByNamespace.put(it.kotlinNamespace, iface)
                 specsByNamespace.put(it.kotlinNamespace, impl)
             }
@@ -1697,100 +1685,6 @@ class KotlinCodeGenerator(
     // endregion Constants
 
     // region Services
-
-    internal fun generateServiceInterface(serviceType: ServiceType): TypeSpec {
-        val type = TypeSpec.interfaceBuilder(serviceType.name).apply {
-            if (serviceType.hasJavadoc) addKdoc("%L", serviceType.documentation)
-            if (serviceType.isDeprecated) addAnnotation(makeDeprecated())
-
-            serviceType.extendsService?.let { baseType ->
-                addSuperinterface(baseType.typeName)
-            }
-        }
-
-        val allocator = nameAllocators[serviceType]
-        for (method in serviceType.methods) {
-            val name = allocator[method]
-            val funSpec = FunSpec.builder(name).apply {
-                addModifiers(KModifier.ABSTRACT)
-
-                if (method.hasJavadoc) addKdoc("%L", method.documentation)
-                if (method.isDeprecated) addAnnotation(makeDeprecated())
-            }
-
-            val methodNameAllocator = nameAllocators[method]
-            for (param in method.parameters) {
-                val paramName = methodNameAllocator[param]
-                val paramSpec = ParameterSpec.builder(paramName, param.type.typeName).apply {
-                    if (param.isDeprecated) addAnnotation(makeDeprecated())
-                }
-                funSpec.addParameter(paramSpec.build())
-            }
-
-            val callbackName = methodNameAllocator[Tags.CALLBACK]
-            val callbackResultType = method.returnType.typeName
-            val callbackType = ServiceMethodCallback::class
-                    .asTypeName()
-                    .parameterizedBy(callbackResultType)
-
-            funSpec.addParameter(callbackName, callbackType)
-
-            type.addFunction(funSpec.build())
-        }
-
-        return type.build()
-    }
-
-    internal fun generateServiceImplementation(schema: Schema, serviceType: ServiceType, serviceInterface: TypeSpec): TypeSpec {
-        val type = TypeSpec.classBuilder("${serviceType.name}Client").apply {
-            val baseType = serviceType.extendsService as? ServiceType
-            val baseClassName = baseType?.let {
-                ClassName(baseType.kotlinNamespace, "${it.name}Client")
-            } ?: AsyncClientBase::class.asClassName()
-
-            superclass(baseClassName)
-            addSuperinterface(ClassName(serviceType.kotlinNamespace, serviceType.name))
-
-            // If any servces extend this, then this needs to be open.
-            if (schema.services.any { it.extendsService == serviceType }) {
-                addModifiers(KModifier.OPEN)
-            }
-
-            primaryConstructor(FunSpec.constructorBuilder()
-                .addParameter("protocol", Protocol::class)
-                .addParameter("listener", AsyncClientBase.Listener::class)
-                .build())
-
-            addSuperclassConstructorParameter("protocol", Protocol::class)
-            addSuperclassConstructorParameter("listener", AsyncClientBase.Listener::class)
-        }
-
-        for ((index, interfaceFun) in serviceInterface.funSpecs.withIndex()) {
-            val method = serviceType.methods[index]
-            val call = buildCallType(schema, method)
-            val spec = FunSpec.builder(interfaceFun.name).apply {
-                addModifiers(KModifier.OVERRIDE)
-                for (param in interfaceFun.parameters) {
-                    addParameter(param)
-                }
-
-                addCode {
-                    add("this.enqueue(%N(", call)
-                    for ((ix, param) in interfaceFun.parameters.withIndex()) {
-                        if (ix > 0) {
-                            add(", ")
-                        }
-                        add("%N", param.name)
-                    }
-                    add("))")
-                }
-            }
-            type.addType(call)
-            type.addFunction(spec.build())
-        }
-
-        return type.build()
-    }
 
     internal fun generateProcessorImplementation(schema: Schema, serviceType: ServiceType, serviceInterface: TypeSpec): TypeSpec {
         val serverTypeName = "${serviceType.name}Processor"
