@@ -34,7 +34,6 @@ import com.microsoft.thrifty.schema.TypedefType
 import com.microsoft.thrifty.schema.UserType
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterizedTypeName
-import java.util.Deque
 
 /**
  * Generates Java code to read a field's value from an open Protocol object.

@@ -30,7 +30,7 @@ import com.microsoft.thrifty.schema.parser.FieldElement
 class Field private constructor(
     private val element: FieldElement,
     private val mixin: UserElementMixin,
-    private var type_: ThriftType? = null
+    private var type_: ThriftType? = null,
 ) : UserElement by mixin {
 
     /**

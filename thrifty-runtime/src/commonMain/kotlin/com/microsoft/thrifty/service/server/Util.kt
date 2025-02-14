@@ -27,7 +27,7 @@ import com.microsoft.thrifty.service.TMessageType
 suspend fun MessageMetadata.reply(
     output: Protocol,
     type: Byte = TMessageType.REPLY,
-    block: suspend Protocol.() -> Unit
+    block: suspend Protocol.() -> Unit,
 ) {
     output.writeMessageBegin(name, type, seqId)
     block(output)

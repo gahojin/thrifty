@@ -23,7 +23,7 @@ package com.microsoft.thrifty.schema.render
 import com.microsoft.thrifty.schema.*
 import java.io.File
 
-internal val NEWLINE = System.getProperty("line.separator")!!
+internal val NEWLINE = System.lineSeparator()
 internal val DOUBLE_NEWLINE = "$NEWLINE$NEWLINE"
 
 /**
@@ -56,10 +56,10 @@ internal val Field.requiredness: String
  * @return the unpacked [ThriftType].
  */
 internal fun ThriftType.unpack(): Set<ThriftType> {
-    return when {
-        this is ListType -> setOf(elementType)
-        this is SetType -> setOf(elementType)
-        this is MapType -> setOf(keyType, valueType)
+    return when (this) {
+        is ListType -> setOf(elementType)
+        is SetType -> setOf(elementType)
+        is MapType -> setOf(keyType, valueType)
         else -> setOf(this)
     }
 }
@@ -80,7 +80,7 @@ internal fun <T, A : Appendable> Iterable<T>.joinEachTo(
     postfix: CharSequence = "",
     limit: Int = -1,
     truncated: CharSequence = "...",
-    action: ((A, T) -> Unit)? = null
+    action: ((A, T) -> Unit)? = null,
 ): A {
     buffer.append(prefix)
     var count = 0

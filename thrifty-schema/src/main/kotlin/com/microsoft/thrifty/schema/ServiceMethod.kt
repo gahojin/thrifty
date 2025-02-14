@@ -35,7 +35,7 @@ class ServiceMethod private constructor(
     private val mixin: UserElementMixin,
     val parameters: List<Field> = element.params.map { Field(it, mixin.namespaces) },
     val exceptions: List<Field> = element.exceptions.map { Field(it, mixin.namespaces) },
-    private var returnType_: ThriftType? = null
+    private var returnType_: ThriftType? = null,
 ) : UserElement by mixin {
     val argsStruct = StructType(
         element = StructElement(

@@ -27,7 +27,7 @@ package com.microsoft.thrifty.schema
  */
 class ListType internal constructor(
     val elementType: ThriftType,
-    override val annotations: Map<String, String> = emptyMap()
+    override val annotations: Map<String, String> = emptyMap(),
 ) : ThriftType("list<${elementType.name}>") {
 
     override val isList: Boolean = true
@@ -50,7 +50,7 @@ class ListType internal constructor(
      */
     class Builder(
         private var elementType: ThriftType,
-        private var annotations: Map<String, String>
+        private var annotations: Map<String, String>,
     ) {
 
         internal constructor(type: ListType) : this(type.elementType, type.annotations)

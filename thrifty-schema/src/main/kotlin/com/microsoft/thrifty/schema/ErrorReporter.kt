@@ -89,7 +89,7 @@ class ErrorReporter {
     data class Report(
         val level: Level,
         val location: Location,
-        val message: String
+        val message: String,
     )
 
     /**
@@ -104,6 +104,6 @@ class ErrorReporter {
         /**
          * An error indicates that loading cannot proceed.
          */
-        ERROR
+        ERROR,
     }
 }

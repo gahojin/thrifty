@@ -29,7 +29,7 @@ import com.microsoft.thrifty.schema.parser.*
 class Constant private constructor(
     private val element: ConstElement,
     private val mixin: UserElementMixin,
-    private var type_: ThriftType? = null
+    private var type_: ThriftType? = null,
 ) : UserElement by mixin {
 
     /**

@@ -34,5 +34,5 @@ package com.microsoft.thrifty.gradle
 enum class FieldNameStyle {
     DEFAULT,
     JAVA,
-    PASCAL
+    PASCAL,
 }

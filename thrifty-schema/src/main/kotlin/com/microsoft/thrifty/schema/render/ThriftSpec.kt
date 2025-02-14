@@ -37,7 +37,7 @@ data class ThriftSpec internal constructor(
     val filePath: String,
     val namespaces: Map<NamespaceScope, String>,
     val includes: List<Include>,
-    val schema: Schema
+    val schema: Schema,
 ) {
 
     /**

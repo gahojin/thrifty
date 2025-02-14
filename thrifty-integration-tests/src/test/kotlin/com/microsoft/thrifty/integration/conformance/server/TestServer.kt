@@ -39,7 +39,6 @@ import org.junit.jupiter.api.extension.ExtensionContext
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
 
-
 class TestServer(private val protocol: ServerProtocol = ServerProtocol.BINARY) : Extension, BeforeEachCallback,
     AfterEachCallback {
     val processor = ThriftTestProcessor(ThriftTestHandler())

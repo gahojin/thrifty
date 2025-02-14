@@ -186,7 +186,7 @@ class Loader {
     private fun loadFileRecursively(
         path: Path,
         loadedFiles: MutableMap<Path, ThriftFileElement>,
-        sourceElement: ThriftFileElement? = null
+        sourceElement: ThriftFileElement? = null,
     ) {
         val dir: Path?
 
@@ -238,7 +238,7 @@ class Loader {
         for (root in includePaths.asSequence().drop(numPrependedPaths)) {
             val relative = try {
                 root.relativize(path)
-            } catch (e: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
                 continue
             }
 

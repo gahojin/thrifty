@@ -2,6 +2,7 @@
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
  *
@@ -62,7 +63,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class ThriftyCodeGenerator(
     private val schema: Schema,
-    namingPolicy: FieldNamingPolicy = FieldNamingPolicy.DEFAULT
+    namingPolicy: FieldNamingPolicy = FieldNamingPolicy.DEFAULT,
 ) {
     private val typeResolver = TypeResolver()
     private val fieldNamer: FieldNamer = FieldNamer(namingPolicy)

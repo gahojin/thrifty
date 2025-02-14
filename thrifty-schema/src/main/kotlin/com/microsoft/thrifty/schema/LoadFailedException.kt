@@ -28,5 +28,5 @@ package com.microsoft.thrifty.schema
  */
 class LoadFailedException(
     cause: Throwable,
-    val errorReporter: ErrorReporter
+    val errorReporter: ErrorReporter,
 ) : Exception(errorReporter.formattedReports().joinToString("\n"), cause)

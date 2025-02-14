@@ -22,7 +22,6 @@
 package com.microsoft.thrifty.testing;
 
 import com.microsoft.thrifty.test.gen.*;
-import org.apache.thrift.TApplicationException;
 import org.apache.thrift.TException;
 import org.apache.thrift.TSerializer;
 import org.apache.thrift.protocol.*;

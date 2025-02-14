@@ -2,6 +2,7 @@
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
  *
@@ -40,6 +41,7 @@ import com.microsoft.thrifty.service.TMessageType
 import com.microsoft.thrifty.util.ObfuscationUtil
 import com.microsoft.thrifty.util.ProtocolUtil
 import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.TypeName
 import okio.ByteString
 
 import java.io.IOException
@@ -50,13 +52,13 @@ import java.util.Collections
  * JavaPoet type names used for code generation.
  */
 internal object TypeNames {
-    val BOOLEAN = ClassName.BOOLEAN.box()
-    val BYTE = ClassName.BYTE.box()
-    val SHORT = ClassName.SHORT.box()
-    val INTEGER = ClassName.INT.box()
-    val LONG = ClassName.LONG.box()
-    val DOUBLE = ClassName.DOUBLE.box()
-    val VOID = ClassName.VOID // Don't box void, it is only used for methods returning nothing.
+    val BOOLEAN: TypeName = ClassName.BOOLEAN.box()
+    val BYTE: TypeName = ClassName.BYTE.box()
+    val SHORT: TypeName = ClassName.SHORT.box()
+    val INTEGER: TypeName = ClassName.INT.box()
+    val LONG: TypeName = ClassName.LONG.box()
+    val DOUBLE: TypeName = ClassName.DOUBLE.box()
+    val VOID: TypeName = ClassName.VOID // Don't box void, it is only used for methods returning nothing.
 
     val COLLECTIONS = classNameOf<Collections>()
     val STRING = classNameOf<String>()
@@ -150,12 +152,12 @@ enum class NullabilityAnnotationType(
 ) {
     NONE(null, null),
     ANDROID_SUPPORT(
-            notNullClassName = TypeNames.ANDROID_SUPPORT_NOT_NULL,
-            nullableClassName = TypeNames.ANDROID_SUPPORT_NULLABLE
+        notNullClassName = TypeNames.ANDROID_SUPPORT_NOT_NULL,
+        nullableClassName = TypeNames.ANDROID_SUPPORT_NULLABLE,
     ),
     ANDROIDX(
-            notNullClassName = TypeNames.ANDROIDX_NOT_NULL,
-            nullableClassName = TypeNames.ANDROIDX_NULLABLE
+        notNullClassName = TypeNames.ANDROIDX_NOT_NULL,
+        nullableClassName = TypeNames.ANDROIDX_NULLABLE,
     )
 }
 

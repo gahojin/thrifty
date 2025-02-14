@@ -32,7 +32,7 @@ class Location private constructor(
     val base: String,
     val path: String,
     val line: Int,
-    val column: Int
+    val column: Int,
 ) {
     init {
         require(line > 0 || line == -1) { "line: $line" }

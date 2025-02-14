@@ -39,7 +39,7 @@ internal interface SymbolTable {
 internal class Linker(
     private val environment: LinkEnvironment,
     private val program: Program,
-    private val reporter: ErrorReporter
+    private val reporter: ErrorReporter,
 ) : SymbolTable {
 
     private val typesByName = linkedMapOf<String, ThriftType>()

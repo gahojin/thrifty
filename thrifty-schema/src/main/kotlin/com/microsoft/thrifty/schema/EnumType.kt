@@ -34,7 +34,7 @@ class EnumType : UserType {
 
     internal constructor(
         element: EnumElement,
-        namespaces: Map<NamespaceScope, String>
+        namespaces: Map<NamespaceScope, String>,
     ) : super(UserElementMixin(element, namespaces)) {
         this.members = element.members.map { EnumMember(it, namespaces) }
     }
