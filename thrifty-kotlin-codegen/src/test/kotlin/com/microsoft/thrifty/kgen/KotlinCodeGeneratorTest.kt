@@ -375,14 +375,12 @@ class KotlinCodeGeneratorTest {
             |const map<i32, list<string>> Maps = {1: [], 2: ["foo"]}
         """.trimMargin()
 
-        val text = generate(thrift) {
+        val file = generate(thrift) {
             mapClassName("android.support.v4.util.ArrayMap")
             emitFileComment(false)
         }
-                .single()
-                .toString()
 
-        text shouldBe """
+        file.single().toString() shouldBe """
             |package test.map_consts
             |
             |import android.support.v4.util.ArrayMap
@@ -450,6 +448,22 @@ class KotlinCodeGeneratorTest {
         val file = generate(thrift) { omitServiceClients() }
 
         file shouldBe emptyList()
+    }
+
+    @Test
+    fun `omit struct implements`() {
+        val thrift = """
+            |namespace kt test.omit_service_clients
+            |
+            |struct Foo { 1: required i32 Number; 2: optional string Text }
+        """.trimMargin()
+
+        val file = generate(thrift) { omitStructImplements() }
+
+        file.single().toString() should contain("""
+            |) {
+            |  private class FooAdapter : Adapter<Foo> {
+        """.trimMargin())
     }
 
     @Test

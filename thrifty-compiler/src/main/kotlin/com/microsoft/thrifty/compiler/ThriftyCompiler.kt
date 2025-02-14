@@ -211,6 +211,10 @@ object ThriftyCompiler {
             .help("When set, don't generate service clients")
             .flag(default = false)
 
+        val omitStructImplements: Boolean by option("--omit-struct-implements")
+            .help("When set, don't generate struct implements")
+            .flag(default = false)
+
         val generateServer: Boolean by option("--experimental-kt-generate-server")
             .help("When set, generate kotlin server implementation (EXPERIMENTAL)")
             .flag(default = false)
@@ -332,8 +336,16 @@ object ThriftyCompiler {
                 gen.parcelize()
             }
 
+            if (emitParcelable) {
+                gen.parcelize()
+            }
+
             if (omitServiceClients) {
                 gen.omitServiceClients()
+            }
+
+            if (omitStructImplements) {
+                gen.omitStructImplement()
             }
 
             if (generateServer) {
