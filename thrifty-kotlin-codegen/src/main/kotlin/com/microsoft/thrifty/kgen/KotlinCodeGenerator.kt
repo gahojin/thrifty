@@ -138,9 +138,7 @@ class KotlinCodeGenerator(
         FILE_PER_TYPE,
     }
 
-    // TODO: Add a compiler flag to omit struct generation
     private var shouldImplementStruct: Boolean = true
-
     private var parcelize: Boolean = false
     private var omitServiceClients: Boolean = false
     private var coroutineServiceClients: Boolean = false
@@ -221,6 +219,7 @@ class KotlinCodeGenerator(
     fun filePerNamespace(): KotlinCodeGenerator = apply { outputStyle = OutputStyle.FILE_PER_NAMESPACE }
     fun filePerType(): KotlinCodeGenerator = apply { outputStyle = OutputStyle.FILE_PER_TYPE }
     fun parcelize(): KotlinCodeGenerator = apply { parcelize = true }
+    fun omitStructImplement(): KotlinCodeGenerator = apply { shouldImplementStruct = false }
 
     fun listClassName(name: String): KotlinCodeGenerator = apply {
         listClassName = ClassName.bestGuess(name)
@@ -236,6 +235,10 @@ class KotlinCodeGenerator(
 
     fun omitServiceClients(): KotlinCodeGenerator = apply {
         omitServiceClients = true
+    }
+
+    fun omitStructImplements(): KotlinCodeGenerator = apply {
+        shouldImplementStruct = false
     }
 
     fun coroutineServiceClients(): KotlinCodeGenerator = apply {
