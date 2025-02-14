@@ -45,12 +45,12 @@
 package com.microsoft.thrifty.protocol
 
 import com.microsoft.thrifty.TType
-import com.microsoft.thrifty.internal.ProtocolException
 import com.microsoft.thrifty.transport.Transport
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
 import okio.IOException
+import okio.ProtocolException
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic

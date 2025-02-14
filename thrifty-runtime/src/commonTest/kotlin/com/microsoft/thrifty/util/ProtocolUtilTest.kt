@@ -21,7 +21,6 @@
 package com.microsoft.thrifty.util
 
 import com.microsoft.thrifty.TType
-import com.microsoft.thrifty.internal.ProtocolException
 import com.microsoft.thrifty.protocol.BinaryProtocol
 import com.microsoft.thrifty.protocol.Xtruct
 import com.microsoft.thrifty.transport.BufferTransport
@@ -31,6 +30,7 @@ import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.throwable.shouldHaveMessage
 import okio.Buffer
 import okio.ByteString.Companion.encodeUtf8
+import okio.ProtocolException
 import kotlin.test.Test
 
 class ProtocolUtilTest {

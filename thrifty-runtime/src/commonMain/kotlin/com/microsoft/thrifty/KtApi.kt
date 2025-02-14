@@ -55,9 +55,7 @@ fun <S : BufferedSource> S.transport() = object : Transport {
 
     override fun write(buffer: ByteArray, offset: Int, count: Int) = error("read-only transport")
 
-    override fun flush() {
-        // No-op
-    }
+    override fun flush() = Unit
 }
 
 /**

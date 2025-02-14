@@ -22,9 +22,9 @@
 package com.microsoft.thrifty.util
 
 import com.microsoft.thrifty.TType
-import com.microsoft.thrifty.internal.ProtocolException
 import com.microsoft.thrifty.protocol.Protocol
 import okio.IOException
+import okio.ProtocolException
 import kotlin.jvm.JvmStatic
 
 object ProtocolUtil {

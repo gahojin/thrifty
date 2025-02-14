@@ -21,11 +21,11 @@
  */
 package com.microsoft.thrifty.protocol
 
-import com.microsoft.thrifty.internal.ProtocolException
 import com.microsoft.thrifty.transport.Transport
 import okio.Buffer
 import okio.ByteString
 import okio.IOException
+import okio.ProtocolException
 
 /**
  * A protocol that maps Thrift data to idiomatic JSON.

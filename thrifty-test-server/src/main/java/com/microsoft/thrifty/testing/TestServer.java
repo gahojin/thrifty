@@ -29,17 +29,13 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-public class TestServer implements Extension,
-        BeforeAllCallback,
-        AfterAllCallback {
+public class TestServer implements Extension, BeforeAllCallback, AfterAllCallback {
     private TestServerInterface serverImplementation;
 
     private ServerProtocol protocol;
     private ServerTransport transport;
 
-
     private Class<?> testClass;
-
 
     public ServerProtocol getProtocol() {
         return protocol;
@@ -74,7 +70,7 @@ public class TestServer implements Extension,
     }
 
     @Override
-    public void afterAll(ExtensionContext context) throws Exception {
+    public void afterAll(ExtensionContext context) {
         serverImplementation.close();
     }
 
@@ -95,6 +91,4 @@ public class TestServer implements Extension,
                 throw new AssertionError("Invalid protocol value: " + protocol);
         }
     }
-
-
 }

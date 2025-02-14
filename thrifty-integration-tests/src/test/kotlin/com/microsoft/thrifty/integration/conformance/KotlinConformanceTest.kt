@@ -49,6 +49,8 @@ import com.microsoft.thrifty.transport.Transport
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.beInstanceOf
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
 import okio.ByteString
 import okio.ByteString.Companion.encodeUtf8
 import org.junit.jupiter.api.AfterAll
@@ -129,7 +131,7 @@ abstract class KotlinConformanceTest {
                         .build()
                         .apply { connect() }
 
-                ServerTransport.HTTP -> HttpTransport("http://localhost:${testServer.port()}/test/service")
+                ServerTransport.HTTP -> HttpTransport("http://localhost:${testServer.port()}/test/service", HttpClient(CIO))
             }
         }
 

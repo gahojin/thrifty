@@ -111,6 +111,9 @@ kotlin {
                 api libs.kotlinx.coroutines.core
 
                 implementation libs.kotlinx.atomicfu
+                implementation libs.ktor.client.core
+                implementation libs.ktor.network
+                implementation libs.ktor.network.tls
             }
         }
 

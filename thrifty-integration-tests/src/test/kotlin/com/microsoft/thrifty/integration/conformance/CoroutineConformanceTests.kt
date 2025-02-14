@@ -48,6 +48,8 @@ import com.microsoft.thrifty.transport.SocketTransport
 import com.microsoft.thrifty.transport.Transport
 import io.kotest.assertions.fail
 import io.kotest.matchers.shouldBe
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -114,7 +116,6 @@ abstract class CoroutineConformanceTests {
             this.protocol = createProtocol(this.transport)
             this.client = ThriftTestClient(protocol, object : AsyncClientBase.Listener {
                 override fun onTransportClosed() {
-
                 }
 
                 override fun onError(error: Throwable) {
@@ -131,7 +132,7 @@ abstract class CoroutineConformanceTests {
                         .build()
                         .apply { connect() }
 
-                ServerTransport.HTTP -> HttpTransport("http://localhost:${testServer.port()}/test/service")
+                ServerTransport.HTTP -> HttpTransport("http://localhost:${testServer.port()}/test/service", HttpClient(CIO))
             }
         }
 

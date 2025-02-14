@@ -123,7 +123,6 @@ public abstract class ConformanceBase {
         client = new ThriftTestClient(protocol, new AsyncClientBase.Listener() {
             @Override
             public void onTransportClosed() {
-
             }
 
             @Override
