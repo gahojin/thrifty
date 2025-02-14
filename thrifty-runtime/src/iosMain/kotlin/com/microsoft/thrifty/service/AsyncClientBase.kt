@@ -22,14 +22,12 @@ package com.microsoft.thrifty.service
 
 import KT62102Workaround.dispatch_attr_serial
 import com.microsoft.thrifty.Struct
-import com.microsoft.thrifty.ThriftException
 import com.microsoft.thrifty.protocol.Protocol
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.convert
 import okio.Closeable
 import okio.IOException
-import platform.darwin.DISPATCH_QUEUE_SERIAL
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_global_queue
 import platform.darwin.dispatch_queue_create
@@ -137,6 +135,7 @@ actual open class AsyncClientBase protected actual constructor(
         }
     }
 
+    @Throws(IOException::class)
     override fun close() = close(error = null)
 
     private fun close(error: Exception?) {

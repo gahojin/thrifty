@@ -1,7 +1,8 @@
 4.0.0 (unreleased)
 ------------------
-- 依存ライブラリアップデート
-- 互換性確認テスト以外のJavaコードをKotlinに移行
+- Change: 依存ライブラリアップデート
+- BREAK: 互換性確認テスト以外のJavaコードをKotlinに移行
+- Change(runtime): Atomicクラスをatomicfuに置き換え
 
 3.1.0 (released 13 December 2022)
 ------------------

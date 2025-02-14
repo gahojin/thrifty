@@ -2,6 +2,7 @@
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
  *
@@ -43,8 +44,8 @@ import java.util.concurrent.RejectedExecutionException
  */
 @Suppress("UNCHECKED_CAST")
 actual open class AsyncClientBase protected actual constructor(
-        protocol: Protocol,
-        private val listener: Listener
+    protocol: Protocol,
+    private val listener: Listener,
 ) : ClientBase(protocol), Closeable {
     /**
      * Exposes important events in the client's lifecycle.
@@ -52,7 +53,6 @@ actual open class AsyncClientBase protected actual constructor(
     actual interface Listener {
         /**
          * Invoked when the client connection has been closed.
-         *
          *
          * After invocation, the client is no longer usable.  All subsequent
          * method call attempts will result in an immediate exception on the
@@ -63,11 +63,9 @@ actual open class AsyncClientBase protected actual constructor(
         /**
          * Invoked when a client-level error has occurred.
          *
-         *
          * This generally indicates a connectivity or protocol error,
          * and is distinct from errors returned as part of normal service
          * operation.
-         *
          *
          * The client is guaranteed to have been closed and shut down
          * by the time this method is invoked.
@@ -91,7 +89,10 @@ actual open class AsyncClientBase protected actual constructor(
      * An unbounded queue holding RPC calls awaiting execution.
      */
     private val pendingCalls: BlockingQueue<MethodCall<*>> = LinkedBlockingQueue()
-    private val workerThread: WorkerThread
+    private val workerThread: WorkerThread = WorkerThread().apply {
+        isDaemon = true
+        start()
+    }
 
     /**
      * When invoked by a derived instance, places the given call in a queue to
@@ -100,7 +101,7 @@ actual open class AsyncClientBase protected actual constructor(
      * @param methodCall the remote method call to be invoked
      */
     protected actual fun enqueue(methodCall: MethodCall<*>) {
-        check(running.get()) { "Cannot write to a closed service client" }
+        check(running.value) { "Cannot write to a closed service client" }
         check(pendingCalls.offer(methodCall)) {
             // This should never happen with an unbounded queue
             "Call queue is full"
@@ -108,9 +109,7 @@ actual open class AsyncClientBase protected actual constructor(
     }
 
     @Throws(IOException::class)
-    override fun close() {
-        close(null)
-    }
+    override fun close() = close(null)
 
     private fun close(error: Throwable?) {
         if (!running.compareAndSet(true, false)) {
@@ -125,7 +124,7 @@ actual open class AsyncClientBase protected actual constructor(
             for (call in incompleteCalls) {
                 try {
                     fail(call, e)
-                } catch (ignored: Exception) {
+                } catch (_: Exception) {
                     // nope
                 }
             }
@@ -141,7 +140,7 @@ actual open class AsyncClientBase protected actual constructor(
             // Shut down, but let queued tasks finish.
             // Don't terminate!
             callbackExecutor.shutdown()
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
             // nope
         }
     }
@@ -149,7 +148,7 @@ actual open class AsyncClientBase protected actual constructor(
     private inner class WorkerThread : Thread() {
         override fun run() {
             var error: Throwable? = null
-            while (running.get()) {
+            while (running.value) {
                 try {
                     invokeRequest()
                 } catch (e: Throwable) {
@@ -159,7 +158,7 @@ actual open class AsyncClientBase protected actual constructor(
             }
             try {
                 close(error)
-            } catch (ignored: Throwable) {
+            } catch (_: Throwable) {
                 // nope
             }
         }
@@ -167,7 +166,7 @@ actual open class AsyncClientBase protected actual constructor(
         @Throws(ThriftException::class, IOException::class, InterruptedException::class)
         private fun invokeRequest() {
             val call = pendingCalls.take()
-            if (!running.get()) {
+            if (!running.value) {
                 fail(call, CancellationException())
                 return
             }
@@ -200,12 +199,12 @@ actual open class AsyncClientBase protected actual constructor(
                 } else {
                     complete(call, result)
                 }
-            } catch (e: RejectedExecutionException) {
+            } catch (_: RejectedExecutionException) {
                 // The client has been closed out from underneath; as there will
                 // be no further use for this thread, no harm in running it
                 // synchronously.
                 if (error != null) {
-                    call.callback!!.onError(error)
+                    call.callback?.onError(error)
                 } else {
                     (call.callback as ServiceMethodCallback<Any?>).onSuccess(result)
                 }
@@ -218,12 +217,6 @@ actual open class AsyncClientBase protected actual constructor(
     }
 
     private fun fail(call: MethodCall<*>, error: Throwable) {
-        callbackExecutor.execute { call.callback!!.onError(error) }
-    }
-
-    init {
-        workerThread = WorkerThread()
-        workerThread.isDaemon = true
-        workerThread.start()
+        callbackExecutor.execute { call.callback?.onError(error) }
     }
 }

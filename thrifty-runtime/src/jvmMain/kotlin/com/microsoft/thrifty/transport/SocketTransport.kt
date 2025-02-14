@@ -29,7 +29,7 @@ import javax.net.SocketFactory
 import javax.net.ssl.SSLSocketFactory
 
 actual class SocketTransport actual constructor(
-        builder: Builder
+    builder: Builder,
 ) : Transport {
     private val host = builder.host
     private val port = builder.port
@@ -134,19 +134,19 @@ actual class SocketTransport actual constructor(
         if (input != null) {
             try {
                 input.close()
-            } catch (ignored: IOException) {
+            } catch (_: IOException) {
             }
         }
         if (output != null) {
             try {
                 output.close()
-            } catch (ignored: IOException) {
+            } catch (_: IOException) {
             }
         }
         if (socket != null) {
             try {
                 socket.close()
-            } catch (ignored: IOException) {
+            } catch (_: IOException) {
             }
         }
     }

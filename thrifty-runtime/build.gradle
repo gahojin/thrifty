@@ -109,6 +109,8 @@ kotlin {
                 api libs.kotlin.stdlib
                 api libs.okio
                 api libs.kotlinx.coroutines.core
+
+                implementation libs.kotlinx.atomicfu
             }
         }
 
