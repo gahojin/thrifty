@@ -28,4 +28,3 @@ Option | Description
 `--set-type=[classname]` | A java.util.Set implementation to be used wherever sets are instantiated in generated code.
 `--map-type=[classname]` | A java.util.Map implementation, as above.
 `--kt-file-per-type` | Specifies that one .kt file should be generated per Kotlin type.  The default is for all code to be written to a single file.
-`--service-type=[callback,coroutine]` | Optional.  Defines the style of interface generated for Thrift service clients.  The default is callback-based.

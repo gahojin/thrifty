@@ -130,7 +130,6 @@ def kompileCoroutineTestThrift = tasks.register("kompileCoroutineTestThrift", Ja
             "--out=$projectDir/build/generated-src/thrifty-kotlin-coro/kotlin",
             "--kt-file-per-type",
             "--kt-emit-jvmname",
-            "--service-type=coroutine",
             "$projectDir/CoroutineClientTest.thrift"
     ]
 }

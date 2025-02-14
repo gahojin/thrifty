@@ -312,10 +312,10 @@ class KotlinCodeGeneratorTest {
         file.shouldCompile()
         val svc = file.members.first { it is TypeSpec && it.name == "Foo" } as TypeSpec
         val method = svc.funSpecs.single()
+        method.modifiers.any { it == KModifier.SUSPEND } shouldBe true
         method.name shouldBe "doIt"
-        method.parameters.single().type shouldBe ServiceMethodCallback::class
-                .asTypeName()
-                .parameterizedBy(ClassName("test.typedefs", "TheNumber"))
+        method.parameters shouldHaveSize 0
+        method.returnType shouldBe ClassName("test.typedefs", "TheNumber")
     }
 
     @Test
@@ -407,7 +407,7 @@ class KotlinCodeGeneratorTest {
             |}
         """.trimMargin()
 
-        val file = generate(thrift) { coroutineServiceClients() }
+        val file = generate(thrift)
         file.shouldCompile()
 
         file.single().toString() should contain("""
@@ -537,7 +537,7 @@ class KotlinCodeGeneratorTest {
             |}
         """.trimMargin()
 
-        val file = generate(thrift) { coroutineServiceClients() }
+        val file = generate(thrift)
         file.shouldCompile()
 
         file.single().toString() should contain("""
@@ -558,7 +558,7 @@ class KotlinCodeGeneratorTest {
             |}
         """.trimMargin()
 
-        val file = generate(thrift) { coroutineServiceClients() }
+        val file = generate(thrift)
         file.shouldCompile()
 
         file.single().toString() should contain("""
@@ -734,7 +734,7 @@ class KotlinCodeGeneratorTest {
             |}
         """.trimMargin()
 
-        val file = generate(thrift) { coroutineServiceClients() }
+        val file = generate(thrift)
         file.shouldCompile()
 
         file.single().toString() should contain("""
@@ -1133,9 +1133,8 @@ class KotlinCodeGeneratorTest {
             |}
         """.trimMargin()
 
-        val files = generate(thrift) {
-            coroutineServiceClients()
-        }
+        val files = generate(thrift)
+
         files.shouldCompile()
 
         println(files)

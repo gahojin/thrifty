@@ -317,27 +317,10 @@ There are a few new command-line options to control Kotlin code generation:
 ```
 java -jar thrifty-compiler.jar \
     --lang=kotlin \
-    --service-type=coroutine \
     --kt-file-per-type \
     --omit-file-comments \
     --experimental-kt-generate-server \
     ...
-```
-
-By default, generated service clients are callback-based:
-
-```kotlin
-public interface Google {
-  public fun search(query: Query, callback: ServiceMethodCallback<List<SearchResult>>)
-}
-```
-
-If, instead, you wish to have a coroutine-based client, specify `--service-type=coroutine`:
-
-```kotlin
-public interface Google {
-  public suspend fun search(query: Query): List<SearchResult>
-}
 ```
 
 By default, Thrifty generates one Kotlin file per JVM package.  For larger thrift files, this can be a little hard on the Kotlin compiler.  If you find build times or IDE performance suffering, the `--kt-file-per-type` flag can help.  Outlook Mobile's single, large, Kotlin file took up to one minute just to typecheck, using Kotlin 1.2.51!  For these cases, `--kt-file-per-type` will tell Thrifty to generate one single file per top-level class - just like the Java code.

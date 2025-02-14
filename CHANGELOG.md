@@ -7,6 +7,7 @@
 - BREAK(integration-tests): アサーションライブラリをhamcrestからAssertJに変更
 - BREAK(kotlin-codegen): struct builder生成オプションを廃止
 - BREAK(kotlin-codegen): structの実装メソッドを生成しないオプションを追加
+- BREAK(kotlin-codegen): service-typeオプションを廃止し、常にcoroutine出力を行う
 
 3.1.0 (released 13 December 2022)
 ------------------
