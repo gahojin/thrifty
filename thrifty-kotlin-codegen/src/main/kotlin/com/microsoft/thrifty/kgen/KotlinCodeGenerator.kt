@@ -265,7 +265,7 @@ class KotlinCodeGenerator(
     }
 
     private object NoTypeProcessor : KotlinTypeProcessor {
-        override fun process(typeSpec: TypeSpec) = typeSpec
+        override fun process(type: TypeSpec) = type
     }
 
     // endregion Configuration
@@ -673,7 +673,7 @@ class KotlinCodeGenerator(
             }
         }
 
-        var adapterInterfaceTypeName = KtAdapter::class
+        val adapterInterfaceTypeName = KtAdapter::class
             .asTypeName()
             .parameterizedBy(struct.typeName)
 

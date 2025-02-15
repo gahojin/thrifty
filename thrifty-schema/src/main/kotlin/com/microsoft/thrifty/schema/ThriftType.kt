@@ -57,37 +57,32 @@ package com.microsoft.thrifty.schema
  * @property name The name of this type.
  */
 abstract class ThriftType internal constructor(
-    open val name: String
+    open val name: String,
 ) {
     /**
      * @return true if this type is a built-in type, e.g. i32, bool, etc.
      */
-    open val isBuiltin: Boolean
-        get() = false
+    open val isBuiltin: Boolean = false
 
     /**
      * @return true if this is a list type.
      */
-    open val isList: Boolean
-        get() = false
+    open val isList: Boolean = false
 
     /**
      * @return true if this is a set type.
      */
-    open val isSet: Boolean
-        get() = false
+    open val isSet: Boolean = false
 
     /**
      * @return true if this is a map type.
      */
-    open val isMap: Boolean
-        get() = false
+    open val isMap: Boolean = false
 
     /**
      * @return true if this is an enumeration type.
      */
-    open val isEnum: Boolean
-        get() = false
+    open val isEnum: Boolean = false
 
     /**
      * True if this is a structured user-defined type such as a struct, union,
@@ -96,20 +91,17 @@ abstract class ThriftType internal constructor(
      *
      * @return true if this is a structured type.
      */
-    open val isStruct: Boolean
-        get() = false
+    open val isStruct: Boolean = false
 
     /**
      * @return true if this is a typedef of another type.
      */
-    open val isTypedef: Boolean
-        get() = false
+    open val isTypedef: Boolean = false
 
     /**
      * @return true if this is a user-defined RPC service type.
      */
-    open val isService: Boolean
-        get() = false
+    open val isService: Boolean = false
 
     /**
      * Returns the aliased type if this is a typedef or, if not,
@@ -118,8 +110,7 @@ abstract class ThriftType internal constructor(
      *
      * @return true if this is a typedef.
      */
-    open val trueType: ThriftType
-        get() = this
+    open val trueType: ThriftType = this
 
     /**
      * Accepts a [Visitor], performing an arbitrary operation and
