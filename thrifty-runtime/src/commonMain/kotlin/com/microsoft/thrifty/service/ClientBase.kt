@@ -26,8 +26,13 @@ import com.microsoft.thrifty.ThriftException
 import com.microsoft.thrifty.ThriftException.Companion.read
 import com.microsoft.thrifty.protocol.Protocol
 import kotlinx.atomicfu.atomic
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import okio.Closeable
 import okio.IOException
+import kotlin.coroutines.CoroutineContext
+import kotlin.jvm.JvmOverloads
 
 /**
  * Implements a basic service client that executes methods synchronously.
@@ -37,9 +42,12 @@ import okio.IOException
  * configure your [Protocol] and [com.microsoft.thrifty.transport.Transport]
  * objects appropriately.
  */
-open class ClientBase protected constructor(
+open class ClientBase @JvmOverloads protected constructor(
     private val protocol: Protocol,
+    context: CoroutineContext = Dispatchers.IO,
 ) : Closeable {
+    protected val scope = CoroutineScope(context)
+
     /**
      * A sequence ID generator; contains the most-recently-used
      * sequence ID (or zero, if no calls have been made).
@@ -58,7 +66,7 @@ open class ClientBase protected constructor(
      * @return the result of the method call
      */
     @Throws(Exception::class)
-    protected fun execute(methodCall: MethodCall<*>): Any? {
+    protected fun <T> execute(methodCall: MethodCall<T>): T {
         check(running.value) { "Cannot write to a closed service client" }
         return try {
             invokeRequest(methodCall)
@@ -74,7 +82,7 @@ open class ClientBase protected constructor(
      */
     @Throws(IOException::class)
     override fun close() {
-        if (!running.compareAndSet(true, false)) {
+        if (!running.compareAndSet(expect = true, update = false)) {
             return
         }
         closeProtocol()
@@ -97,8 +105,9 @@ open class ClientBase protected constructor(
      * @throws IOException from the protocol
      * @throws Exception exception received from server implements [com.microsoft.thrifty.Struct]
      */
+    @Suppress("UNCHECKED_CAST")
     @Throws(Exception::class)
-    fun invokeRequest(call: MethodCall<*>): Any? {
+    fun <T> invokeRequest(call: MethodCall<T>): T {
         val isOneWay = call.callTypeId == TMessageType.ONEWAY
         val sid = seqId.incrementAndGet()
         protocol.writeMessageBegin(call.name, call.callTypeId, sid)
@@ -107,7 +116,7 @@ open class ClientBase protected constructor(
         protocol.flush()
         if (isOneWay) {
             // No response will be received
-            return Unit
+            return Unit as T
         }
         val metadata = protocol.readMessageBegin()
         if (metadata.seqId != sid) {

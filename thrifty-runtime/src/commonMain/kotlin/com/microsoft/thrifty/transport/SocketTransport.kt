@@ -2,6 +2,7 @@
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
  *
@@ -58,16 +59,16 @@ class SocketTransport @JvmOverloads constructor(
     override fun read(buffer: ByteArray, offset: Int, count: Int): Int {
         return runBlocking {
             readChannel.readFully(
-                out =  buffer,
+                out = buffer,
                 start = offset,
-                end =  offset + count,
+                end = offset + count,
             )
             count
         }
     }
 
-     override fun write(buffer: ByteArray, offset: Int, count: Int) {
-         runBlocking {
+    override fun write(buffer: ByteArray, offset: Int, count: Int) {
+        runBlocking {
             writeChannel.writeFully(
                 value = buffer,
                 startIndex = offset,
@@ -102,8 +103,8 @@ class SocketTransport @JvmOverloads constructor(
     }
 
     class Builder(
-        var host: String,
-        val port: Int,
+        private var host: String,
+        private val port: Int,
     ) {
         private var readTimeout: Long = Long.MAX_VALUE
         private var enableTls: Boolean = false
@@ -116,14 +117,12 @@ class SocketTransport @JvmOverloads constructor(
             enableTls = value
         }
 
-        fun build(): SocketTransport {
-            return SocketTransport(host, port, enableTls) {
-                keepAlive = true
-                noDelay = true
-                reuseAddress = false
-                reusePort = true
-                socketTimeout = this@Builder.readTimeout
-            }
+        fun build() = SocketTransport(host, port, enableTls) {
+            keepAlive = true
+            noDelay = true
+            reuseAddress = false
+            reusePort = true
+            socketTimeout = this@Builder.readTimeout
         }
     }
 }

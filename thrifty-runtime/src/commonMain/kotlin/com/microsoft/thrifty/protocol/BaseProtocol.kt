@@ -22,16 +22,13 @@
 package com.microsoft.thrifty.protocol
 
 import com.microsoft.thrifty.transport.Transport
-import okio.IOException
 import kotlin.jvm.JvmField
 
 abstract class BaseProtocol(
     @JvmField
     protected val transport: Transport
 ) : Protocol {
-    @Throws(IOException::class)
     override fun close() = transport.close()
 
-    @Throws(IOException::class)
     override fun flush() = transport.flush()
 }

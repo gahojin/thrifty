@@ -70,10 +70,6 @@ kotlin {
             }
         }
 
-        compilations.main.cinterops {
-            KT62102Workaround {}
-        }
-
         compilations.test.compileTaskProvider.configure {
             dependsOn compileTestThrift
         }
@@ -84,10 +80,6 @@ kotlin {
             framework {
                 baseName = "Thrifty"
             }
-        }
-
-        compilations.main.cinterops {
-            KT62102Workaround {}
         }
 
         compilations.test.compileTaskProvider.configure {

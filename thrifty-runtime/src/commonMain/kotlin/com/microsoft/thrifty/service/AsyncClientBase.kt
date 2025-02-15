@@ -21,8 +21,16 @@
  */
 package com.microsoft.thrifty.service
 
+import com.microsoft.thrifty.Struct
 import com.microsoft.thrifty.protocol.Protocol
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okio.Closeable
+import kotlin.coroutines.CoroutineContext
+import kotlin.jvm.JvmOverloads
 
 /**
  * Implements a basic service client that executes methods asynchronously.
@@ -33,14 +41,12 @@ import okio.Closeable
  * at the transport level.  If your backend requires framing, be sure to
  * configure your [Protocol] and [com.microsoft.thrifty.transport.Transport]
  * objects appropriately.
- *
- * @param protocol the [Protocol] used to encode/decode requests and responses.
- * @param listener a callback object to receive client-level events.
  */
-expect open class AsyncClientBase protected constructor(
+open class AsyncClientBase @JvmOverloads protected constructor(
     protocol: Protocol,
-    listener: Listener,
-) : ClientBase, Closeable {
+    private val listener: Listener,
+    context: CoroutineContext = Dispatchers.IO,
+) : ClientBase(protocol, context), Closeable {
     /**
      * Exposes important events in the client's lifecycle.
      */
@@ -69,13 +75,51 @@ expect open class AsyncClientBase protected constructor(
         fun onError(error: Throwable)
     }
 
+    private val lock = Mutex()
+
     /**
-     * Enqueues a method call for asynchronous execution.
+     * When invoked by a derived instance, places the given call in a queue to
+     * be sent to the server.
      *
-     * WARNING:
-     * This method is *NOT* part of the public API.  It is an implementation
-     * detail, for use by generated code only.  As multi-platform code evolves,
-     * expect this to change and/or be removed entirely!
+     * @param methodCall the remote method call to be invoked
      */
-    protected fun enqueue(methodCall: MethodCall<*>)
+    protected fun <T> enqueue(methodCall: MethodCall<T>) {
+        check(running.value) { "Cannot write to a closed service client" }
+
+        scope.launch {
+            lock.withLock {
+                try {
+                    val result = invokeRequest(methodCall)
+                    methodCall.callback?.onSuccess(result)
+                } catch (e: ServerException) {
+                    methodCall.callback?.onError(e.thriftException)
+                } catch (e: Exception) {
+                    if (e is Struct) {
+                        methodCall.callback?.onError(e)
+                        return@withLock
+                    }
+
+                    close(e)
+                    methodCall.callback?.onError(e)
+                }
+            }
+        }
+    }
+
+    override fun close() = close(null)
+
+    private fun close(error: Throwable?) {
+        if (!running.compareAndSet(expect = true, update = false)) {
+            return
+        }
+        closeProtocol()
+
+        scope.launch {
+            error?.also {
+                listener.onError(it)
+            } ?: run {
+                listener.onTransportClosed()
+            }
+        }
+    }
 }
