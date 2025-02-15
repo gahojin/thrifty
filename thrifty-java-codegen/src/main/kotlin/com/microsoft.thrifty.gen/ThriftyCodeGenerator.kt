@@ -75,62 +75,44 @@ class ThriftyCodeGenerator(
     private var emitFileComment = true
     private var failOnUnknownEnumValues = true
 
-    fun withListType(listClassName: String): ThriftyCodeGenerator {
+    fun withListType(listClassName: String) = apply {
         typeResolver.listClass = ClassName.bestGuess(listClassName)
-        return this
     }
 
-    fun withSetType(setClassName: String): ThriftyCodeGenerator {
+    fun withSetType(setClassName: String) = apply {
         typeResolver.setClass = ClassName.bestGuess(setClassName)
-        return this
     }
 
-    fun withMapType(mapClassName: String): ThriftyCodeGenerator {
+    fun withMapType(mapClassName: String) = apply {
         typeResolver.mapClass = ClassName.bestGuess(mapClassName)
-        return this
     }
 
-    fun nullabilityAnnotationType(type: NullabilityAnnotationType): ThriftyCodeGenerator {
+    fun nullabilityAnnotationType(type: NullabilityAnnotationType) = apply {
         nullabilityAnnotationType = type
-        return this
     }
 
-    fun emitParcelable(emitParcelable: Boolean): ThriftyCodeGenerator {
+    fun emitParcelable(emitParcelable: Boolean) = apply {
         this.emitParcelable = emitParcelable
-        return this
     }
 
-    fun emitFileComment(emitFileComment: Boolean): ThriftyCodeGenerator {
+    fun emitFileComment(emitFileComment: Boolean) = apply {
         this.emitFileComment = emitFileComment
-        return this
     }
 
-    fun usingTypeProcessor(typeProcessor: TypeProcessor): ThriftyCodeGenerator {
+    fun usingTypeProcessor(typeProcessor: TypeProcessor) = apply {
         this.typeProcessor = typeProcessor
-        return this
     }
 
-    fun failOnUnknownEnumValues(failOnUnknownEnumValues: Boolean): ThriftyCodeGenerator {
+    fun failOnUnknownEnumValues(failOnUnknownEnumValues: Boolean) = apply {
         this.failOnUnknownEnumValues = failOnUnknownEnumValues
-        return this
     }
 
     fun generate(directory: Path) {
-        generate { file ->
-            file?.writeTo(directory)
-        }
+        generate { it.writeTo(directory) }
     }
 
     fun generate(directory: File) {
-        generate { file ->
-            file?.writeTo(directory)
-        }
-    }
-
-    fun generate(appendable: Appendable) {
-        generate { file ->
-            file?.writeTo(appendable)
-        }
+        generate { it.writeTo(directory) }
     }
 
     fun generateTypes(): List<JavaFile> {
@@ -154,7 +136,7 @@ class ThriftyCodeGenerator(
         return enums + structs + exceptions + unions + constants + services
     }
 
-    private fun generate(writer: (JavaFile?) -> Unit) {
+    private fun generate(writer: (JavaFile) -> Unit) {
         for (file in generateTypes()) {
             writer(file)
         }
@@ -162,26 +144,26 @@ class ThriftyCodeGenerator(
 
     private fun assembleJavaFile(named: UserType, spec: TypeSpec): JavaFile? {
         val packageName = named.getNamespaceFor(NamespaceScope.JAVA)
-        if (packageName == null || packageName == "") {
-            throw IllegalArgumentException("A Java package name must be given for java code generation")
+        check(!packageName.isNullOrEmpty()) {
+            "A Java package name must be given for java code generation"
         }
 
         return assembleJavaFile(packageName, spec, named.location)
     }
 
     private fun assembleJavaFile(packageName: String, spec: TypeSpec, location: Location? = null): JavaFile? {
-        val processedSpec = typeProcessor?.let { processor ->
-            processor.process(spec) ?: return null
+        val processedSpec = typeProcessor?.let {
+            it.process(spec) ?: return null
         } ?: spec
 
         val file = JavaFile.builder(packageName, processedSpec)
-                .skipJavaLangImports(true)
+            .skipJavaLangImports(true)
 
         if (emitFileComment) {
             file.addFileComment(FILE_COMMENT + DATE_FORMATTER.format(Instant.now()))
 
-            if (location != null) {
-                file.addFileComment("\nSource: \$L", location)
+            location?.also {
+                file.addFileComment("\nSource: \$L", it)
             }
         }
 
@@ -194,8 +176,8 @@ class ThriftyCodeGenerator(
         val builderTypeName = structTypeName.nestedClass("Builder")
 
         val structBuilder = TypeSpec.classBuilder(type.name)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addSuperinterface(Struct::class.java)
+            .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            .addSuperinterface(Struct::class.java)
 
         if (type.hasJavadoc) {
             structBuilder.addJavadoc("\$L", type.documentation)
@@ -219,17 +201,16 @@ class ThriftyCodeGenerator(
         structBuilder.addType(builderSpec)
         structBuilder.addType(adapterSpec)
         structBuilder.addField(FieldSpec.builder(adapterSpec.superinterfaces[0], ADAPTER_FIELDNAME)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer("new \$N()", adapterSpec)
-                .build())
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+            .initializer("new \$N()", adapterSpec)
+            .build())
 
         val ctor = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PRIVATE)
-                .addParameter(builderTypeName, "builder")
+            .addModifiers(Modifier.PRIVATE)
+            .addParameter(builderTypeName, "builder")
 
         val isUnion = type.isUnion
         for (field in type.fields) {
-
             val name = fieldNamer.getName(field)
             val fieldType = field.type
             val trueType = fieldType.trueType
@@ -237,8 +218,8 @@ class ThriftyCodeGenerator(
 
             // Define field
             var fieldBuilder: FieldSpec.Builder = FieldSpec.builder(fieldTypeName, name)
-                    .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                    .addAnnotation(fieldAnnotation(field))
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                .addAnnotation(fieldAnnotation(field))
 
             if (nullabilityAnnotationType != NullabilityAnnotationType.NONE) {
                 val nullability = when {
@@ -277,21 +258,21 @@ class ThriftyCodeGenerator(
                         assignment.add("builder.\$N == null ? null : ", name)
                     }
                     assignment.add("\$T.unmodifiableList(builder.\$N)",
-                            TypeNames.COLLECTIONS, name)
+                        TypeNames.COLLECTIONS, name)
                 }
                 trueType.isSet -> {
                     if (!field.required) {
                         assignment.add("builder.\$N == null ? null : ", name)
                     }
                     assignment.add("\$T.unmodifiableSet(builder.\$N)",
-                            TypeNames.COLLECTIONS, name)
+                        TypeNames.COLLECTIONS, name)
                 }
                 trueType.isMap -> {
                     if (!field.required) {
                         assignment.add("builder.\$N == null ? null : ", name)
                     }
                     assignment.add("\$T.unmodifiableMap(builder.\$N)",
-                            TypeNames.COLLECTIONS, name)
+                        TypeNames.COLLECTIONS, name)
                 }
                 else -> assignment.add("builder.\$N", name)
             }
@@ -312,39 +293,39 @@ class ThriftyCodeGenerator(
         structBuilder.addSuperinterface(TypeNames.PARCELABLE)
 
         structBuilder.addField(FieldSpec.builder(ClassLoader::class.java, "CLASS_LOADER")
-                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                .initializer("\$T.class.getClassLoader()", structName)
-                .build())
+            .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+            .initializer("\$T.class.getClassLoader()", structName)
+            .build())
 
         val creatorType = ParameterizedTypeName.get(
-                TypeNames.PARCELABLE_CREATOR, structName)
+            TypeNames.PARCELABLE_CREATOR, structName)
         val creator = TypeSpec.anonymousClassBuilder("")
-                .addSuperinterface(creatorType)
-                .addMethod(MethodSpec.methodBuilder("createFromParcel")
-                        .addAnnotation(TypeNames.OVERRIDE)
-                        .addModifiers(Modifier.PUBLIC)
-                        .returns(structName)
-                        .addParameter(TypeNames.PARCEL, "source")
-                        .addStatement("return new \$T(source)", structName)
-                        .build())
-                .addMethod(MethodSpec.methodBuilder("newArray")
-                        .addAnnotation(TypeNames.OVERRIDE)
-                        .addModifiers(Modifier.PUBLIC)
-                        .returns(ArrayTypeName.of(structName))
-                        .addParameter(Int::class.javaPrimitiveType, "size")
-                        .addStatement("return new \$T[size]", structName)
-                        .build())
-                .build()
-
-        val parcelCtor = MethodSpec.constructorBuilder()
-                .addParameter(TypeNames.PARCEL, "in")
-                .addModifiers(Modifier.PRIVATE)
-
-        val parcelWriter = MethodSpec.methodBuilder("writeToParcel")
+            .addSuperinterface(creatorType)
+            .addMethod(MethodSpec.methodBuilder("createFromParcel")
                 .addAnnotation(TypeNames.OVERRIDE)
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(TypeNames.PARCEL, "dest")
-                .addParameter(Int::class.javaPrimitiveType, "flags")
+                .returns(structName)
+                .addParameter(TypeNames.PARCEL, "source")
+                .addStatement("return new \$T(source)", structName)
+                .build())
+            .addMethod(MethodSpec.methodBuilder("newArray")
+                .addAnnotation(TypeNames.OVERRIDE)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ArrayTypeName.of(structName))
+                .addParameter(Int::class.javaPrimitiveType, "size")
+                .addStatement("return new \$T[size]", structName)
+                .build())
+            .build()
+
+        val parcelCtor = MethodSpec.constructorBuilder()
+            .addParameter(TypeNames.PARCEL, "in")
+            .addModifiers(Modifier.PRIVATE)
+
+        val parcelWriter = MethodSpec.methodBuilder("writeToParcel")
+            .addAnnotation(TypeNames.OVERRIDE)
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(TypeNames.PARCEL, "dest")
+            .addParameter(Int::class.javaPrimitiveType, "flags")
 
         for (field in structType.fields) {
             val name = fieldNamer.getName(field)
@@ -355,54 +336,55 @@ class ThriftyCodeGenerator(
         }
 
         val creatorField = FieldSpec.builder(creatorType, "CREATOR")
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer("\$L", creator)
-                .build()
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+            .initializer("\$L", creator)
+            .build()
 
         structBuilder
-                .addField(creatorField)
-                .addMethod(MethodSpec.methodBuilder("describeContents")
-                        .addAnnotation(TypeNames.OVERRIDE)
-                        .addModifiers(Modifier.PUBLIC)
-                        .returns(Int::class.javaPrimitiveType!!)
-                        .addStatement("return 0")
-                        .build())
-                .addMethod(parcelCtor.build())
-                .addMethod(parcelWriter.build())
+            .addField(creatorField)
+            .addMethod(MethodSpec.methodBuilder("describeContents")
+                .addAnnotation(TypeNames.OVERRIDE)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(Int::class.javaPrimitiveType!!)
+                .addStatement("return 0")
+                .build())
+            .addMethod(parcelCtor.build())
+            .addMethod(parcelWriter.build())
 
     }
 
     private fun builderFor(
-            structType: StructType,
-            structClassName: ClassName,
-            builderClassName: ClassName): TypeSpec {
+        structType: StructType,
+        structClassName: ClassName,
+        builderClassName: ClassName,
+    ): TypeSpec {
         val builderSuperclassName = ParameterizedTypeName.get(TypeNames.BUILDER, structClassName)
         val builder = TypeSpec.classBuilder("Builder")
-                .addSuperinterface(builderSuperclassName)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+            .addSuperinterface(builderSuperclassName)
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
 
         val buildMethodBuilder = MethodSpec.methodBuilder("build")
-                .addAnnotation(TypeNames.OVERRIDE)
-                .returns(structClassName)
-                .addModifiers(Modifier.PUBLIC)
+            .addAnnotation(TypeNames.OVERRIDE)
+            .returns(structClassName)
+            .addModifiers(Modifier.PUBLIC)
 
         val resetBuilder = MethodSpec.methodBuilder("reset")
-                .addAnnotation(TypeNames.OVERRIDE)
-                .addModifiers(Modifier.PUBLIC)
+            .addAnnotation(TypeNames.OVERRIDE)
+            .addModifiers(Modifier.PUBLIC)
 
         val structParameterBuilder = ParameterSpec.builder(structClassName, "struct")
         if (nullabilityAnnotationType != NullabilityAnnotationType.NONE) {
             structParameterBuilder
-                    .addAnnotation(AnnotationSpec.builder(nullabilityAnnotationType.notNullClassName)
-                    .build())
+                .addAnnotation(AnnotationSpec.builder(nullabilityAnnotationType.notNullClassName)
+                .build())
         }
 
         val copyCtor = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(structParameterBuilder.build())
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(structParameterBuilder.build())
 
         val defaultCtor = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
+            .addModifiers(Modifier.PUBLIC)
 
         if (structType.isUnion) {
             buildMethodBuilder.addStatement("int setFields = 0")
@@ -430,8 +412,7 @@ class ThriftyCodeGenerator(
                 f.addAnnotation(AnnotationSpec.builder(nullabilityAnnotationType.nullableClassName).build())
             }
 
-            val fieldDefaultValue = field.defaultValue
-            if (fieldDefaultValue != null) {
+            field.defaultValue?.also { fieldDefaultValue ->
                 val initializer = CodeBlock.builder()
                 constantBuilder.generateFieldInitializer(
                         initializer,
@@ -444,15 +425,15 @@ class ThriftyCodeGenerator(
                 defaultCtor.addCode(initializer.build())
 
                 resetBuilder.addCode(initializer.build())
-            } else {
+            } ?: run {
                 resetBuilder.addStatement("this.\$N = null", fieldName)
             }
 
             builder.addField(f.build())
 
             val setterBuilder = MethodSpec.methodBuilder(fieldName)
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(builderClassName)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(builderClassName)
 
             val parameterBuilder = ParameterSpec.builder(javaTypeName, fieldName)
 
@@ -471,30 +452,30 @@ class ThriftyCodeGenerator(
             if (field.required) {
                 setterBuilder.beginControlFlow("if (\$N == null)", fieldName)
                 setterBuilder.addStatement(
-                        "throw new \$T(\"Required field '\$L' cannot be null\")",
-                        TypeNames.NULL_POINTER_EXCEPTION,
-                        fieldName)
+                    "throw new \$T(\"Required field '\$L' cannot be null\")",
+                    TypeNames.NULL_POINTER_EXCEPTION,
+                    fieldName,
+                )
                 setterBuilder.endControlFlow()
             }
 
             setterBuilder
-                    .addStatement("this.\$N = \$N", fieldName, fieldName)
-                    .addStatement("return this")
+                .addStatement("this.\$N = \$N", fieldName, fieldName)
+                .addStatement("return this")
 
             builder.addMethod(setterBuilder.build())
 
             if (structType.isUnion) {
                 buildMethodBuilder
-                        .addStatement("if (this.\$N != null) ++setFields", fieldName)
-            } else {
-                if (field.required) {
-                    buildMethodBuilder.beginControlFlow("if (this.\$N == null)", fieldName)
-                    buildMethodBuilder.addStatement(
-                            "throw new \$T(\$S)",
-                            TypeNames.ILLEGAL_STATE_EXCEPTION,
-                            "Required field '$fieldName' is missing")
-                    buildMethodBuilder.endControlFlow()
-                }
+                    .addStatement("if (this.\$N != null) ++setFields", fieldName)
+            } else if (field.required) {
+                buildMethodBuilder.beginControlFlow("if (this.\$N == null)", fieldName)
+                buildMethodBuilder.addStatement(
+                    "throw new \$T(\$S)",
+                    TypeNames.ILLEGAL_STATE_EXCEPTION,
+                    "Required field '$fieldName' is missing",
+                )
+                buildMethodBuilder.endControlFlow()
             }
 
             copyCtor.addStatement("this.\$N = \$N.\$N", fieldName, "struct", fieldName)
@@ -502,13 +483,14 @@ class ThriftyCodeGenerator(
 
         if (structType.isUnion) {
             buildMethodBuilder
-                    .beginControlFlow("if (setFields != 1)")
-                    .addStatement(
-                            "throw new \$T(\$S + setFields + \$S)",
-                            TypeNames.ILLEGAL_STATE_EXCEPTION,
-                            "Invalid union; ",
-                            " field(s) were set")
-                    .endControlFlow()
+                .beginControlFlow("if (setFields != 1)")
+                .addStatement(
+                    "throw new \$T(\$S + setFields + \$S)",
+                    TypeNames.ILLEGAL_STATE_EXCEPTION,
+                    "Invalid union; ",
+                    " field(s) were set",
+                )
+                .endControlFlow()
         }
 
         buildMethodBuilder.addStatement("return new \$T(this)", structClassName)
@@ -522,33 +504,34 @@ class ThriftyCodeGenerator(
 
     private fun adapterFor(structType: StructType, structClassName: ClassName, builderClassName: ClassName): TypeSpec {
         val adapterSuperclass = ParameterizedTypeName.get(
-                TypeNames.ADAPTER,
-                structClassName,
-                builderClassName)
+            TypeNames.ADAPTER,
+            structClassName,
+            builderClassName,
+        )
 
         val write = MethodSpec.methodBuilder("write")
-                .addAnnotation(TypeNames.OVERRIDE)
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(TypeNames.PROTOCOL, "protocol")
-                .addParameter(structClassName, "struct")
-                .addException(TypeNames.IO_EXCEPTION)
+            .addAnnotation(TypeNames.OVERRIDE)
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(TypeNames.PROTOCOL, "protocol")
+            .addParameter(structClassName, "struct")
+            .addException(TypeNames.IO_EXCEPTION)
 
         val read = MethodSpec.methodBuilder("read")
-                .addAnnotation(TypeNames.OVERRIDE)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(typeResolver.getJavaClass(structType))
-                .addParameter(TypeNames.PROTOCOL, "protocol")
-                .addParameter(builderClassName, "builder")
-                .addException(TypeNames.IO_EXCEPTION)
+            .addAnnotation(TypeNames.OVERRIDE)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(typeResolver.getJavaClass(structType))
+            .addParameter(TypeNames.PROTOCOL, "protocol")
+            .addParameter(builderClassName, "builder")
+            .addException(TypeNames.IO_EXCEPTION)
 
         val readHelper = MethodSpec.methodBuilder("read")
-                .addAnnotation(TypeNames.OVERRIDE)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(typeResolver.getJavaClass(structType))
-                .addParameter(TypeNames.PROTOCOL, "protocol")
-                .addException(TypeNames.IO_EXCEPTION)
-                .addStatement("return read(protocol, new \$T())", builderClassName)
-                .build()
+            .addAnnotation(TypeNames.OVERRIDE)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(typeResolver.getJavaClass(structType))
+            .addParameter(TypeNames.PROTOCOL, "protocol")
+            .addException(TypeNames.IO_EXCEPTION)
+            .addStatement("return read(protocol, new \$T())", builderClassName)
+            .build()
 
         // First, the writer
         write.addStatement("protocol.writeStructBegin(\$S)", structType.name)
@@ -579,11 +562,12 @@ class ThriftyCodeGenerator(
             }
 
             write.addStatement(
-                    "protocol.writeFieldBegin(\$S, \$L, \$T.\$L)",
-                    field.name, // make sure that we write the Thrift IDL name, and not the name of the Java field
-                    field.id,
-                    TypeNames.TTYPE,
-                    typeCodeName)
+                "protocol.writeFieldBegin(\$S, \$L, \$T.\$L)",
+                field.name, // make sure that we write the Thrift IDL name, and not the name of the Java field
+                field.id,
+                TypeNames.TTYPE,
+                typeCodeName,
+            )
 
             tt.accept(GenerateWriterVisitor(typeResolver, write, "protocol", "struct", fieldName))
 
@@ -622,32 +606,32 @@ class ThriftyCodeGenerator(
         read.addStatement("return builder.build()")
 
         return TypeSpec.classBuilder(structType.name + "Adapter")
-                .addSuperinterface(adapterSuperclass)
-                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                .addMethod(write.build())
-                .addMethod(read.build())
-                .addMethod(readHelper)
-                .build()
+            .addSuperinterface(adapterSuperclass)
+            .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+            .addMethod(write.build())
+            .addMethod(read.build())
+            .addMethod(readHelper)
+            .build()
     }
 
     private fun buildWrite(): MethodSpec {
         return MethodSpec.methodBuilder("write")
-                .addAnnotation(TypeNames.OVERRIDE)
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(TypeNames.PROTOCOL, "protocol")
-                .addStatement("ADAPTER.write(protocol, this)")
-                .addException(TypeNames.IO_EXCEPTION)
-                .build()
+            .addAnnotation(TypeNames.OVERRIDE)
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(TypeNames.PROTOCOL, "protocol")
+            .addStatement("ADAPTER.write(protocol, this)")
+            .addException(TypeNames.IO_EXCEPTION)
+            .build()
     }
 
     private fun buildEqualsFor(struct: StructType): MethodSpec {
         val equals = MethodSpec.methodBuilder("equals")
-                .addAnnotation(TypeNames.OVERRIDE)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(Boolean::class.javaPrimitiveType!!)
-                .addParameter(Any::class.java, "other")
-                .addStatement("if (this == other) return true")
-                .addStatement("if (other == null) return false")
+            .addAnnotation(TypeNames.OVERRIDE)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(Boolean::class.javaPrimitiveType!!)
+            .addParameter(Any::class.java, "other")
+            .addStatement("if (this == other) return true")
+            .addStatement("if (other == null) return false")
 
 
         if (struct.fields.isNotEmpty()) {
@@ -704,11 +688,10 @@ class ThriftyCodeGenerator(
             anno.addMember("value", "\$S", warnings.single())
         } else {
             val valuesText = warnings.joinToString(
-                    separator = ", ",
-                    prefix = "{",
-                    postfix = "}") {
-                "\"$it\""
-            }
+                separator = ", ",
+                prefix = "{",
+                postfix = "}",
+            ) { "\"$it\"" }
 
             anno.addMember("value", "\$L", valuesText)
         }
@@ -718,10 +701,10 @@ class ThriftyCodeGenerator(
 
     private fun buildHashCodeFor(struct: StructType): MethodSpec {
         val hashCode = MethodSpec.methodBuilder("hashCode")
-                .addAnnotation(TypeNames.OVERRIDE)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(Int::class.javaPrimitiveType!!)
-                .addStatement("int code = 16777619")
+            .addAnnotation(TypeNames.OVERRIDE)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(Int::class.javaPrimitiveType!!)
+            .addStatement("int code = 16777619")
 
         for (field in struct.fields) {
             val fieldName = fieldNamer.getName(field)
@@ -760,9 +743,9 @@ class ThriftyCodeGenerator(
         class Chunk(val format: String, vararg val args: Any)
 
         val toString = MethodSpec.methodBuilder("toString")
-                .addAnnotation(TypeNames.OVERRIDE)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(TypeNames.STRING)
+            .addAnnotation(TypeNames.OVERRIDE)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeNames.STRING)
 
         val chunks = ArrayList<Chunk>()
 
@@ -796,20 +779,22 @@ class ThriftyCodeGenerator(
                         }
 
                         Chunk("\$T.summarizeCollection(this.\$L, \$S, \$S)",
-                                TypeNames.OBFUSCATION_UTIL,
-                                fieldName,
-                                type,
-                                elementType)
+                            TypeNames.OBFUSCATION_UTIL,
+                            fieldName,
+                            type,
+                            elementType,
+                        )
                     } else if (fieldType.isMap) {
                         val mapType = fieldType as MapType
                         val keyType = mapType.keyType.name
                         val valueType = mapType.valueType.name
 
                         Chunk("\$T.summarizeMap(this.\$L, \$S, \$S)",
-                                TypeNames.OBFUSCATION_UTIL,
-                                fieldName,
-                                keyType,
-                                valueType)
+                            TypeNames.OBFUSCATION_UTIL,
+                            fieldName,
+                            keyType,
+                            valueType,
+                        )
                     } else {
                         Chunk("\$T.hash(this.\$L)", TypeNames.OBFUSCATION_UTIL, fieldName)
                     }
@@ -847,11 +832,11 @@ class ThriftyCodeGenerator(
      */
     private fun buildConst(constants: Collection<Constant>): TypeSpec {
         val builder = TypeSpec.classBuilder("Constants")
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addMethod(MethodSpec.constructorBuilder()
-                        .addModifiers(Modifier.PRIVATE)
-                        .addCode("// no instances\n")
-                        .build())
+            .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            .addMethod(MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PRIVATE)
+                .addCode("// no instances\n")
+                .build())
 
         val allocator = NameAllocator()
         allocator.newName("Constants", "Constants")
@@ -885,12 +870,12 @@ class ThriftyCodeGenerator(
             type.accept(object : SimpleVisitor<Unit>() {
                 override fun visitBuiltin(builtinType: ThriftType) {
                     field.initializer(constantBuilder.renderConstValue(
-                            CodeBlock.builder(), allocator, scope, type, constant.value))
+                        CodeBlock.builder(), allocator, scope, type, constant.value))
                 }
 
                 override fun visitEnum(enumType: EnumType) {
                     field.initializer(constantBuilder.renderConstValue(
-                            CodeBlock.builder(), allocator, scope, type, constant.value))
+                        CodeBlock.builder(), allocator, scope, type, constant.value))
                 }
 
                 override fun visitList(listType: ListType) {
@@ -921,18 +906,20 @@ class ThriftyCodeGenerator(
                     val tempName = localName + scope.incrementAndGet()
 
                     constantBuilder.generateFieldInitializer(
-                            staticInit,
-                            allocator,
-                            scope,
-                            tempName,
-                            type,
-                            constant.value,
-                            needsDeclaration = true)
+                        staticInit,
+                        allocator,
+                        scope,
+                        tempName,
+                        type,
+                        constant.value,
+                        needsDeclaration = true,
+                    )
                     staticInit.addStatement("\$N = \$T.\$L(\$N)",
-                            constant.name,
-                            TypeNames.COLLECTIONS,
-                            unmodifiableMethod,
-                            tempName)
+                        constant.name,
+                        TypeNames.COLLECTIONS,
+                        unmodifiableMethod,
+                        tempName,
+                    )
 
                     hasStaticInit.set(true)
                 }
@@ -949,7 +936,8 @@ class ThriftyCodeGenerator(
                             constant.name,
                             constant.type.trueType,
                             cve,
-                            needsDeclaration = false)
+                            needsDeclaration = false,
+                        )
 
                         hasStaticInit.set(true)
                     }
@@ -976,16 +964,17 @@ class ThriftyCodeGenerator(
 
     private fun buildEnum(type: EnumType): TypeSpec {
         val enumClassName = ClassName.get(
-                type.getNamespaceFor(NamespaceScope.JAVA),
-                type.name)
+            type.getNamespaceFor(NamespaceScope.JAVA),
+            type.name,
+        )
 
         val builder = TypeSpec.enumBuilder(type.name)
-                .addModifiers(Modifier.PUBLIC)
-                .addField(Int::class.javaPrimitiveType, "value", Modifier.PUBLIC, Modifier.FINAL)
-                .addMethod(MethodSpec.constructorBuilder()
-                        .addParameter(Int::class.javaPrimitiveType, "value")
-                        .addStatement("this.\$N = \$N", "value", "value")
-                        .build())
+            .addModifiers(Modifier.PUBLIC)
+            .addField(Int::class.javaPrimitiveType, "value", Modifier.PUBLIC, Modifier.FINAL)
+            .addMethod(MethodSpec.constructorBuilder()
+                .addParameter(Int::class.javaPrimitiveType, "value")
+                .addStatement("this.\$N = \$N", "value", "value")
+                .build())
 
         if (type.hasJavadoc) {
             builder.addJavadoc("\$L", type.documentation)
@@ -996,10 +985,10 @@ class ThriftyCodeGenerator(
         }
 
         val fromCodeMethod = MethodSpec.methodBuilder("findByValue")
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .returns(enumClassName)
-                .addParameter(Int::class.javaPrimitiveType, "value")
-                .beginControlFlow("switch (value)")
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            .returns(enumClassName)
+            .addParameter(Int::class.javaPrimitiveType, "value")
+            .beginControlFlow("switch (value)")
 
         if (nullabilityAnnotationType != NullabilityAnnotationType.NONE) {
             fromCodeMethod.addAnnotation(nullabilityAnnotationType.nullableClassName)
@@ -1025,8 +1014,8 @@ class ThriftyCodeGenerator(
         }
 
         fromCodeMethod
-                .addStatement("default: return null")
-                .endControlFlow()
+            .addStatement("default: return null")
+            .endControlFlow()
 
         builder.addMethod(fromCodeMethod.build())
 
@@ -1035,7 +1024,7 @@ class ThriftyCodeGenerator(
 
     companion object {
         private const val FILE_COMMENT =
-                "Automatically generated by the Thrifty compiler; do not edit!\nGenerated on: "
+            "Automatically generated by the Thrifty compiler; do not edit!\nGenerated on: "
 
         private const val ADAPTER_FIELDNAME = "ADAPTER"
 
@@ -1043,7 +1032,7 @@ class ThriftyCodeGenerator(
 
         private fun fieldAnnotation(field: Field): AnnotationSpec {
             val spec: AnnotationSpec.Builder = AnnotationSpec.builder(TypeNames.THRIFT_FIELD)
-                    .addMember("fieldId", "\$L", field.id)
+                .addMember("fieldId", "\$L", field.id)
 
             if (field.required) {
                 spec.addMember("isRequired", "\$L", field.required)
@@ -1054,7 +1043,7 @@ class ThriftyCodeGenerator(
             }
 
             val typedef = field.typedefName
-            if (typedef != null && typedef.isNotEmpty()) {
+            if (!typedef.isNullOrEmpty()) {
                 spec.addMember("typedefName", "\$S", typedef)
             }
 

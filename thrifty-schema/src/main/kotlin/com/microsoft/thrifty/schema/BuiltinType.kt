@@ -30,7 +30,7 @@ import com.microsoft.thrifty.schema.BuiltinType.Companion.BYTE
  */
 class BuiltinType internal constructor(
     name: String,
-    override val annotations: Map<String, String> = emptyMap()
+    override val annotations: Map<String, String> = emptyMap(),
 ) : ThriftType(name) {
 
     /**
