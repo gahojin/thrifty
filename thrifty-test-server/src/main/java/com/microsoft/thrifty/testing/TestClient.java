@@ -46,8 +46,8 @@ public class TestClient {
     private static final int ERR_PROTOCOLS = 16;
     private static final int ERR_UNKNOWN = 64;
 
-    private static final Set<String> expectTransportType = new HashSet<>(Arrays.asList("buffered", "framed", "fastframed", "http"));
-    private static final Set<String> expectProtocolType = new HashSet<>(Arrays.asList("binary", "compact", "json", "multi", "multic", "multij"));
+    private static final Set<String> expectTransportType = new LinkedHashSet<>(Arrays.asList("buffered", "framed", "fastframed", "http"));
+    private static final Set<String> expectProtocolType = new LinkedHashSet<>(Arrays.asList("binary", "compact", "json", "multi", "multic", "multij"));
 
     public static void main(String... args) {
         String host = "localhost";
