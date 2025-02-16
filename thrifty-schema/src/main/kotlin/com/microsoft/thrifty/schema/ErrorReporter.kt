@@ -32,19 +32,19 @@ class ErrorReporter {
     var hasError = false
         private set
 
-    private val reports_: MutableList<Report> = mutableListOf()
+    private val _reports = mutableListOf<Report>()
 
     /**
      * All reports collected by this reporter.
      */
     val reports: List<Report>
-        get() = reports_
+        get() = _reports
 
     /**
      * Reports a warning at the given [location].
      */
     fun warn(location: Location, message: String) {
-        reports_.add(Report(Level.WARNING, location, message))
+        _reports.add(Report(Level.WARNING, location, message))
     }
 
     /**
@@ -52,7 +52,7 @@ class ErrorReporter {
      */
     fun error(location: Location, message: String) {
         hasError = true
-        reports_.add(Report(Level.ERROR, location, message))
+        _reports.add(Report(Level.ERROR, location, message))
     }
 
     /**
@@ -62,7 +62,7 @@ class ErrorReporter {
     fun formattedReports(): List<String> {
         val list = mutableListOf<String>()
         val sb = StringBuilder()
-        for (report in reports_) {
+        for (report in _reports) {
             when (report.level) {
                 Level.WARNING -> sb.append("W: ")
                 Level.ERROR -> sb.append("E: ")
@@ -73,7 +73,7 @@ class ErrorReporter {
             sb.append(report.location)
             sb.append(")")
 
-            list += sb.toString()
+            list.add(sb.toString())
 
             sb.setLength(0)
         }
@@ -97,14 +97,10 @@ class ErrorReporter {
      * The severities of reports.
      */
     enum class Level {
-        /**
-         * A warning is non-fatal, but should be investigated.
-         */
+        /** A warning is non-fatal, but should be investigated. */
         WARNING,
 
-        /**
-         * An error indicates that loading cannot proceed.
-         */
+        /** An error indicates that loading cannot proceed. */
         ERROR,
     }
 }

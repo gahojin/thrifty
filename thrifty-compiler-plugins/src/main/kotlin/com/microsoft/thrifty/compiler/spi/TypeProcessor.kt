@@ -49,7 +49,7 @@ import com.squareup.javapoet.TypeSpec
  * }
 `</pre> *
  */
-interface TypeProcessor {
+fun interface TypeProcessor {
     /**
      * Processes and returns a given type.
      *

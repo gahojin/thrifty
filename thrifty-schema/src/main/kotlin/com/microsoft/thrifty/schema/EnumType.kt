@@ -27,7 +27,6 @@ import com.microsoft.thrifty.schema.parser.EnumElement
  * Represents an enumeration defined in Thrift IDL.
  */
 class EnumType : UserType {
-
     /**
      * All members contained within this enum type.
      */
@@ -91,6 +90,6 @@ class EnumType : UserType {
             this.members = members.toList()
         }
 
-        override fun build(): EnumType = EnumType(this)
+        override fun build() = EnumType(this)
     }
 }

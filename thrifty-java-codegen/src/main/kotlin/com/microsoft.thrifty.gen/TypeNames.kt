@@ -158,7 +158,7 @@ enum class NullabilityAnnotationType(
     ANDROIDX(
         notNullClassName = TypeNames.ANDROIDX_NOT_NULL,
         nullableClassName = TypeNames.ANDROIDX_NULLABLE,
-    )
+    ),
 }
 
 internal inline fun <reified T> classNameOf(): ClassName = ClassName.get(T::class.java)

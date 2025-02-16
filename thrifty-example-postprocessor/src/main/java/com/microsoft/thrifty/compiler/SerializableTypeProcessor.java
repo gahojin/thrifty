@@ -34,14 +34,12 @@ import java.io.Serializable;
 public class SerializableTypeProcessor implements TypeProcessor {
     @Override
     public TypeSpec process(TypeSpec type) {
-        TypeSpec.Builder builder = type.toBuilder();
-
-        builder.addSuperinterface(Serializable.class);
-
-        builder.addField(FieldSpec.builder(long.class, "serialVersionUID")
-                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                .initializer("$L", -1)
-                .build());
+        TypeSpec.Builder builder = type.toBuilder()
+                .addSuperinterface(Serializable.class)
+                .addField(FieldSpec.builder(long.class, "serialVersionUID")
+                        .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                        .initializer("$L", -1)
+                        .build());
 
         return builder.build();
     }

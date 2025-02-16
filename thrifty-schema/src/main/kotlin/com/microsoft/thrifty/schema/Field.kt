@@ -31,7 +31,7 @@ import com.microsoft.thrifty.schema.parser.FieldElement
 class Field private constructor(
     private val element: FieldElement,
     private val mixin: UserElementMixin,
-    private var type_: ThriftType? = null,
+    private var _type: ThriftType? = null,
 ) : UserElement by mixin {
 
     /**
@@ -58,7 +58,7 @@ class Field private constructor(
      * The type of value contained within this field.
      */
     val type: ThriftType
-        get() = type_!!
+        get() = checkNotNull(_type)
 
     /**
      * The integer ID of this field in its containing structure.
@@ -90,7 +90,7 @@ class Field private constructor(
      */
     val typedefName: String?
         get() {
-            return type_?.let {
+            return _type?.let {
                 if (it.isTypedef) it.name else null
             }
         }
@@ -104,18 +104,16 @@ class Field private constructor(
     fun toBuilder(): Builder = Builder(this)
 
     internal fun link(linker: Linker) {
-        this.type_ = linker.resolveType(element.type)
+        _type = linker.resolveType(element.type)
     }
 
     internal fun validate(linker: Linker) {
-        val value = element.constValue
-        if (value != null) {
+        element.constValue?.also {
             try {
-                Constant.validate(linker, value, type_!!)
+                Constant.validate(linker, it, checkNotNull(_type))
             } catch (e: IllegalStateException) {
-                linker.addError(value.location, e.message ?: "Error validating default field value")
+                linker.addError(it.location, e.message ?: "Error validating default field value")
             }
-
         }
     }
 
@@ -124,21 +122,15 @@ class Field private constructor(
      */
     class Builder internal constructor(field: Field) : AbstractUserElementBuilder<Field, Builder>(field.mixin) {
         private val fieldElement: FieldElement = field.element
-        private var fieldType: ThriftType? = null
-
-        init {
-            this.fieldType = field.type_
-        }
+        private var fieldType: ThriftType? = field._type
 
         /**
          * Use the given [type] for the [Field] under construction.
          */
-        fun type(type: ThriftType): Builder = apply {
+        fun type(type: ThriftType) = apply {
             this.fieldType = type
         }
 
-        override fun build(): Field {
-            return Field(fieldElement, mixin, fieldType)
-        }
+        override fun build() = Field(fieldElement, mixin, fieldType)
     }
 }

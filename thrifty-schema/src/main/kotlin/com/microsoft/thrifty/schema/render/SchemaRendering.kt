@@ -101,31 +101,21 @@ fun Schema.multiFileRender(
 
             val sourceFile = File(filePath)
             val includes = elements
-                .flatMap { element ->
-                    when (element) {
-                        is StructType -> {
-                            element.fields
-                                .flatMap {
-                                    it.type
-                                        .unpack()
-                                }
-                        }
+                .flatMap { element -> when (element) {
+                    is StructType -> element.fields
+                        .flatMap { it.type.unpack() }
 
-                        is ServiceType -> {
-                            element.methods
-                                .flatMap { method ->
-                                    (method.run { exceptions + parameters })
-                                        .flatMap {
-                                            it.type
-                                                .unpack()
-                                        } + method.returnType.unpack()
-                                }
-                        }
-
-                        is TypedefType -> element.oldType.unpack()
-                        else -> emptySet()
+                    is ServiceType -> {
+                        element.methods
+                            .flatMap { method ->
+                                method.run { exceptions + parameters }
+                                    .flatMap { it.type.unpack() } + method.returnType.unpack()
+                            }
                     }
-                }
+
+                    is TypedefType -> element.oldType.unpack()
+                    else -> emptySet()
+                } }
                 .filterIsInstance<UserType>()
                 .distinctBy(UserType::filepath)
                 .filter { it.filepath.removePrefix(commonPathPrefix) != filePath }
@@ -149,7 +139,7 @@ fun Schema.multiFileRender(
                     Include(
                         path = it.second,
                         namespace = namespaceResolver(it.first),
-                        relative = relativizeIncludes
+                        relative = relativizeIncludes,
                     )
                 }
 
@@ -157,7 +147,7 @@ fun Schema.multiFileRender(
                 filePath = filePath,
                 namespaces = realNamespaces,
                 includes = includes,
-                schema = fileSchema
+                schema = fileSchema,
             )
         }
 }
@@ -188,7 +178,7 @@ fun <A : Appendable> Schema.renderTo(buffer: A) = buffer.apply {
             .joinEachTo(
                 buffer = buffer,
                 separator = DOUBLE_NEWLINE,
-                postfix = DOUBLE_NEWLINE
+                postfix = DOUBLE_NEWLINE,
             ) { _, typedef ->
                 typedef.renderTo<A>(buffer)
             }
@@ -198,7 +188,7 @@ fun <A : Appendable> Schema.renderTo(buffer: A) = buffer.apply {
             .joinEachTo(
                 buffer = buffer,
                 separator = DOUBLE_NEWLINE,
-                postfix = DOUBLE_NEWLINE
+                postfix = DOUBLE_NEWLINE,
             ) { _, enum ->
                 enum.renderTo<A>(buffer)
             }
@@ -208,7 +198,7 @@ fun <A : Appendable> Schema.renderTo(buffer: A) = buffer.apply {
             .joinEachTo(
                 buffer = buffer,
                 separator = DOUBLE_NEWLINE,
-                postfix = DOUBLE_NEWLINE
+                postfix = DOUBLE_NEWLINE,
             ) { _, struct ->
                 struct.renderTo<A>(buffer)
             }
@@ -218,7 +208,7 @@ fun <A : Appendable> Schema.renderTo(buffer: A) = buffer.apply {
             .joinEachTo(
                 buffer = buffer,
                 separator = DOUBLE_NEWLINE,
-                postfix = DOUBLE_NEWLINE
+                postfix = DOUBLE_NEWLINE,
             ) { _, struct ->
                 struct.renderTo<A>(buffer)
             }
@@ -228,7 +218,7 @@ fun <A : Appendable> Schema.renderTo(buffer: A) = buffer.apply {
             .joinEachTo(
                 buffer = buffer,
                 separator = DOUBLE_NEWLINE,
-                postfix = DOUBLE_NEWLINE
+                postfix = DOUBLE_NEWLINE,
             ) { _, struct ->
                 struct.renderTo<A>(buffer)
             }
@@ -238,12 +228,11 @@ fun <A : Appendable> Schema.renderTo(buffer: A) = buffer.apply {
             .joinEachTo(
                 buffer = buffer,
                 separator = DOUBLE_NEWLINE,
-                postfix = DOUBLE_NEWLINE
+                postfix = DOUBLE_NEWLINE,
             ) { _, service ->
                 service.renderTo<A>(buffer)
             }
     }
-
 }
 
 /**
@@ -297,8 +286,7 @@ private fun <A : Appendable> TypedefType.renderTo(buffer: A) = buffer.apply {
     renderJavadocTo(buffer)
     append("typedef ")
     oldType.renderTypeTo(buffer, location)
-    oldType.annotations
-        .renderTo(buffer)
+    oldType.annotations.renderTo(buffer)
     append(" ", name)
     renderAnnotationsTo(buffer, indent = " ")
 }
@@ -312,10 +300,9 @@ private fun <A : Appendable> StructType.renderTo(buffer: A) = buffer.apply {
     }
     append(type, " ", name, " {")
     appendLine()
-    fields
-        .joinEachTo(buffer, NEWLINE) { _, field ->
-            field.renderElementTo(buffer)
-        }
+    fields.joinEachTo(buffer, NEWLINE) { _, field ->
+        field.renderElementTo(buffer)
+    }
     appendLine()
     append("}")
     renderAnnotationsTo(buffer)
@@ -365,22 +352,20 @@ private fun <A : Appendable> ServiceMethod.renderTo(buffer: A, indent: String = 
         if (parameters.isEmpty()) {
             append("()")
         } else {
-            parameters
-                .joinEachTo(
-                    buffer = buffer,
-                    separator = ",$NEWLINE",
-                    prefix = "($NEWLINE",
-                    postfix = "$NEWLINE$indent)"
-                ) { _, param ->
-                    param.renderTo(buffer, "$indent  ")
-                }
+            parameters.joinEachTo(
+                buffer = buffer,
+                separator = ",$NEWLINE",
+                prefix = "($NEWLINE",
+                postfix = "$NEWLINE$indent)",
+            ) { _, param ->
+                param.renderTo(buffer, "$indent  ")
+            }
         }
         if (exceptions.isNotEmpty()) {
             appendLine(" throws (")
-            exceptions
-                .joinEachTo(buffer = buffer, separator = ",$NEWLINE") { _, param ->
-                    param.renderTo(buffer, "$indent  ")
-                }
+            exceptions.joinEachTo(buffer = buffer, separator = ",$NEWLINE") { _, param ->
+                param.renderTo(buffer, "$indent  ")
+            }
             appendLine()
             append(indent, ")")
         }
@@ -398,8 +383,7 @@ private fun <A : Appendable> Constant.renderTo(buffer: A) = buffer.apply {
     append("const ")
     type.renderTypeTo(buffer, location)
     append(" ")
-    type.annotations
-        .renderTo(buffer)
+    type.annotations.renderTo(buffer)
     append(" ", name)
     value.renderTo(buffer)
     renderAnnotationsTo(buffer)
@@ -416,38 +400,30 @@ private fun <A : Appendable> ConstValueElement.renderTo(buffer: A, prefix: Strin
 private fun <A : Appendable> ThriftType.renderTypeTo(buffer: A, source: Location): A {
     // Doesn't follow the usual buffer.apply function body pattern because type checking falls over
     when {
-        this is UserType && source.filepath != location.filepath -> {
-            buffer.apply {
-                append(location.programName)
-                append(".")
-                append(name)
-            }
+        this is UserType && source.filepath != location.filepath -> buffer.apply {
+            append(location.programName)
+            append(".")
+            append(name)
         }
 
-        this is SetType -> {
-            buffer.apply {
-                append("set<")
-                elementType.renderTypeTo(buffer, source)
-                append(">")
-            }
+        this is SetType -> buffer.apply {
+            append("set<")
+            elementType.renderTypeTo(buffer, source)
+            append(">")
         }
 
-        this is ListType -> {
-            buffer.apply {
-                append("list<")
-                elementType.renderTypeTo(buffer, source)
-                append(">")
-            }
+        this is ListType -> buffer.apply {
+            append("list<")
+            elementType.renderTypeTo(buffer, source)
+            append(">")
         }
 
-        this is MapType -> {
-            buffer.apply {
-                append("map<")
-                keyType.renderTypeTo(buffer, source)
-                append(",")
-                valueType.renderTypeTo(buffer, source)
-                append(">")
-            }
+        this is MapType -> buffer.apply {
+            append("map<")
+            keyType.renderTypeTo(buffer, source)
+            append(",")
+            valueType.renderTypeTo(buffer, source)
+            append(">")
         }
 
         else -> buffer.append(name)
@@ -472,7 +448,7 @@ private fun <A : Appendable> UserElement.renderJavadocTo(buffer: A, indent: Stri
                     buffer = buffer,
                     separator = NEWLINE,
                     prefix = "$indent/**$NEWLINE",
-                    postfix = "$NEWLINE$indent */$NEWLINE"
+                    postfix = "$NEWLINE$indent */$NEWLINE",
                 ) {
                     val line = if (it.isBlank()) "" else " ${it.trimEnd()}"
                     "$indent *$line"
@@ -484,7 +460,7 @@ private fun <A : Appendable> UserElement.renderJavadocTo(buffer: A, indent: Stri
 private fun <A : Appendable> UserElement.renderAnnotationsTo(
     buffer: A,
     indent: String = "",
-    prefix: String = " "
+    prefix: String = " ",
 ) = buffer.apply {
     annotations.renderTo(buffer, indent, prefix)
 }
@@ -492,7 +468,7 @@ private fun <A : Appendable> UserElement.renderAnnotationsTo(
 private fun <A : Appendable> Map<String, String>.renderTo(
     buffer: A,
     indent: String = "",
-    prefix: String = " "
+    prefix: String = " ",
 ) = buffer.apply {
     when {
         size == 1 -> {

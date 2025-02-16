@@ -247,10 +247,9 @@ fun StructType.checkFunctionallyEquals(other: StructType) {
     check(isStruct == other.isStruct) {
         "Struct isStruct mismatch at $location. Found $isStruct but expected ${other.isStruct}"
     }
-    fields.zip(other.fields)
-        .forEach { (field1, field2) ->
-            field1.checkFunctionallyEquals(field2, "Struct field")
-        }
+    fields.zip(other.fields).forEach { (field1, field2) ->
+        field1.checkFunctionallyEquals(field2, "Struct field")
+    }
 }
 
 /**
@@ -278,10 +277,9 @@ fun ServiceType.checkFunctionallyEquals(other: ServiceType) {
     check(annotations == other.annotations) {
         "Service annotations mismatch at $location. Found $annotations but expected ${other.annotations}"
     }
-    methods.zip(other.methods)
-        .forEach { (method1, method2) ->
-            method1.checkFunctionallyEquals(method2)
-        }
+    methods.zip(other.methods).forEach { (method1, method2) ->
+        method1.checkFunctionallyEquals(method2)
+    }
 }
 
 /**
@@ -365,10 +363,9 @@ fun EnumType.checkFunctionallyEquals(other: EnumType) {
     check(annotations == other.annotations) {
         "Enum annotations mismatch at $location. Found $annotations but expected ${other.annotations}"
     }
-    members.zip(other.members)
-        .forEach { (member1, member2) ->
-            member1.checkFunctionallyEquals(member2)
-        }
+    members.zip(other.members).forEach { (member1, member2) ->
+        member1.checkFunctionallyEquals(member2)
+    }
 }
 
 /**

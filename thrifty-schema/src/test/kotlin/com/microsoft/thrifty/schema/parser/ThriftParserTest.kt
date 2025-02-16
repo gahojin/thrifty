@@ -309,8 +309,9 @@ class ThriftParserTest {
                 "1: string bar;\n" +
                 "}"
 
-        val e = shouldThrow<IllegalStateException> { parse(thrift, Location.get("", "duplicateIds.thrift")) }
-        e.message shouldContain "duplicate field ID:"
+        shouldThrow<IllegalStateException> {
+            parse(thrift, Location.get("", "duplicateIds.thrift"))
+        }.message shouldContain "duplicate field ID:"
     }
 
     @Test
@@ -822,8 +823,9 @@ class ThriftParserTest {
                 "  BAZ\n" +
                 "}"
 
-        val e = shouldThrow<IllegalStateException> { parse(thrift) }
-        e.message shouldContain "duplicate enum value"
+        shouldThrow<IllegalStateException> {
+            parse(thrift)
+        }.message shouldContain "duplicate enum value"
     }
 
     @Test

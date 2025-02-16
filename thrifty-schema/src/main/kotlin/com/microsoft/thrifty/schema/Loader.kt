@@ -139,8 +139,8 @@ class Loader {
         if (filesToLoad.isEmpty()) {
             for (path in includePaths) {
                 Files.walk(path)
-                    .filter { p -> p.fileName != null && THRIFT_PATH_MATCHER.matches(p.fileName) }
-                    .map { p -> p.normalize().toAbsolutePath() }
+                    .filter { it.fileName != null && THRIFT_PATH_MATCHER.matches(it.fileName) }
+                    .map { it.normalize().toAbsolutePath() }
                     .forEach { filesToLoad.add(it) }
             }
         }
@@ -192,19 +192,17 @@ class Loader {
         val dir: Path?
 
         val element: ThriftFileElement
-        val file = findFirstExisting(path, null)?.normalize()
-        if (file != null) {
-            // Resolve symlinks, redundant '.' and '..' segments.
-            if (loadedFiles.containsKey(file)) {
-                return
-            }
+        val file = findFirstExisting(path, null)?.normalize() ?: run {
+            val suffix = sourceElement?.let { "\n--> Included from ${it.location.filepath}" } ?: ""
+            throw FileNotFoundException("Failed to locate $path in $includePaths$suffix")
+        }
+        // Resolve symlinks, redundant '.' and '..' segments.
+        if (loadedFiles.containsKey(file)) {
+            return
+        }
 
-            dir = findClosestIncludeRoot(file) ?: file.parent!!
-            element = loadSingleFile(dir, dir.relativize(file)) ?: run {
-                val suffix = sourceElement?.let { "\n--> Included from ${it.location.filepath}" } ?: ""
-                throw FileNotFoundException("Failed to locate $path in $includePaths$suffix")
-            }
-        } else {
+        dir = findClosestIncludeRoot(file) ?: checkNotNull(file.parent) { "not found parent of $file" }
+        element = loadSingleFile(dir, dir.relativize(file)) ?: run {
             val suffix = sourceElement?.let { "\n--> Included from ${it.location.filepath}" } ?: ""
             throw FileNotFoundException("Failed to locate $path in $includePaths$suffix")
         }
@@ -272,10 +270,10 @@ class Loader {
         }
 
         file.source().use { source ->
-            try {
+            return try {
                 val location = Location.get("$base", "$fileName")
                 val data = source.buffer().readUtf8()
-                return ThriftParser.parse(location, data, errorReporter)
+                ThriftParser.parse(location, data, errorReporter)
             } catch (e: IOException) {
                 throw IOException("Failed to load $fileName from $base", e)
             }
@@ -330,9 +328,7 @@ class Loader {
     }
 
     private val Path.canonicalPath: Path
-        get() {
-            return toFile().canonicalFile.toPath()
-        }
+        get() = toFile().canonicalFile.toPath()
 }
 
 private val THRIFT_PATH_MATCHER = FileSystems.getDefault().getPathMatcher("glob:*.thrift")

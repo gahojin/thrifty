@@ -26,7 +26,7 @@ import com.microsoft.thrifty.schema.parser.*
 import java.io.File
 import java.util.*
 
-internal interface SymbolTable {
+internal fun interface SymbolTable {
     fun lookupConst(symbol: String): Constant?
 }
 
@@ -224,7 +224,6 @@ internal class Linker(
             } catch (e: LinkFailureException) {
                 reporter.error(union.location, "Failed to resolve type ${e.message}'")
             }
-
         }
     }
 
@@ -235,7 +234,6 @@ internal class Linker(
             } catch (e: LinkFailureException) {
                 reporter.error(exception.location, "Failed to resolve type ${e.message}'")
             }
-
         }
     }
 
@@ -246,7 +244,6 @@ internal class Linker(
             } catch (e: LinkFailureException) {
                 reporter.error(service.location, "Failed to resolve type ${e.message}'")
             }
-
         }
     }
 
@@ -257,7 +254,6 @@ internal class Linker(
             } catch (e: IllegalStateException) {
                 reporter.error(constant.location, e.message ?: "Error validating constants")
             }
-
         }
     }
 

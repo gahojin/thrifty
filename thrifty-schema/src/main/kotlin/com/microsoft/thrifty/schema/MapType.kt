@@ -44,7 +44,7 @@ class MapType internal constructor(
     /**
      * Creates a [Builder] initialized with this map type.
      */
-    fun toBuilder(): Builder = Builder(this)
+    fun toBuilder() = Builder(this)
 
     /**
      * An object that can create [MapType] instances.
@@ -63,29 +63,27 @@ class MapType internal constructor(
         /**
          * Use the given [keyType] for the [MapType] under construction.
          */
-        fun keyType(keyType: ThriftType): Builder = apply {
+        fun keyType(keyType: ThriftType) = apply {
             this.keyType = keyType
         }
 
         /**
          * Use the given [valueType] for the [MapType] under construction.
          */
-        fun valueType(valueType: ThriftType): Builder = apply {
+        fun valueType(valueType: ThriftType) = apply {
             this.valueType = valueType
         }
 
         /**
          * Use the given [annotations] for the [MapType] under construction.
          */
-        fun annotations(annotations: Map<String, String>): Builder = apply {
+        fun annotations(annotations: Map<String, String>) = apply {
             this.annotations = annotations
         }
 
         /**
          * Creates a new [MapType] instance.
          */
-        fun build(): MapType {
-            return MapType(keyType, valueType, annotations)
-        }
+        fun build() = MapType(keyType, valueType, annotations)
     }
 }

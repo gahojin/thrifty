@@ -42,9 +42,7 @@ abstract class FieldNamingPolicy {
          * The default policy is to leave names unaltered from their definition in Thrift IDL.
          */
         val DEFAULT: FieldNamingPolicy = object : FieldNamingPolicy() {
-            override fun apply(name: String): String {
-                return name
-            }
+            override fun apply(name: String) = name
         }
 
         /**

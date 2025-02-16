@@ -147,16 +147,14 @@ class FieldTest {
         return AnnotationElement(Location.get("", ""), mapOf(name to "true"))
     }
 
-    private fun field(): FieldElement {
-        return FieldElement(
-            location = location,
-            fieldId = fieldId,
-            type = fieldType,
-            name = fieldName,
-            requiredness = requiredness,
-            documentation = documentation,
-            constValue = null,
-            annotations = annotations,
-        )
-    }
+    private fun field() = FieldElement(
+        location = location,
+        fieldId = fieldId,
+        type = fieldType,
+        name = fieldName,
+        requiredness = requiredness,
+        documentation = documentation,
+        constValue = null,
+        annotations = annotations,
+    )
 }

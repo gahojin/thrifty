@@ -51,7 +51,7 @@ import com.squareup.kotlinpoet.TypeSpec
  * }
  * ```
  */
-interface KotlinTypeProcessor {
+fun interface KotlinTypeProcessor {
     /**
      * Processes and returns a given type.
      *

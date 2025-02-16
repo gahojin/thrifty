@@ -23,7 +23,6 @@ package com.microsoft.thrifty.schema
 
 import com.microsoft.thrifty.schema.BuiltinType.Companion.BYTE
 
-
 /**
  * Represents types defined by the Thrift IDL, such as the numeric types,
  * strings, binaries, and void.
@@ -70,18 +69,17 @@ class BuiltinType internal constructor(
         if (other == null) return false
         if (javaClass != other.javaClass) return false
 
-        val that = other as BuiltinType
+        val that = other as? BuiltinType ?: return false
 
-        if (this.name == that.name) {
+        if (name == that.name) {
             return true
         }
 
         // 'byte' and 'i8' are synonyms
         val synonyms = arrayOf(BYTE.name, I8.name)
-        return this.name in synonyms && that.name in synonyms
+        return name in synonyms && that.name in synonyms
     }
 
-    /** @inheritdoc */
     override fun hashCode(): Int {
         var name = name
         if (name == I8.name) {
@@ -144,9 +142,7 @@ class BuiltinType internal constructor(
          */
         val VOID: ThriftType = BuiltinType("void")
 
-        private val BUILTINS = listOf(BOOL, BYTE, I8, I16, I32, I64, DOUBLE, STRING, BINARY, VOID)
-            .map { it.name to it }
-            .toMap()
+        private val BUILTINS = listOf(BOOL, BYTE, I8, I16, I32, I64, DOUBLE, STRING, BINARY, VOID).associateBy { it.name }
 
         /**
          * Returns the builtin type corresponding to the given [name], or null

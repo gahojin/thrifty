@@ -41,7 +41,7 @@ internal class ParserErrorListener(
         line: Int,
         charPositionInLine: Int,
         msg: String,
-        e: RecognitionException?
+        e: RecognitionException?,
     ) {
         // Antlr char positions are zero-based, location is not.
         val loc = location.at(line, charPositionInLine + 1)

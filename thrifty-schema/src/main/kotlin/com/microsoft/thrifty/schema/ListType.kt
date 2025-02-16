@@ -42,9 +42,7 @@ class ListType internal constructor(
     /**
      * Creates a [Builder] initialized with this type's values.
      */
-    fun toBuilder(): Builder {
-        return Builder(this)
-    }
+    fun toBuilder() = Builder(this)
 
     /**
      * An object that can build new [ListType] instances.
@@ -53,7 +51,6 @@ class ListType internal constructor(
         private var elementType: ThriftType,
         private var annotations: Map<String, String>,
     ) {
-
         internal constructor(type: ListType) : this(type.elementType, type.annotations)
 
         /**
@@ -73,8 +70,6 @@ class ListType internal constructor(
         /**
          * Creates a new [ListType] instance.
          */
-        fun build(): ListType {
-            return ListType(elementType, annotations)
-        }
+        fun build() = ListType(elementType, annotations)
     }
 }

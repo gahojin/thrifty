@@ -139,8 +139,8 @@ class Program internal constructor(element: ThriftFileElement) {
 
         checkNotNull(includedPrograms == null) { "Included programs already resolved" }
 
-        includedPrograms = thriftIncludes.map {
-            loader.resolveIncludedProgram(location, it).also {
+        includedPrograms = thriftIncludes.map { thriftImport ->
+            loader.resolveIncludedProgram(location, thriftImport).also {
                 it.loadIncludedPrograms(loader, visited, this)
             }
         }
@@ -173,16 +173,14 @@ class Program internal constructor(element: ThriftFileElement) {
         )
     }
 
-    /** @inheritdoc */
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Program) return false
+        val that = other as? Program ?: return false
 
         // Programs are considered equal if they are derived from the same file.
-        return location.base == other.location.base && location.path == other.location.path
+        return location.base == that.location.base && location.path == that.location.path
     }
 
-    /** @inheritdoc */
     override fun hashCode(): Int {
         var result = location.base.hashCode()
         result = 31 * result + location.path.hashCode()
