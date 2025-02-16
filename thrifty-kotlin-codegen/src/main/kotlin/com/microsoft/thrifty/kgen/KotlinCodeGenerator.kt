@@ -1646,7 +1646,7 @@ class KotlinCodeGenerator(
                 private fun constOrError(error: String) {
                     val message = "$error: $value at ${value.location}"
                     if (value !is IdentifierValueElement) {
-                        throw IllegalStateException(message)
+                        error(message)
                     }
 
                     val name: String

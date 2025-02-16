@@ -91,7 +91,7 @@ abstract class GenerateThriftSourcesWorkAction : WorkAction<GenerateThriftSource
         } else if (opts.isJava) {
             generateJavaThrifts(schema, opts)
         } else {
-            throw IllegalStateException("Only Java or Kotlin thrift options are supported")
+            error("Only Java or Kotlin thrift options are supported")
         }
     }
 

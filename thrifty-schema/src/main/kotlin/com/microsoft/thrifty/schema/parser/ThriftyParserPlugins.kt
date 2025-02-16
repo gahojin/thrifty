@@ -65,7 +65,7 @@ object ThriftyParserPlugins {
      */
     fun setUUIDProvider(uuidProvider: UUIDProvider) {
         if (lockdown) {
-            throw IllegalStateException("Plugins can't be changed anymore")
+            error("Plugins can't be changed anymore")
         }
         ThriftyParserPlugins.uuidProvider = uuidProvider
     }

@@ -146,7 +146,7 @@ class Loader {
         }
 
         if (filesToLoad.isEmpty()) {
-            throw IllegalStateException("No files and no include paths containing Thrift files were provided")
+            error("No files and no include paths containing Thrift files were provided")
         }
 
         val loadedFiles = linkedMapOf<Path, ThriftFileElement>()
@@ -258,7 +258,7 @@ class Loader {
             }
 
             if (environment.hasErrors) {
-                throw IllegalStateException("Linking failed")
+                error("Linking failed")
             }
         }
     }
