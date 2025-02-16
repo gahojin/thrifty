@@ -54,11 +54,9 @@ internal val ThriftType.typeCode: Byte
 
 internal val UserType.kotlinNamespace: String
     get() = getNamespaceFor(NamespaceScope.KOTLIN, NamespaceScope.JAVA, NamespaceScope.ALL)
-            ?: throw AssertionError("No JVM namespace defined for $name")
 
 internal val Constant.kotlinNamespace: String
     get() = getNamespaceFor(NamespaceScope.KOTLIN, NamespaceScope.JAVA, NamespaceScope.ALL)
-            ?: throw AssertionError("No JVM namespace defined for $name")
 
 internal val ThriftType.typeCodeName: String
     get() = when (typeCode) {

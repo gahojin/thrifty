@@ -46,15 +46,13 @@ private inline val UserType.fqcn: String
  * The java package name from the spec. We always assume its there because we don't support specs that don't.
  */
 private inline val UserType.javaPackage: String
-    get() = getNamespaceFor(NamespaceScope.JAVA)!!
+    get() = getNamespaceFor(NamespaceScope.JAVA)
 
 /**
  * The java package name from the spec. We always assume its there because we don't support specs that don't.
  */
 private inline val Constant.javaPackage: String
-    get() {
-        return getNamespaceFor(NamespaceScope.JAVA)!!
-    }
+    get() = getNamespaceFor(NamespaceScope.JAVA)
 
 /**
  * Checks that this [ThriftType] is equal to a given [other] [ThriftType].
