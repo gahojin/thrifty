@@ -35,8 +35,6 @@ public class TestServer implements Extension, BeforeAllCallback, AfterAllCallbac
     private ServerProtocol protocol;
     private ServerTransport transport;
 
-    private Class<?> testClass;
-
     public ServerProtocol getProtocol() {
         return protocol;
     }
@@ -47,7 +45,7 @@ public class TestServer implements Extension, BeforeAllCallback, AfterAllCallbac
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
-        testClass = context.getRequiredTestClass();
+        Class<?> testClass = context.getRequiredTestClass();
 
         ServerConfig config = testClass.getDeclaredAnnotation(ServerConfig.class);
         protocol = config != null ? config.protocol() : ServerProtocol.BINARY;

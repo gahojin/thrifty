@@ -99,11 +99,13 @@ interface UserElement {
      * @return the first namespace found corresponding to one of the given
      *         [scopes], the * namespace, or null.
      */
-    fun getNamespaceFor(vararg scopes: NamespaceScope): String? {
+    fun getNamespaceFor(vararg scopes: NamespaceScope): String {
         for (s in scopes) {
-            namespaces[s]?.let { return it }
+            namespaces[s]?.also { return it }
         }
-        return namespaces[NamespaceScope.ALL]
+        return namespaces[NamespaceScope.ALL] ?: run {
+            throw AssertionError("No JVM namespace found for $name as $location")
+        }
     }
 }
 

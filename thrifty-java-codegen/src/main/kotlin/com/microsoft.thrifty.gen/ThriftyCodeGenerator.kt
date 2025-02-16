@@ -121,7 +121,7 @@ class ThriftyCodeGenerator(
         val exceptions = schema.exceptions.mapNotNull { assembleJavaFile(it, buildStruct(it)) }
         val unions = schema.unions.mapNotNull { assembleJavaFile(it, buildStruct(it)) }
 
-        val constantsByPackage = schema.constants.groupBy { it.getNamespaceFor(NamespaceScope.JAVA)!! }
+        val constantsByPackage = schema.constants.groupBy { it.getNamespaceFor(NamespaceScope.JAVA) }
         val constants = constantsByPackage.mapNotNull { (packageName, values) ->
             assembleJavaFile(packageName, buildConst(values))
         }
@@ -144,7 +144,7 @@ class ThriftyCodeGenerator(
 
     private fun assembleJavaFile(named: UserType, spec: TypeSpec): JavaFile? {
         val packageName = named.getNamespaceFor(NamespaceScope.JAVA)
-        check(!packageName.isNullOrEmpty()) {
+        check(packageName.isNotEmpty()) {
             "A Java package name must be given for java code generation"
         }
 

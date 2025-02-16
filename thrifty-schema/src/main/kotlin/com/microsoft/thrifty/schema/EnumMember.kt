@@ -30,26 +30,21 @@ import com.microsoft.thrifty.schema.parser.EnumMemberElement
  */
 class EnumMember private constructor(
     private val mixin: UserElementMixin,
-    val value: Int
+    val value: Int,
 ) : UserElement by mixin {
+    internal constructor(
+        element: EnumMemberElement,
+        namespaces: Map<NamespaceScope, String>,
+    ) : this(UserElementMixin(element, namespaces), element.value)
 
-    internal constructor(element: EnumMemberElement, namespaces: Map<NamespaceScope, String>)
-            : this(UserElementMixin(element, namespaces), element.value)
+    private constructor(builder: Builder) : this(builder.mixin, builder.value)
 
-    private constructor(builder: Builder)
-            : this(builder.mixin, builder.value)
-
-    /** @inheritdoc */
-    override fun toString(): String {
-        return name
-    }
+    override fun toString() = name
 
     /**
      * Returns a [Builder] initialized with this enum member.
      */
-    fun toBuilder(): Builder {
-        return Builder(this)
-    }
+    fun toBuilder() = Builder(this)
 
     /**
      * An object that can construct [EnumMembers][EnumMember].
@@ -62,13 +57,11 @@ class EnumMember private constructor(
         /**
          * Use the given [value] for the member under construction.
          */
-        fun value(value: Int): Builder = apply {
+        fun value(value: Int) = apply {
             require(value >= 0) { "Enum values cannot be less than zero" }
             this.value = value
         }
 
-        override fun build(): EnumMember {
-            return EnumMember(this)
-        }
+        override fun build() = EnumMember(this)
     }
 }

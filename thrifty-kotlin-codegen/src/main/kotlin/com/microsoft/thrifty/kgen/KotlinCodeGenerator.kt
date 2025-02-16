@@ -1646,7 +1646,7 @@ class KotlinCodeGenerator(
                 private fun constOrError(error: String) {
                     val message = "$error: $value at ${value.location}"
                     if (value !is IdentifierValueElement) {
-                        throw IllegalStateException(message)
+                        error(message)
                     }
 
                     val name: String
@@ -1668,9 +1668,7 @@ class KotlinCodeGenerator(
                                 && (expectedProgram == null || expectedProgram == it.location.programName)
                     } ?: error(message)
 
-                    val packageName = checkNotNull(c.getNamespaceFor(NamespaceScope.KOTLIN, NamespaceScope.JAVA, NamespaceScope.ALL)) {
-                        "No JVM namespace found for ${c.name} at ${c.location}"
-                    }
+                    val packageName = c.getNamespaceFor(NamespaceScope.KOTLIN, NamespaceScope.JAVA, NamespaceScope.ALL)
 
                     block.add("$packageName.$name")
                 }

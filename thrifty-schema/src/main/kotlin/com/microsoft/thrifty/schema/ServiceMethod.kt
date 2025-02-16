@@ -36,7 +36,7 @@ class ServiceMethod private constructor(
     private val mixin: UserElementMixin,
     val parameters: List<Field> = element.params.map { Field(it, mixin.namespaces) },
     val exceptions: List<Field> = element.exceptions.map { Field(it, mixin.namespaces) },
-    private var returnType_: ThriftType? = null,
+    private var _returnType: ThriftType? = null,
 ) : UserElement by mixin {
     val argsStruct = StructType(
         element = StructElement(
@@ -69,7 +69,7 @@ class ServiceMethod private constructor(
      * The type of value returned by this method, or [BuiltinType.VOID].
      */
     val returnType: ThriftType
-        get() = returnType_!!
+        get() = checkNotNull(_returnType)
 
     /**
      * True if this method was declared as `oneway`, otherwise false.
@@ -85,9 +85,7 @@ class ServiceMethod private constructor(
     /**
      * Creates a new [Builder] initialized with this method's values.
      */
-    fun toBuilder(): Builder {
-        return Builder(this)
-    }
+    fun toBuilder() = Builder(this)
 
     internal fun link(linker: Linker) {
         for (parameter in parameters) {
@@ -98,7 +96,7 @@ class ServiceMethod private constructor(
             exception.link(linker)
         }
 
-        returnType_ = linker.resolveType(element.returnType)
+        _returnType = linker.resolveType(element.returnType)
         argsStruct.link(linker)
         resultStruct.link(linker)
     }
@@ -145,46 +143,38 @@ class ServiceMethod private constructor(
      * An object that can create new [ServiceMethod] instances.
      */
     class Builder internal constructor(
-        method: ServiceMethod
+        method: ServiceMethod,
     ) : AbstractUserElementBuilder<ServiceMethod, Builder>(method.mixin) {
 
         private val element: FunctionElement = method.element
-        private var parameters: List<Field>
-        private var exceptions: List<Field>
-        private var returnType: ThriftType?
-
-        init {
-            this.parameters = method.parameters
-            this.exceptions = method.exceptions
-            this.returnType = method.returnType
-        }
+        private var parameters: List<Field> = method.parameters
+        private var exceptions: List<Field> = method.exceptions
+        private var returnType: ThriftType? = method.returnType
 
         /**
          * Use the given [parameters] for the method under construction.
          */
-        fun parameters(parameters: List<Field>): Builder = apply {
+        fun parameters(parameters: List<Field>) = apply {
             this.parameters = parameters.toList()
         }
 
         /**
          * Use the given [exceptions] for the method under construction.
          */
-        fun exceptions(exceptions: List<Field>): Builder = apply {
+        fun exceptions(exceptions: List<Field>) = apply {
             this.exceptions = exceptions.toList()
         }
 
         /**
          * Use the given return [type] for the method under construction.
          */
-        fun returnType(type: ThriftType): Builder = apply {
+        fun returnType(type: ThriftType) = apply {
             returnType = type
         }
 
         /**
          * Creates a new [ServiceMethod] instance.
          */
-        override fun build(): ServiceMethod {
-            return ServiceMethod(element, mixin, parameters, exceptions, returnType)
-        }
+        override fun build() = ServiceMethod(element, mixin, parameters, exceptions, returnType)
     }
 }

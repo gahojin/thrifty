@@ -41,7 +41,7 @@ object TypeProcessorService {
      * Because service ordering is non-deterministic, only the first instance
      * is returned.  A warning will be printed if more than one are found.
      */
-    val javaProcessor by lazy { loadSingleProcessor<TypeProcessor>(serviceLoader) }
+    val javaProcessor by lazy { loadSingleProcessor(serviceLoader) }
 
     /**
      * Gets the first [KotlinTypeProcessor] implementation loaded, or `null` if none are found.
@@ -49,7 +49,7 @@ object TypeProcessorService {
      * Because service ordering is non-deterministic, only the first instance
      * is returned.  A warning will be printed if more than one are found.
      */
-    val kotlinProcessor by lazy { loadSingleProcessor<KotlinTypeProcessor>(kotlinProcessorLoader) }
+    val kotlinProcessor by lazy { loadSingleProcessor(kotlinProcessorLoader) }
 
     private fun <T : Any> loadSingleProcessor(serviceLoader: ServiceLoader<T>): T? {
         var processor: T? = null

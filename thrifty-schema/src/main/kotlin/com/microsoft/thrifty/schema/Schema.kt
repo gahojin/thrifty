@@ -115,9 +115,7 @@ class Schema {
     /**
      * Returns a [Builder] initialized with this schema's types.
      */
-    fun toBuilder(): Builder {
-        return Builder(structs, unions, exceptions, enums, constants, typedefs, services)
-    }
+    fun toBuilder() = Builder(structs, unions, exceptions, enums, constants, typedefs, services)
 
     /**
      * A builder for [schemas][Schema].
@@ -129,82 +127,78 @@ class Schema {
         internal var enums: List<EnumType>,
         internal var constants: List<Constant>,
         internal var typedefs: List<TypedefType>,
-        internal var services: List<ServiceType>
+        internal var services: List<ServiceType>,
     ) {
         /**
          * Use the given [structs] for the schema under construction.
          */
-        fun structs(structs: List<StructType>): Builder = apply {
+        fun structs(structs: List<StructType>) = apply {
             this.structs = structs.toList()
         }
 
         /**
          * Use the given [unions] for the schema under construction.
          */
-        fun unions(unions: List<StructType>): Builder = apply {
+        fun unions(unions: List<StructType>) = apply {
             this.unions = unions.toList()
         }
 
         /**
          * Use the given [exceptions] for the schema under construction.
          */
-        fun exceptions(exceptions: List<StructType>): Builder = apply {
+        fun exceptions(exceptions: List<StructType>) = apply {
             this.exceptions = exceptions.toList()
         }
 
         /**
          * Use the given [enums] for the schema under construction.
          */
-        fun enums(enums: List<EnumType>): Builder = apply {
+        fun enums(enums: List<EnumType>) = apply {
             this.enums = enums.toList()
         }
 
         /**
          * Use the given [constants] for the schema under construction.
          */
-        fun constants(constants: List<Constant>): Builder = apply {
+        fun constants(constants: List<Constant>) = apply {
             this.constants = constants.toList()
         }
 
         /**
          * Use the given [typedefs] for the schema under construction.
          */
-        fun typedefs(typedefs: List<TypedefType>): Builder = apply {
+        fun typedefs(typedefs: List<TypedefType>) = apply {
             this.typedefs = typedefs.toList()
         }
 
         /**
          * Use the given [services] for the schema under construction.
          */
-        fun services(services: List<ServiceType>): Builder = apply {
+        fun services(services: List<ServiceType>) = apply {
             this.services = services.toList()
         }
 
         /**
          * Build a new [Schema].
          */
-        fun build(): Schema = Schema(this)
+        fun build() = Schema(this)
     }
 
-    /** @inheritdoc */
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Schema
-
-        if (structs != other.structs) return false
-        if (unions != other.unions) return false
-        if (exceptions != other.exceptions) return false
-        if (enums != other.enums) return false
-        if (constants != other.constants) return false
-        if (typedefs != other.typedefs) return false
-        if (services != other.services) return false
-
+        val that = other as? Schema ?: return false
+        if (structs != that.structs) return false
+        if (unions != that.unions) return false
+        if (exceptions != that.exceptions) return false
+        if (enums != that.enums) return false
+        if (constants != that.constants) return false
+        if (typedefs != that.typedefs) return false
+        if (services != that.services) return false
         return true
     }
 
-    /** @inheritdoc */
     override fun hashCode(): Int {
         var result = structs.hashCode()
         result = 31 * result + unions.hashCode()

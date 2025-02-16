@@ -29,11 +29,9 @@ package com.microsoft.thrifty.schema
  */
 @Suppress("UNCHECKED_CAST")
 abstract class AbstractUserElementBuilder<
-        TElement : UserElement,
-        TBuilder : AbstractUserElementBuilder<TElement, TBuilder>
-        > internal constructor(
-    internal var mixin: UserElementMixin
-) {
+    TElement : UserElement,
+    TBuilder : AbstractUserElementBuilder<TElement, TBuilder>,
+> internal constructor(internal var mixin: UserElementMixin) {
 
     /**
      * The name to use for the element under construction.

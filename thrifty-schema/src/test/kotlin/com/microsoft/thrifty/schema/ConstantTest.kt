@@ -71,10 +71,11 @@ class ConstantTest {
     @Test
     fun boolConstant() {
         val c = makeConstant(
-                "aBool",
-                ScalarTypeElement(loc, "string", null),
-                IdentifierValueElement(loc, "aBool", "aBool"),
-                BuiltinType.BOOL)
+            "aBool",
+            ScalarTypeElement(loc, "string", null),
+            IdentifierValueElement(loc, "aBool", "aBool"),
+            BuiltinType.BOOL,
+        )
 
         symbolTable["aBool"] = c
 
@@ -84,10 +85,11 @@ class ConstantTest {
     @Test
     fun boolWithWrongTypeOfConstant() {
         val c = makeConstant(
-                "aBool",
-                ScalarTypeElement(loc, "string", null),
-                IdentifierValueElement(loc, "aBool", "abool"),
-                BuiltinType.STRING)
+            "aBool",
+            ScalarTypeElement(loc, "string", null),
+            IdentifierValueElement(loc, "aBool", "abool"),
+            BuiltinType.STRING,
+        )
 
         symbolTable["aBool"] = c
 
@@ -110,10 +112,11 @@ class ConstantTest {
         val td = makeTypedef(BuiltinType.BOOL, "Truthiness")
 
         val c = makeConstant(
-                "aBool",
-                ScalarTypeElement(loc, "Truthiness", null),
-                IdentifierValueElement(loc, "aBool", "aBool"),
-                td)
+            "aBool",
+            ScalarTypeElement(loc, "Truthiness", null),
+            IdentifierValueElement(loc, "aBool", "aBool"),
+            td,
+        )
 
         symbolTable["aBool"] = c
 
@@ -139,28 +142,22 @@ class ConstantTest {
 
     @Test
     fun tooLargeInt() {
-        val value = IntValueElement(loc,
-                "${Integer.MAX_VALUE.toLong() + 1}", Integer.MAX_VALUE.toLong() + 1)
+        val value = IntValueElement(loc, "${Integer.MAX_VALUE.toLong() + 1}", Integer.MAX_VALUE.toLong() + 1)
         val type = BuiltinType.I32
 
-        val e = shouldThrow<IllegalStateException> {
+        shouldThrow<IllegalStateException> {
             Constant.validate(symbolTable, value, type)
-        }
-
-        e.message shouldContain "out of range for type i32"
+        }.message shouldContain "out of range for type i32"
     }
 
     @Test
     fun tooSmallInt() {
-        val value = IntValueElement(loc,
-                "${Integer.MIN_VALUE.toLong() - 1}", Integer.MIN_VALUE.toLong() - 1)
+        val value = IntValueElement(loc, "${Integer.MIN_VALUE.toLong() - 1}", Integer.MIN_VALUE.toLong() - 1)
         val type = BuiltinType.I32
 
-        val e = shouldThrow<IllegalStateException> {
+        shouldThrow<IllegalStateException> {
             Constant.validate(symbolTable, value, type)
-        }
-
-        e.message shouldContain "out of range for type i32"
+        }.message shouldContain "out of range for type i32"
     }
 
     @Test
@@ -177,10 +174,11 @@ class ConstantTest {
     @Test
     fun doubleConstant() {
         val c = makeConstant(
-                "aDouble",
-                ScalarTypeElement(loc, "string", null),
-                IdentifierValueElement(loc, "aDouble", "aDouble"),
-                BuiltinType.DOUBLE)
+            "aDouble",
+            ScalarTypeElement(loc, "string", null),
+            IdentifierValueElement(loc, "aDouble", "aDouble"),
+            BuiltinType.DOUBLE,
+        )
 
         symbolTable["aDouble"] = c
 
@@ -190,10 +188,11 @@ class ConstantTest {
     @Test
     fun doubleWithWrongTypeOfConstant() {
         val c = makeConstant(
-                "aString",
-                ScalarTypeElement(loc, "string", null),
-                IdentifierValueElement(loc, "aString", "aString"),
-                BuiltinType.STRING)
+            "aString",
+            ScalarTypeElement(loc, "string", null),
+            IdentifierValueElement(loc, "aString", "aString"),
+            BuiltinType.STRING,
+        )
 
         symbolTable["aString"] = c
 
@@ -244,19 +243,18 @@ class ConstantTest {
 
         val et = EnumType(enumElement, emptyMap())
 
-        val e = shouldThrow<IllegalStateException> {
+        shouldThrow<IllegalStateException> {
             Constant.validate(symbolTable, IdentifierValueElement(loc, "TEST", "TEST"), et)
-        }
-        e.message shouldContain "Unqualified name 'TEST' is not a valid enum constant value"
+        }.message shouldContain "Unqualified name 'TEST' is not a valid enum constant value"
     }
 
     @Test
     fun listOfInts() {
         val list = ListType(BuiltinType.I32)
         val listValue = ListValueElement(location = loc, thriftText = "[0, 1, 2]", value = listOf(
-                IntValueElement(loc, "0", 0),
-                IntValueElement(loc, "1", 1),
-                IntValueElement(loc, "2", 2)
+            IntValueElement(loc, "0", 0),
+            IntValueElement(loc, "1", 1),
+            IntValueElement(loc, "2", 2),
         ))
 
         Constant.validate(symbolTable, listValue, list)
@@ -266,12 +264,14 @@ class ConstantTest {
     fun heterogeneousList() {
         val list = ListType(BuiltinType.I32)
         val listValue = ListValueElement(location = loc, thriftText = "[0, 1, \"2\"]", value = listOf(
-                IntValueElement(loc, "0", 0),
-                IntValueElement(loc, "1", 1),
-                LiteralValueElement(loc, "\"2\"", "2")
+            IntValueElement(loc, "0", 0),
+            IntValueElement(loc, "1", 1),
+            LiteralValueElement(loc, "\"2\"", "2"),
         ))
 
-        shouldThrow<IllegalStateException> { Constant.validate(symbolTable, listValue, list) }
+        shouldThrow<IllegalStateException> {
+            Constant.validate(symbolTable, listValue, list)
+        }.message shouldContain "Expected a value of type i32 but got 2"
     }
 
     @Test
@@ -301,39 +301,35 @@ class ConstantTest {
 
         val value = IdentifierValueElement(loc, "AnEnum.FOO", "AnEnum.FOO")
 
-        val e = shouldThrow<IllegalStateException> {
+        shouldThrow<IllegalStateException> {
             Constant.validate(symbolTable, value, typedefType)
-        }
-        e.message shouldBe "'AnEnum.FOO' is not a member of enum type DifferentEnum: members=[BAR]"
+        }.message shouldBe "'AnEnum.FOO' is not a member of enum type DifferentEnum: members=[BAR]"
     }
 
     @Test
     fun setOfInts() {
         val setType = SetType(BuiltinType.I32)
         val listValue = ListValueElement(location = loc, thriftText = "[0, 1, 2]", value = listOf(
-                IntValueElement(loc, "0", 0),
-                IntValueElement(loc, "1", 1),
-                IntValueElement(loc, "2", 2)
+            IntValueElement(loc, "0", 0),
+            IntValueElement(loc, "1", 1),
+            IntValueElement(loc, "2", 2),
         ))
 
         Constant.validate(symbolTable, listValue, setType)
     }
 
     private fun makeConstant(name: String, typeElement: TypeElement, value: ConstValueElement, thriftType: ThriftType): Constant {
-        val element = ConstElement(
-                loc,
-                typeElement,
-                name,
-                value)
+        val element = ConstElement(loc, typeElement, name, value)
 
         return Constant(element, emptyMap(), thriftType)
     }
 
     private fun makeTypedef(oldType: ThriftType, newName: String): TypedefType {
         val element = TypedefElement(
-                loc,
-                ScalarTypeElement(loc, "does_not_matter", null),
-                newName)
+            loc,
+            ScalarTypeElement(loc, "does_not_matter", null),
+            newName,
+        )
 
         return TypedefType(element, emptyMap(), oldType)
     }

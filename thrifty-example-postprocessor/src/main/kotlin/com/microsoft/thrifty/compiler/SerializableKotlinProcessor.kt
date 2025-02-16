@@ -31,22 +31,22 @@ import java.io.Serializable
  * for all generated types.
  */
 class SerializableKotlinProcessor : KotlinTypeProcessor {
-    override fun process(spec: TypeSpec): TypeSpec? {
-        return spec.toBuilder().run {
-            addSuperinterface(Serializable::class)
+    override fun process(type: TypeSpec): TypeSpec {
+        val serialVersionUidField = PropertySpec.builder("serialVersionUID", Long::class)
+            .addModifiers(KModifier.PRIVATE, KModifier.CONST) // const vals in companions are static
+            .initializer("%L", -1L)
+            .build()
 
-            // Static fields in Kotlin go in a companion object;
-            // we'll assume here that `spec` does not already
-            // have one.
-            val companionType = TypeSpec.companionObjectBuilder()
-                    .addProperty(PropertySpec.builder("serialVersionUID", Long::class)
-                            .addModifiers(KModifier.PRIVATE, KModifier.CONST) // const vals in companions are static
-                            .initializer("%L", -1L)
-                            .build())
-                    .build()
+        // Static fields in Kotlin go in a companion object;
+        // we'll assume here that `spec` does not already
+        // have one.
+        val companionType = TypeSpec.companionObjectBuilder()
+            .addProperty(serialVersionUidField)
+            .build()
 
-            addType(companionType)
-            build()
-        }
+        return type.toBuilder()
+            .addSuperinterface(Serializable::class)
+            .addType(companionType)
+            .build()
     }
 }

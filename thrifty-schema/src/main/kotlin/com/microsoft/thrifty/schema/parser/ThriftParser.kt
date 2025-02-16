@@ -59,7 +59,7 @@ object ThriftParser {
         if (reporter.hasError) {
             val errorReports = reporter.formattedReports().joinToString("\n")
             val message = String.format(Locale.US, "Syntax errors in %s:\n%s", location, errorReports)
-            throw IllegalStateException(message)
+            error(message)
         }
 
         return thriftListener.buildFileElement()

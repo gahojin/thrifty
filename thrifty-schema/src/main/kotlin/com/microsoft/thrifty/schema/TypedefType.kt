@@ -31,14 +31,14 @@ import java.util.*
 class TypedefType internal constructor(
     mixin: UserElementMixin,
     private val oldTypeElement: TypeElement,
-    private var oldType_: ThriftType? = null
+    private var _oldType: ThriftType? = null,
 ) : UserType(mixin) {
 
     /**
      * The aliased type
      */
     val oldType: ThriftType
-        get() = checkNotNull(oldType_)
+        get() = checkNotNull(_oldType)
 
     internal constructor(element: TypedefElement, namespaces: Map<NamespaceScope, String>, oldType: ThriftType? = null)
             : this(UserElementMixin(element, namespaces), element.oldType, oldType)
@@ -47,15 +47,16 @@ class TypedefType internal constructor(
             : this(builder.mixin, builder.oldTypeElement, builder.oldType)
 
     internal fun link(linker: Linker) {
-        oldType_ = linker.resolveType(oldTypeElement)
+        _oldType = linker.resolveType(oldTypeElement)
     }
 
     internal fun validate(linker: Linker) {
-        if (oldType_!!.isService) {
+        val oldType = oldType
+        if (oldType.isService) {
             linker.addError(location, "Cannot declare a typedef of a service")
         }
 
-        if (oldType_ == BuiltinType.VOID) {
+        if (oldType == BuiltinType.VOID) {
             linker.addError(location, "Cannot declare a typedef of void")
         }
 
@@ -80,13 +81,13 @@ class TypedefType internal constructor(
     /**
      * Creates a [Builder] initialized with this type's values.
      */
-    fun toBuilder(): Builder = Builder(this)
+    fun toBuilder() = Builder(this)
 
     override fun equals(other: Any?): Boolean {
         if (!super.equals(other)) return false
-        if (other !is TypedefType) return false
+        val that = other as? TypedefType ?: return false
 
-        return this.oldTypeElement == other.oldTypeElement
+        return this.oldTypeElement == that.oldTypeElement
     }
 
     override fun hashCode(): Int {
@@ -96,26 +97,24 @@ class TypedefType internal constructor(
     /**
      * An object that can create new [TypedefType] instances
      */
-    class Builder internal constructor(
-        typedef: TypedefType
-    ) : UserTypeBuilder<TypedefType, Builder>(typedef) {
+    class Builder internal constructor(typedef: TypedefType) : UserTypeBuilder<TypedefType, Builder>(typedef) {
         internal var oldTypeElement: TypeElement = typedef.oldTypeElement
         internal var oldType: ThriftType = typedef.oldType
 
         /**
          * Use the given [oldTypeElement] for the typedef under construction.
          */
-        fun oldTypeElement(oldTypeElement: TypeElement): Builder = apply {
+        fun oldTypeElement(oldTypeElement: TypeElement) = apply {
             this.oldTypeElement = oldTypeElement
         }
 
         /**
          * Use the given [oldType] for the typedef under construction.
          */
-        fun oldType(oldType: ThriftType): Builder = apply {
+        fun oldType(oldType: ThriftType) = apply {
             this.oldType = oldType
         }
 
-        override fun build(): TypedefType = TypedefType(this)
+        override fun build() = TypedefType(this)
     }
 }

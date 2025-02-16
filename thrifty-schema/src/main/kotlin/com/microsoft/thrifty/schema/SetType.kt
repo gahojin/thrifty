@@ -42,7 +42,7 @@ class SetType internal constructor(
     /**
      * Creates a [Builder] initialized with this type's values.
      */
-    fun toBuilder(): Builder = Builder(this)
+    fun toBuilder() = Builder(this)
 
     /**
      * An object that can create new [SetType] instances.
@@ -56,20 +56,20 @@ class SetType internal constructor(
         /**
          * Use the given [elementType] with the set type under construction.
          */
-        fun elementType(elementType: ThriftType): Builder = apply {
+        fun elementType(elementType: ThriftType) = apply {
             this.elementType = elementType
         }
 
         /**
          * Use the given [annotations] with the set type under construction.
          */
-        fun annotations(annotations: Map<String, String>): Builder = apply {
+        fun annotations(annotations: Map<String, String>) = apply {
             this.annotations = annotations
         }
 
         /**
          * Creates a new [SetType] instance.
          */
-        fun build(): SetType = SetType(elementType, annotations)
+        fun build() = SetType(elementType, annotations)
     }
 }

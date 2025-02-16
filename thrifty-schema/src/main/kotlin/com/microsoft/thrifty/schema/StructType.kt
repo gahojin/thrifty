@@ -48,8 +48,10 @@ class StructType : UserType {
     val isException: Boolean
         get() = structType === StructElement.Type.EXCEPTION
 
-    internal constructor(element: StructElement, namespaces: Map<NamespaceScope, String>)
-            : super(UserElementMixin(element, namespaces)) {
+    internal constructor(
+        element: StructElement,
+        namespaces: Map<NamespaceScope, String>,
+    ) : super(UserElementMixin(element, namespaces)) {
         this.structType = element.type
         this.fields = element.fields.map { Field(it, namespaces) }
     }
@@ -74,9 +76,7 @@ class StructType : UserType {
     /**
      * Creates a [Builder] initialized with this struct's values.
      */
-    fun toBuilder(): Builder {
-        return Builder(this)
-    }
+    fun toBuilder() = Builder(this)
 
     internal fun link(linker: Linker) {
         for (field in fields) {
@@ -112,14 +112,12 @@ class StructType : UserType {
         }
     }
 
-    /** @inheritDoc */
     override fun equals(other: Any?): Boolean {
         if (!super.equals(other)) return false
         val that = other as? StructType ?: return false
         return this.structType == that.structType && this.fields == that.fields
     }
 
-    /** @inheritDoc */
     override fun hashCode(): Int {
         return Objects.hash(super.hashCode(), structType, fields)
     }
@@ -134,37 +132,35 @@ class StructType : UserType {
         /**
          * Make the struct under construction a `union` type.
          */
-        fun asUnion(): Builder = structType(StructElement.Type.UNION)
+        fun asUnion() = structType(StructElement.Type.UNION)
 
         /**
          * Make the struct under construction a `struct` type.
          */
-        fun asStruct(): Builder = structType(StructElement.Type.STRUCT)
+        fun asStruct() = structType(StructElement.Type.STRUCT)
 
         /**
          * Make the struct under construction an `exception` type.
          */
-        fun asException(): Builder = structType(StructElement.Type.EXCEPTION)
+        fun asException() = structType(StructElement.Type.EXCEPTION)
 
         /**
          * Set the [structType] for the type under construction.
          */
-        fun structType(structType: StructElement.Type): Builder = apply {
+        fun structType(structType: StructElement.Type) = apply {
             this.structType = structType
         }
 
         /**
          * Use the given [fields] for the type under construction.
          */
-        fun fields(fields: List<Field>): Builder = apply {
+        fun fields(fields: List<Field>) = apply {
             this.fields = fields.toList()
         }
 
         /**
          * Creates a new [StructType] instance.
          */
-        override fun build(): StructType {
-            return StructType(this)
-        }
+        override fun build() = StructType(this)
     }
 }

@@ -293,7 +293,7 @@ internal class ConstantBuilder(
                     else -> throw AssertionError("Constant value $value is not possibly an enum; validation bug")
                 }
             } catch (_: NoSuchElementException) {
-                throw IllegalStateException("No enum member in ${enumType.name} with value $value")
+                error("No enum member in ${enumType.name} with value $value")
             }
 
             return CodeBlock.of("\$T.\$L", typeResolver.getJavaClass(enumType), member.name)
@@ -361,14 +361,14 @@ internal class ConstantBuilder(
         }
 
         override fun visitService(serviceType: ServiceType): CodeBlock {
-            throw IllegalStateException("constants cannot be services")
+            error("constants cannot be services")
         }
 
         private fun constantOrError(error: String): CodeBlock {
             val message = "$error: $value + at ${value.location}"
 
             if (value !is IdentifierValueElement) {
-                throw IllegalStateException(message)
+                error(message)
             }
 
             val expectedType = type.trueType

@@ -68,33 +68,27 @@ class Location private constructor(
 
     /** @inheritdoc */
     override fun toString(): String {
-        val sb = StringBuilder(base.length + path.length)
-        if (!base.isEmpty()) {
-            sb.append(base).append(File.separator)
-        }
-        sb.append(path)
-        if (line != -1) {
-            sb.append(": (").append(line)
-            if (column != -1) {
-                sb.append(", ").append(column)
+        return buildString(base.length + path.length) {
+            if (base.isNotEmpty()) {
+                append(base).append(File.separator)
             }
-            sb.append(")")
+            append(path)
+            if (line != -1) {
+                append(": (").append(line)
+                if (column != -1) {
+                    append(", ").append(column)
+                }
+                append(")")
+            }
         }
-        return sb.toString()
     }
 
-    /** @inheritdoc */
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other is Location) {
-            val location = other as Location?
-
-            if (line != location!!.line) return false
-            if (column != location.column) return false
-            return if (base != location.base) false else path == location.path
-        }
-
-        return false
+        val that = other as? Location ?: return false
+        if (line != that.line) return false
+        if (column != that.column) return false
+        return if (base != that.base) false else path == that.path
     }
 
     /** @inheritdoc */

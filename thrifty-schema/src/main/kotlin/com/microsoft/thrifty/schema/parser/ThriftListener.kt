@@ -72,7 +72,7 @@ internal class ThriftListener(
     fun buildFileElement(): ThriftFileElement {
         // Default JVM subtypes to the JVM namespace if present
         namespaces.find { it.scope == NamespaceScope.JVM }?.let { jvmElement ->
-            NamespaceScope.jvmMembers().subtract(namespaces.map { it.scope }).forEach { subType ->
+            NamespaceScope.jvmMembers().subtract(namespaces.map { it.scope }.toSet()).forEach { subType ->
                 namespaces.add(jvmElement.copy(scope = subType))
             }
         }
@@ -154,9 +154,8 @@ internal class ThriftListener(
         for (memberContext in ctx.enumMember()) {
             var value = nextValue
 
-            val valueToken = memberContext.INTEGER()
-            if (valueToken != null) {
-                value = parseInt(valueToken)
+            memberContext.INTEGER()?.also {
+                value = parseInt(it)
             }
 
             if (!values.add(value)) {
@@ -247,7 +246,7 @@ internal class ThriftListener(
 
     private fun parseFieldList(
         contexts: List<AntlrThriftParser.FieldContext>,
-        defaultRequiredness: Requiredness = Requiredness.DEFAULT
+        defaultRequiredness: Requiredness = Requiredness.DEFAULT,
     ): List<FieldElement> {
         val fields = mutableListOf<FieldElement>()
         val ids = mutableSetOf<Int>()
@@ -444,42 +443,39 @@ internal class ThriftListener(
             throw AssertionError("Incorrect UNESCAPED_LITERAL rule: $literal")
         }
 
-        val sb = StringBuilder(literal.length - 2)
+        return buildString(literal.length - 2) {
+            var i = 1
+            val end = chars.size - 1
+            while (i < end) {
+                val c = chars[i++]
 
-        var i = 1
-        val end = chars.size - 1
-        while (i < end) {
-            val c = chars[i++]
-
-            if (processEscapes && c == '\\') {
-                if (i == end) {
-                    errorReporter.error(location, "Unterminated literal")
-                    break
-                }
-
-                val escape = chars[i++]
-                when (escape) {
-                    'a' -> sb.append(0x7.toChar())
-                    'b' -> sb.append('\b')
-                    'f' -> sb.append('\u000C')
-                    'n' -> sb.append('\n')
-                    'r' -> sb.append('\r')
-                    't' -> sb.append('\t')
-                    'v' -> sb.append(0xB.toChar())
-                    '\\' -> sb.append('\\')
-                    'u' -> throw UnsupportedOperationException("unicode escapes not yet implemented")
-                    else -> if (escape == startChar) {
-                        sb.append(startChar)
-                    } else {
-                        errorReporter.error(location, "invalid escape character: $escape")
+                if (processEscapes && c == '\\') {
+                    if (i == end) {
+                        errorReporter.error(location, "Unterminated literal")
+                        break
                     }
+
+                    when (val escape = chars[i++]) {
+                        'a' -> append(0x7.toChar())
+                        'b' -> append('\b')
+                        'f' -> append('\u000C')
+                        'n' -> append('\n')
+                        'r' -> append('\r')
+                        't' -> append('\t')
+                        'v' -> append(0xB.toChar())
+                        '\\' -> append('\\')
+                        'u' -> throw UnsupportedOperationException("unicode escapes not yet implemented")
+                        else -> if (escape == startChar) {
+                            append(startChar)
+                        } else {
+                            errorReporter.error(location, "invalid escape character: $escape")
+                        }
+                    }
+                } else {
+                    append(c)
                 }
-            } else {
-                sb.append(c)
             }
         }
-
-        return sb.toString()
     }
 
     private fun typeElementOf(context: AntlrThriftParser.FieldTypeContext): TypeElement {
@@ -593,9 +589,7 @@ internal class ThriftListener(
     }
 
     private fun formatJavadoc(context: ParserRuleContext): String {
-        return formatJavadoc(
-            getLeadingComments(context.getStart()) + getTrailingComments(context.getStop())
-        )
+        return formatJavadoc(getLeadingComments(context.getStart()) + getTrailingComments(context.getStop()))
     }
 
     private fun getLeadingComments(token: Token): List<Token> {
@@ -623,7 +617,7 @@ internal class ThriftListener(
     private fun getTrailingComments(endToken: Token): List<Token> {
         val hiddenTokens = tokenStream.getHiddenTokensToRight(endToken.tokenIndex, Lexer.HIDDEN)
 
-        if (hiddenTokens != null && hiddenTokens.isNotEmpty()) {
+        if (hiddenTokens?.isNotEmpty() == true) {
             val maybeTrailingDoc = hiddenTokens.first() // only one trailing comment is possible
 
             if (maybeTrailingDoc.isComment) {
@@ -640,8 +634,6 @@ internal class ThriftListener(
         // without wildly re-allocating.  Estimated based on the ClientTestThrift
         // and TestThrift files, which contain around ~1200 tokens each.
         private const val INITIAL_BITSET_CAPACITY = 2048
-
-
     }
 
     // endregion
@@ -681,8 +673,8 @@ private fun formatJavadoc(commentTokens: List<Token>): String {
     }
 
     return sb.toString().trim { it <= ' ' }.let { doc ->
-        if (doc.isNotEmpty() && !doc.endsWith("\n")) {
-            doc + "\n"
+        if (doc.isNotEmpty()) {
+            "${doc}\n"
         } else {
             doc
         }

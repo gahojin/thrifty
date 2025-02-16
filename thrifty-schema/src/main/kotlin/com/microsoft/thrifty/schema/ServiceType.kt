@@ -29,9 +29,7 @@ import java.util.*
  * Represents a `service` defined in a .thrift file.
  */
 class ServiceType : UserType {
-    /**
-     * The methods defined by this service.
-     */
+    /** The methods defined by this service. */
     val methods: List<ServiceMethod>
     private val extendsServiceType: TypeElement?
 
@@ -71,7 +69,7 @@ class ServiceType : UserType {
     /**
      * Creates a [Builder] initialized with this service's values.
      */
-    fun toBuilder(): Builder = Builder(this)
+    fun toBuilder() = Builder(this)
 
     internal fun link(linker: Linker) {
         for (method in methods) {
@@ -151,7 +149,7 @@ class ServiceType : UserType {
         /**
          * Use the given [methods] for the service under construction.
          */
-        fun methods(methods: List<ServiceMethod>): Builder = apply {
+        fun methods(methods: List<ServiceMethod>) = apply {
             this.methods = methods
         }
 
@@ -159,15 +157,13 @@ class ServiceType : UserType {
          * Use the given [base type][extendsService] for the service under
          * construction.
          */
-        fun extendsService(extendsService: ThriftType?): Builder = apply {
+        fun extendsService(extendsService: ThriftType?) = apply {
             this.extendsService = extendsService
         }
 
         /**
          * Creates a new [ServiceType] instance.
          */
-        override fun build(): ServiceType {
-            return ServiceType(this)
-        }
+        override fun build() = ServiceType(this)
     }
 }

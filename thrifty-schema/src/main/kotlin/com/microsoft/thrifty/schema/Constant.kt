@@ -30,14 +30,14 @@ import com.microsoft.thrifty.schema.parser.*
 class Constant private constructor(
     private val element: ConstElement,
     private val mixin: UserElementMixin,
-    private var type_: ThriftType? = null,
+    private var _type: ThriftType? = null,
 ) : UserElement by mixin {
 
     /**
      * The type of the const value.
      */
     val type: ThriftType
-        get() = type_!!
+        get() = checkNotNull(_type)
 
     /**
      * The const's value.
@@ -58,7 +58,7 @@ class Constant private constructor(
             : this(builder.element, builder.mixin, builder.type)
 
     internal fun link(linker: Linker) {
-        type_ = linker.resolveType(element.type)
+        _type = linker.resolveType(element.type)
     }
 
     internal fun linkReferencedConstants(linker: Linker) {
@@ -73,7 +73,7 @@ class Constant private constructor(
     private fun detectCycles(
         linker: Linker,
         visitStates: MutableMap<Constant, VisitState>,
-        path: MutableList<Constant>
+        path: MutableList<Constant>,
     ) {
         if (visitStates[this] == VisitState.VISITING) {
             val message = path.joinToString(
@@ -82,7 +82,7 @@ class Constant private constructor(
             ) { elem ->
                 "${elem.name} (${elem.location.path}:${elem.location.line})"
             }
-            throw IllegalStateException(message)
+            error(message)
         }
 
         visitStates[this] = VisitState.VISITING
@@ -105,7 +105,7 @@ class Constant private constructor(
      */
     private enum class VisitState {
         VISITING,
-        VISITED
+        VISITED,
     }
 
     /**
@@ -123,15 +123,13 @@ class Constant private constructor(
      * An object that can build [Constants][Constant].
      */
     class Builder internal constructor(
-        constant: Constant
+        constant: Constant,
     ) : AbstractUserElementBuilder<Constant, Builder>(constant.mixin) {
 
         internal val element: ConstElement = constant.element
         internal val type: ThriftType = constant.type
 
-        override fun build(): Constant {
-            return Constant(this)
-        }
+        override fun build() = Constant(this)
     }
 
     internal interface ConstValueValidator {
@@ -155,57 +153,34 @@ class Constant private constructor(
         fun forType(type: ThriftType): ConstValueValidator {
             val tt = type.trueType
 
-            if (tt.isBuiltin) {
-                if (tt == BuiltinType.BOOL) return BOOL
-                if (tt == BuiltinType.BYTE) return BYTE
-                if (tt == BuiltinType.I16) return I16
-                if (tt == BuiltinType.I32) return I32
-                if (tt == BuiltinType.I64) return I64
-                if (tt == BuiltinType.DOUBLE) return DOUBLE
-                if (type == BuiltinType.STRING) return STRING
-
-                if (tt == BuiltinType.BINARY) {
-                    throw IllegalStateException("Binary constants are unsupported")
+            return when {
+                tt.isBuiltin -> when (tt) {
+                    BuiltinType.BOOL -> BOOL
+                    BuiltinType.BYTE -> BYTE
+                    BuiltinType.I16 -> I16
+                    BuiltinType.I32 -> I32
+                    BuiltinType.I64 -> I64
+                    BuiltinType.DOUBLE -> DOUBLE
+                    BuiltinType.STRING -> STRING
+                    BuiltinType.BINARY -> error("Binary constants are unsupported")
+                    BuiltinType.VOID -> error("Cannot declare a constant of type 'void'")
+                    else -> throw AssertionError("Unrecognized built-in type: ${type.name}")
                 }
-
-                if (tt == BuiltinType.VOID) {
-                    throw IllegalStateException("Cannot declare a constant of type 'void'")
-                }
-
-                throw AssertionError("Unrecognized built-in type: ${type.name}")
-            }
-
-            if (tt.isEnum) {
-                return ENUM
-            }
-
-            if (tt.isList || tt.isSet) {
-                return COLLECTION
-            }
-
-            if (tt.isMap) {
-                return MAP
-            }
-
-            if (tt.isStruct) {
+                tt.isEnum -> ENUM
+                tt.isList || tt.isSet -> COLLECTION
+                tt.isMap -> MAP
                 // this should work for exception type as well. structType has isException field
-                return STRUCT
+                tt.isStruct -> STRUCT
+                else -> error("Illegal const definition. Const must be of type [bool, byte, i16, i32, i64, double, string, enum, list, set, map, struct]")
             }
-
-            throw IllegalStateException(
-                "Illegal const definition. " +
-                        "Const must be of type [bool, byte, i16, i32, i64, double, string, enum, list, set, map, struct]"
-            )
         }
     }
 
     private object BoolValidator : ConstValueValidator {
         override fun validate(symbolTable: SymbolTable, expected: ThriftType, valueElement: ConstValueElement) {
             when (valueElement) {
-                is IntValueElement -> {
-                    if (valueElement.value in listOf(0L, 1L)) {
-                        return
-                    }
+                is IntValueElement -> if (valueElement.value in listOf(0L, 1L)) {
+                    return
                 }
 
                 is IdentifierValueElement -> {
@@ -220,12 +195,10 @@ class Constant private constructor(
                     }
                 }
 
-                else -> {}
+                else -> Unit
             }
 
-            throw IllegalStateException(
-                "Expected 'true', 'false', '1', '0', or a bool constant; got: $valueElement at ${valueElement.location}"
-            )
+            error("Expected 'true', 'false', '1', '0', or a bool constant; got: $valueElement at ${valueElement.location}")
         }
     }
 
@@ -248,13 +221,13 @@ class Constant private constructor(
 
     private class IntegerValidator(
         private val minValue: Long,
-        private val maxValue: Long
+        private val maxValue: Long,
     ) : BaseValidator() {
         override fun validate(symbolTable: SymbolTable, expected: ThriftType, valueElement: ConstValueElement) {
             when (valueElement) {
                 is IntValueElement -> {
                     val lv = valueElement.value
-                    check(lv >= minValue && lv <= maxValue) {
+                    check(lv in minValue..maxValue) {
                         "value '$lv' is out of range for type ${expected.name}"
                     }
                 }
@@ -295,7 +268,7 @@ class Constant private constructor(
     private object EnumValidator : ConstValueValidator {
         override fun validate(symbolTable: SymbolTable, expected: ThriftType, valueElement: ConstValueElement) {
             if (expected !is EnumType) {
-                throw IllegalStateException("bad enum literal")
+                error("bad enum literal")
             }
 
             when (valueElement) {
@@ -474,9 +447,8 @@ class Constant private constructor(
 
         override fun visitBool(boolType: BuiltinType): List<Constant> {
             if (cve is IdentifierValueElement) {
-                val maybeRef = linker.lookupConst(cve.value)
-                if (maybeRef != null) {
-                    return listOf(maybeRef)
+                linker.lookupConst(cve.value)?.also {
+                    return listOf(it)
                 }
                 // Bool constants can have IdentifierValueElement values that are not
                 // const references; that's likely the case here.
@@ -494,9 +466,8 @@ class Constant private constructor(
 
         override fun visitEnum(enumType: EnumType): List<Constant> {
             if (cve is IdentifierValueElement) {
-                val maybeRef = linker.lookupConst(cve.value)
-                if (maybeRef != null) {
-                    return listOf(maybeRef)
+                linker.lookupConst(cve.value)?.also {
+                    return listOf(it)
                 }
                 // Enum constants can have IdentifierValueElement values that are not
                 // const references; that's likely the case here.
@@ -544,16 +515,12 @@ class Constant private constructor(
                 return getScalarConstantReference()
             }
 
-            check(cve is MapValueElement) {
-                "unpossible"
-            }
+            check(cve is MapValueElement) { "unpossible" }
 
             val fieldsByName = structType.fields.associateBy { it.name }
 
             return cve.value.flatMap { (key, value) ->
-                check(key is LiteralValueElement) {
-                    "wtf"
-                }
+                check(key is LiteralValueElement) { "wtf" }
 
                 val fieldName = key.value
                 val field = checkNotNull(fieldsByName[fieldName]) { "nope" }
