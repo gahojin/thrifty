@@ -40,23 +40,24 @@ import javax.inject.Inject
  * This is the public interface of our Gradle plugin to build scripts.  Renaming
  * or removing a method is a breaking change!
  */
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class ThriftyExtension @Inject constructor(
     private val objects: ObjectFactory,
-    private val layout: ProjectLayout
+    private val layout: ProjectLayout,
 ) {
     private val includePathEntries: ListProperty<Directory> = objects.listProperty(Directory::class.java)
-    private val sources: ListProperty<DefaultThriftSourceDirectory> = objects.listProperty(DefaultThriftSourceDirectory::class.java)
-        .convention(listOf(DefaultThriftSourceDirectory(defaultSourceDirectorySet)))
-    val thriftOptions: Property<ThriftOptions> = objects.property(ThriftOptions::class.java)
-        .convention(KotlinThriftOptions())
     private val outputDirectory: DirectoryProperty = objects.directoryProperty()
         .convention(layout.buildDirectory.dir(DEFAULT_OUTPUT_DIR))
-    val thriftyVersion: Property<String> = objects.property(String::class.java)
-
     private val defaultSourceDirectorySet: SourceDirectorySet
         get() = objects.sourceDirectorySet("thrift-sources", "Thrift Sources")
             .srcDir(DEFAULT_SOURCE_DIR)
             .include("**/*.thrift") as SourceDirectorySet
+    private val sources: ListProperty<DefaultThriftSourceDirectory> = objects.listProperty(DefaultThriftSourceDirectory::class.java)
+        .convention(listOf(DefaultThriftSourceDirectory(defaultSourceDirectorySet)))
+
+    val thriftOptions: Property<ThriftOptions> = objects.property(ThriftOptions::class.java)
+        .convention(KotlinThriftOptions())
+    val thriftyVersion: Property<String> = objects.property(String::class.java)
 
     fun getIncludePathEntries(): Provider<List<Directory>> {
         return includePathEntries

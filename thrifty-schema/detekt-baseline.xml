@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:FieldNamingPolicy.kt$FieldNamingPolicy.Companion.&lt;no name provided>$name.length > 1 &amp;&amp; formattedName.length > 1 &amp;&amp; Character.isUpperCase(name[0]) &amp;&amp; Character.isUpperCase(name[1]) &amp;&amp; caseFormat !== CaseFormat.UPPER_UNDERSCORE</ID>
+    <ID>ConstructorParameterNaming:Constant.kt$Constant$private var _type: ThriftType? = null</ID>
+    <ID>ConstructorParameterNaming:Field.kt$Field$private var _type: ThriftType? = null</ID>
+    <ID>ConstructorParameterNaming:ServiceMethod.kt$ServiceMethod$private var _returnType: ThriftType? = null</ID>
+    <ID>ConstructorParameterNaming:TypedefType.kt$TypedefType$private var _oldType: ThriftType? = null</ID>
+    <ID>CyclomaticComplexMethod:Constant.kt$Constant.Validators$fun forType(type: ThriftType): ConstValueValidator</ID>
+    <ID>CyclomaticComplexMethod:SchemaRendering.kt$fun Schema.multiFileRender( relativizeIncludes: Boolean = true, namespaceResolver: (UserType) -> String = { it.namespaces[JAVA]!! }, minimumPrefix: String? = null ): Set&lt;ThriftSpec></ID>
+    <ID>CyclomaticComplexMethod:ThriftListener.kt$ThriftListener$private fun unquote( location: Location, literal: String, processEscapes: Boolean = true, ): String</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:ThriftParserTest.kt$ThriftParserTest$val (a1, a2, a3, a4) = enum.members.map { it.annotations }</ID>
+    <ID>ForbiddenComment:Linker.kt$Linker$// TODO: Surely there must be a more efficient way to do this.</ID>
+    <ID>ForbiddenComment:LoaderTest.kt$LoaderTest$// TODO: Does this actually work in the Apache compiler?</ID>
+    <ID>LargeClass:LoaderTest.kt$LoaderTest</ID>
+    <ID>LargeClass:ThriftParserTest.kt$ThriftParserTest</ID>
+    <ID>LongMethod:LoaderTest.kt$LoaderTest$@Test fun structValuedConstant()</ID>
+    <ID>LongMethod:SchemaRendering.kt$@Suppress("RemoveExplicitTypeArguments") // False positive fun &lt;A : Appendable> Schema.renderTo(buffer: A)</ID>
+    <ID>LongMethod:SchemaRendering.kt$fun Schema.multiFileRender( relativizeIncludes: Boolean = true, namespaceResolver: (UserType) -> String = { it.namespaces[JAVA]!! }, minimumPrefix: String? = null ): Set&lt;ThriftSpec></ID>
+    <ID>LongMethod:ThriftParserTest.kt$ThriftParserTest$@Test fun weirdFieldPermutations()</ID>
+    <ID>LongParameterList:RenderingUtil.kt$( buffer: A, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", action: ((A, T) -> Unit)? = null, )</ID>
+    <ID>LongParameterList:Schema.kt$Schema.Builder$( internal var structs: List&lt;StructType>, internal var unions: List&lt;StructType>, internal var exceptions: List&lt;StructType>, internal var enums: List&lt;EnumType>, internal var constants: List&lt;Constant>, internal var typedefs: List&lt;TypedefType>, internal var services: List&lt;ServiceType>, )</ID>
+    <ID>LoopWithTooManyJumpStatements:Linker.kt$Linker$while</ID>
+    <ID>LoopWithTooManyJumpStatements:SortUtilTest.kt$SortUtilTest$for</ID>
+    <ID>MagicNumber:ThriftListener.kt$10</ID>
+    <ID>MagicNumber:ThriftListener.kt$16</ID>
+    <ID>MaxLineLength:Constant.kt$Constant.BoolValidator$error("Expected 'true', 'false', '1', '0', or a bool constant; got: $valueElement at ${valueElement.location}")</ID>
+    <ID>MaxLineLength:Constant.kt$Constant.Validators$else -> error("Illegal const definition. Const must be of type [bool, byte, i16, i32, i64, double, string, enum, list, set, map, struct]")</ID>
+    <ID>MaxLineLength:Include.kt$Include$*</ID>
+    <ID>MaxLineLength:Linker.kt$Linker$throw AssertionError("No extension found for included file ${included.absolutePath}, invalid include statement")</ID>
+    <ID>MaxLineLength:LoaderTest.kt$LoaderTest$}</ID>
+    <ID>MaxLineLength:RenderingUtil.kt$*</ID>
+    <ID>MaxLineLength:SchemaFunctionalEquality.kt$"$prefix documentation mismatch at $location. Found ${documentation.cleanedDoc()} but expected ${other.documentation.cleanedDoc()}"</ID>
+    <ID>MaxLineLength:SchemaFunctionalEquality.kt$"Constant documentation mismatch at $location. Found ${documentation.cleanedDoc()} but expected ${other.documentation.cleanedDoc()}"</ID>
+    <ID>MaxLineLength:SchemaFunctionalEquality.kt$"Enum documentation mismatch at $location. Found ${documentation.cleanedDoc()} but expected ${other.documentation.cleanedDoc()}"</ID>
+    <ID>MaxLineLength:SchemaFunctionalEquality.kt$"Enum member documentation mismatch at $location. Found ${documentation.cleanedDoc()} but expected ${other.documentation.cleanedDoc()}"</ID>
+    <ID>MaxLineLength:SchemaFunctionalEquality.kt$"Service documentation mismatch at $location. Found ${documentation.cleanedDoc()} but expected ${other.documentation.cleanedDoc()}"</ID>
+    <ID>MaxLineLength:SchemaFunctionalEquality.kt$"Service method documentation mismatch at $location. Found ${documentation.cleanedDoc()} but expected ${other.documentation.cleanedDoc()}"</ID>
+    <ID>MaxLineLength:SchemaFunctionalEquality.kt$"Struct documentation mismatch at $location. Found ${documentation.cleanedDoc()} but expected ${other.documentation.cleanedDoc()}"</ID>
+    <ID>MaxLineLength:SchemaFunctionalEquality.kt$"Typedef documentation mismatch at $location. Found ${documentation.cleanedDoc()} but expected ${other.documentation.cleanedDoc()}"</ID>
+    <ID>MaxLineLength:SchemaRendering.kt$"Calculated common prefix for files doesn't contain the specified minimum prefix!\nCalculated: $calculatedPrefix\nMinimum: $minPrefix"</ID>
+    <ID>MemberNameEqualsClassName:StructType.kt$StructType$private val structType: StructElement.Type</ID>
+    <ID>NestedBlockDepth:Linker.kt$Linker$private fun checkForCircularInheritance()</ID>
+    <ID>NestedBlockDepth:LoaderTest.kt$LoaderTest$@Test fun structValuedConstant()</ID>
+    <ID>NestedBlockDepth:Program.kt$Program$internal fun loadIncludedPrograms(loader: Loader, visited: MutableMap&lt;Program, Program?>, parent: Program?)</ID>
+    <ID>ReturnCount:Constant.kt$Constant.BoolValidator$override fun validate(symbolTable: SymbolTable, expected: ThriftType, valueElement: ConstValueElement)</ID>
+    <ID>ReturnCount:FieldNamingPolicy.kt$FieldNamingPolicy.Companion$private fun caseFormatOf(s: String): CaseFormat?</ID>
+    <ID>ReturnCount:FieldNamingPolicy.kt$FieldNamingPolicy.Companion.&lt;no name provided>$override fun apply(name: String): String</ID>
+    <ID>ReturnCount:Loader.kt$Loader$private fun findFirstExisting(path: Path, currentLocation: Path?): Path?</ID>
+    <ID>ReturnCount:ThriftListener.kt$ThriftListener$private fun constValueElementOf(ctx: AntlrThriftParser.ConstValueContext?): ConstValueElement?</ID>
+    <ID>ReturnCount:ThriftListener.kt$ThriftListener$private fun typeElementOf(context: AntlrThriftParser.FieldTypeContext): TypeElement</ID>
+    <ID>ThrowsCount:ThriftListener.kt$ThriftListener$private fun constValueElementOf(ctx: AntlrThriftParser.ConstValueContext?): ConstValueElement?</ID>
+    <ID>TooGenericExceptionCaught:Loader.kt$Loader$e: Exception</ID>
+    <ID>TooManyFunctions:Constant.kt$Constant$ConstantReferenceVisitor : Visitor</ID>
+    <ID>TooManyFunctions:Linker.kt$Linker : SymbolTable</ID>
+    <ID>TooManyFunctions:Loader.kt$Loader</ID>
+    <ID>TooManyFunctions:SchemaFunctionalEquality.kt$com.microsoft.thrifty.schema.SchemaFunctionalEquality.kt</ID>
+    <ID>TooManyFunctions:SchemaRendering.kt$com.microsoft.thrifty.schema.render.SchemaRendering.kt</ID>
+    <ID>TooManyFunctions:ThriftListener.kt$ThriftListener : AntlrThriftBaseListener</ID>
+    <ID>TooManyFunctions:ThriftType.kt$ThriftType$Visitor&lt;T></ID>
+    <ID>WildcardImport:Constant.kt$import com.microsoft.thrifty.schema.parser.*</ID>
+    <ID>WildcardImport:Linker.kt$import com.microsoft.thrifty.schema.parser.*</ID>
+    <ID>WildcardImport:ThriftParser.kt$import org.antlr.v4.runtime.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

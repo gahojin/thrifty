@@ -434,7 +434,11 @@ internal class ThriftListener(
         return location.at(line, col)
     }
 
-    private fun unquote(location: Location, literal: String, processEscapes: Boolean = true): String {
+    private fun unquote(
+        location: Location,
+        literal: String,
+        processEscapes: Boolean = true,
+    ): String {
         val chars = literal.toCharArray()
         val startChar = chars[0]
         val endChar = chars[chars.size - 1]

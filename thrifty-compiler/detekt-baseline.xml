@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>MaxLineLength:ThriftyCompiler.kt$ThriftyCompiler.&lt;no name provided>$.</ID>
+    <ID>MaxLineLength:ThriftyCompiler.kt$ThriftyCompiler.&lt;no name provided>$echo("Warning: --use-android-annotations is deprecated and superseded by the --nullability-annotation-type option.")</ID>
+    <ID>PrintStackTrace:ThriftyCompiler.kt$ThriftyCompiler$e</ID>
+    <ID>TooGenericExceptionCaught:ThriftyCompiler.kt$ThriftyCompiler$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -115,8 +115,7 @@ abstract class CoroutineConformanceTests {
             this.transport = decorateTransport(transport)
             this.protocol = createProtocol(this.transport)
             this.client = ThriftTestClient(protocol, object : AsyncClientBase.Listener {
-                override fun onTransportClosed() {
-                }
+                override fun onTransportClosed() = Unit
 
                 override fun onError(error: Throwable) {
                     throw AssertionError(error)
@@ -132,7 +131,12 @@ abstract class CoroutineConformanceTests {
                         .build()
                         .apply { connect() }
 
-                ServerTransport.HTTP -> HttpTransport("http://localhost:${testServer.port()}/test/service", HttpClient(CIO))
+                ServerTransport.HTTP -> HttpTransport(
+                    url = "http://localhost:${testServer.port()}/test/service",
+                    httpClient = HttpClient(CIO),
+                )
+
+                else -> throw AssertionError("Unsupported transport")
             }
         }
 

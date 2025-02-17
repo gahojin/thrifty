@@ -2,6 +2,8 @@
 
 [plugins]
 
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
@@ -25,6 +27,8 @@ apache-thrift = "0.21.0"
 assertj = "3.27.3"
 
 clikt = "5.0.3"
+
+detekt = "1.23.7"
 
 dokka = "2.0.0"
 

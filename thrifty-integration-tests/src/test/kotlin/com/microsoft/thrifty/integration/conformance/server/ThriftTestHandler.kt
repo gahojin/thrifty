@@ -36,8 +36,7 @@ import okio.ByteString
 import org.apache.thrift.TException
 
 class ThriftTestHandler : ThriftTest {
-    override suspend fun testVoid() {
-    }
+    override suspend fun testVoid() = Unit
 
     override suspend fun testString(thing: String): String {
         return thing
@@ -159,9 +158,7 @@ class ThriftTestHandler : ThriftTest {
         arg3: Map<Short, String>,
         arg4: Numberz,
         arg5: UserId,
-    ): Xtruct {
-        return Xtruct("Hello2", arg0, arg1, arg2, null, null)
-    }
+    ) = Xtruct("Hello2", arg0, arg1, arg2, null, null)
 
     override suspend fun testException(arg: String) {
         if ("TException" == arg) {
@@ -196,8 +193,7 @@ class ThriftTestHandler : ThriftTest {
         )
     }
 
-    override suspend fun testOneway(secondsToSleep: Int) {
-    }
+    override suspend fun testOneway(secondsToSleep: Int) = Unit
 
     override suspend fun testUnionArgument(arg0: NonEmptyUnion): HasUnion {
         val result = HasUnion(arg0)
@@ -207,5 +203,4 @@ class ThriftTestHandler : ThriftTest {
     override suspend fun testUnionWithDefault(theArg: UnionWithDefault): UnionWithDefault {
         return theArg
     }
-
 }

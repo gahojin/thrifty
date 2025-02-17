@@ -23,8 +23,23 @@
 
 package com.microsoft.thrifty.schema.render
 
-import com.microsoft.thrifty.schema.*
+import com.microsoft.thrifty.schema.Constant
+import com.microsoft.thrifty.schema.EnumMember
+import com.microsoft.thrifty.schema.EnumType
+import com.microsoft.thrifty.schema.Field
+import com.microsoft.thrifty.schema.ListType
+import com.microsoft.thrifty.schema.Location
+import com.microsoft.thrifty.schema.MapType
 import com.microsoft.thrifty.schema.NamespaceScope.JAVA
+import com.microsoft.thrifty.schema.Schema
+import com.microsoft.thrifty.schema.ServiceMethod
+import com.microsoft.thrifty.schema.ServiceType
+import com.microsoft.thrifty.schema.SetType
+import com.microsoft.thrifty.schema.StructType
+import com.microsoft.thrifty.schema.ThriftType
+import com.microsoft.thrifty.schema.TypedefType
+import com.microsoft.thrifty.schema.UserElement
+import com.microsoft.thrifty.schema.UserType
 import com.microsoft.thrifty.schema.parser.ConstValueElement
 import java.io.File
 
@@ -101,21 +116,23 @@ fun Schema.multiFileRender(
 
             val sourceFile = File(filePath)
             val includes = elements
-                .flatMap { element -> when (element) {
-                    is StructType -> element.fields
-                        .flatMap { it.type.unpack() }
+                .flatMap { element ->
+                    when (element) {
+                        is StructType -> element.fields
+                            .flatMap { it.type.unpack() }
 
-                    is ServiceType -> {
-                        element.methods
-                            .flatMap { method ->
-                                method.run { exceptions + parameters }
-                                    .flatMap { it.type.unpack() } + method.returnType.unpack()
-                            }
+                        is ServiceType -> {
+                            element.methods
+                                .flatMap { method ->
+                                    method.run { exceptions + parameters }
+                                        .flatMap { it.type.unpack() } + method.returnType.unpack()
+                                }
+                        }
+
+                        is TypedefType -> element.oldType.unpack()
+                        else -> emptySet()
                     }
-
-                    is TypedefType -> element.oldType.unpack()
-                    else -> emptySet()
-                } }
+                }
                 .filterIsInstance<UserType>()
                 .distinctBy(UserType::filepath)
                 .filter { it.filepath.removePrefix(commonPathPrefix) != filePath }

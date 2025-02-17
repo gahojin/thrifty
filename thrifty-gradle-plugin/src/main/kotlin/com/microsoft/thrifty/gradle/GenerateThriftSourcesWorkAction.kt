@@ -28,10 +28,11 @@ import com.microsoft.thrifty.gen.ThriftyCodeGenerator
 import com.microsoft.thrifty.gradle.JavaThriftOptions.NullabilityAnnotations
 import com.microsoft.thrifty.gradle.KotlinThriftOptions.ClientStyle
 import com.microsoft.thrifty.kgen.KotlinCodeGenerator
-import com.microsoft.thrifty.schema.*
-import com.microsoft.thrifty.schema.FieldNamingPolicy.Companion.DEFAULT
-import com.microsoft.thrifty.schema.FieldNamingPolicy.Companion.JAVA
-import com.microsoft.thrifty.schema.FieldNamingPolicy.Companion.PASCAL
+import com.microsoft.thrifty.schema.ErrorReporter
+import com.microsoft.thrifty.schema.FieldNamingPolicy
+import com.microsoft.thrifty.schema.LoadFailedException
+import com.microsoft.thrifty.schema.Loader
+import com.microsoft.thrifty.schema.Schema
 import org.gradle.api.GradleException
 import org.gradle.api.logging.configuration.ShowStacktrace
 import org.gradle.workers.WorkAction
@@ -104,7 +105,7 @@ abstract class GenerateThriftSourcesWorkAction : WorkAction<GenerateThriftSource
             }
         }
 
-        val sst = parameters.showStacktrace.getOrElse(ShowStacktrace.INTERNAL_EXCEPTIONS)
+        val sst = parameters.showStacktrace.orNull ?: ShowStacktrace.INTERNAL_EXCEPTIONS
         when (sst) {
             ShowStacktrace.ALWAYS, ShowStacktrace.ALWAYS_FULL -> LOGGER.error("Thrift compilation failed", e)
             ShowStacktrace.INTERNAL_EXCEPTIONS -> Unit
@@ -202,9 +203,9 @@ abstract class GenerateThriftSourcesWorkAction : WorkAction<GenerateThriftSource
 
         private fun policyFromNameStyle(style: FieldNameStyle): FieldNamingPolicy {
             return when (style) {
-                FieldNameStyle.DEFAULT -> DEFAULT
-                FieldNameStyle.JAVA -> JAVA
-                FieldNameStyle.PASCAL -> PASCAL
+                FieldNameStyle.DEFAULT -> FieldNamingPolicy.DEFAULT
+                FieldNameStyle.JAVA -> FieldNamingPolicy.JAVA
+                FieldNameStyle.PASCAL -> FieldNamingPolicy.PASCAL
             }
         }
     }

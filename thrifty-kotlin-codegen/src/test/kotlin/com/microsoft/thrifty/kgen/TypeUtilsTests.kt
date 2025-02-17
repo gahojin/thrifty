@@ -22,7 +22,14 @@ package com.microsoft.thrifty.kgen
 
 import com.microsoft.thrifty.TType
 import com.microsoft.thrifty.schema.BuiltinType
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.BOOLEAN
+import com.squareup.kotlinpoet.BYTE
+import com.squareup.kotlinpoet.DOUBLE
+import com.squareup.kotlinpoet.INT
+import com.squareup.kotlinpoet.LONG
+import com.squareup.kotlinpoet.SHORT
+import com.squareup.kotlinpoet.UNIT
+import com.squareup.kotlinpoet.asTypeName
 import io.kotest.matchers.shouldBe
 import okio.ByteString
 import org.junit.jupiter.api.Test

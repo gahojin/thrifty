@@ -78,10 +78,10 @@ abstract class ThriftyGradlePlugin : Plugin<Project> {
         }
 
         configuration.defaultDependencies {
-            it.add(project.dependencies.create("com.microsoft.thrifty:thrifty-schema:${thriftyVersion.get()}"))
-            it.add(project.dependencies.create("com.microsoft.thrifty:thrifty-java-codegen:${thriftyVersion.get()}"))
-            it.add(project.dependencies.create("com.microsoft.thrifty:thrifty-kotlin-codegen:${thriftyVersion.get()}"))
-            it.add(project.dependencies.create("com.microsoft.thrifty:thrifty-compiler-plugins:${thriftyVersion.get()}"))
+            val version = thriftyVersion.get()
+            listOf("schema", "java-codegen", "kotlin-codegen", "compiler-plugins").forEach { name ->
+                it.add(project.dependencies.create("com.microsoft.thrifty:thrifty-$name:$version"))
+            }
         }
 
         return configuration

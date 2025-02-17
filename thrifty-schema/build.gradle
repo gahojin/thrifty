@@ -25,6 +25,7 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'antlr'
+    alias libs.plugins.detekt
     alias libs.plugins.dokka
     alias libs.plugins.kotlin.jvm
     alias libs.plugins.maven.publish

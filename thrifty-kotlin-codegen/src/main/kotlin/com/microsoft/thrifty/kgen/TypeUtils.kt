@@ -140,5 +140,4 @@ private object TypeNameVisitor : ThriftType.Visitor<TypeName> {
     private fun userTypeName(userType: UserType): TypeName {
         return ClassName(userType.kotlinNamespace, userType.name)
     }
-
 }

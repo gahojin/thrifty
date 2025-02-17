@@ -113,8 +113,7 @@ interface UserElement {
  * Returns `true` if `doc` is non-empty Javadoc, otherwise `false`.
  */
 fun isNonEmptyJavadoc(doc: String?): Boolean {
-    if (doc == null) return false
-    if (doc.isEmpty()) return false
+    if (doc.isNullOrEmpty()) return false
 
     return doc.any { !it.isWhitespace() }
 }

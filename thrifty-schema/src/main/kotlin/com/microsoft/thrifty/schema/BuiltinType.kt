@@ -142,7 +142,9 @@ class BuiltinType internal constructor(
          */
         val VOID: ThriftType = BuiltinType("void")
 
-        private val BUILTINS = listOf(BOOL, BYTE, I8, I16, I32, I64, DOUBLE, STRING, BINARY, VOID).associateBy { it.name }
+        private val BUILTINS = listOf(
+            BOOL, BYTE, I8, I16, I32, I64, DOUBLE, STRING, BINARY, VOID,
+        ).associateBy { it.name }
 
         /**
          * Returns the builtin type corresponding to the given [name], or null

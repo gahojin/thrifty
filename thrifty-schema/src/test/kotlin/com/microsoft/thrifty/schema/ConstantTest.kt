@@ -230,7 +230,8 @@ class ConstantTest {
         val et = EnumType(enumElement, emptyMap())
 
         val e = shouldThrow<IllegalStateException> {
-            Constant.validate(symbolTable, IdentifierValueElement(loc, "TestEnum.NON_MEMBER", "TestEnum.NON_MEMBER"), et)
+            Constant.validate(symbolTable,
+                IdentifierValueElement(loc, "TestEnum.NON_MEMBER", "TestEnum.NON_MEMBER"), et)
         }
         e.message shouldContain "'TestEnum.NON_MEMBER' is not a member of enum type TestEnum: members=[TEST]"
     }
@@ -318,7 +319,12 @@ class ConstantTest {
         Constant.validate(symbolTable, listValue, setType)
     }
 
-    private fun makeConstant(name: String, typeElement: TypeElement, value: ConstValueElement, thriftType: ThriftType): Constant {
+    private fun makeConstant(
+        name: String,
+        typeElement: TypeElement,
+        value: ConstValueElement,
+        thriftType: ThriftType,
+    ): Constant {
         val element = ConstElement(loc, typeElement, name, value)
 
         return Constant(element, emptyMap(), thriftType)

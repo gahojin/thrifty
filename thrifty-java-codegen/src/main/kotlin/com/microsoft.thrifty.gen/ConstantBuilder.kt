@@ -150,7 +150,9 @@ internal class ConstantBuilder(
                 val map = (value as MapValueElement).value
                 for ((keyElement, valueElement) in map) {
                     val key = (keyElement as LiteralValueElement).value
-                    val field = checkNotNull(fieldsByName[key]) { "Struct ${structType.name} has no field named '$key'" }
+                    val field = checkNotNull(fieldsByName[key]) {
+                        "Struct ${structType.name} has no field named '$key'"
+                    }
                     val setterName = fieldNamer.getName(field)
                     val valueName = renderConstValue(initializer, allocator, scope, field.type, valueElement)
                     initializer.addStatement("\$N.\$N(\$L)", builderName, setterName, valueName)

@@ -32,8 +32,8 @@ import java.util.*
  * Used by the compiler to detect and run user-provided processors.
  */
 object TypeProcessorService {
-    private val serviceLoader: ServiceLoader<TypeProcessor> = ServiceLoader.load(TypeProcessor::class.java)
-    private val kotlinProcessorLoader: ServiceLoader<KotlinTypeProcessor> = ServiceLoader.load(KotlinTypeProcessor::class.java)
+    private val serviceLoader = ServiceLoader.load(TypeProcessor::class.java)
+    private val kotlinProcessorLoader = ServiceLoader.load(KotlinTypeProcessor::class.java)
 
     /**
      * Gets the first [TypeProcessor] implementation loaded, or `null` if none are found.

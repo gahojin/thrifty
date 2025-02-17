@@ -28,7 +28,9 @@ import javax.inject.Inject
  * The default implementation of [ThriftSourceDirectory].
  * Backed by a [SourceDirectorySet].
  */
-open class DefaultThriftSourceDirectory @Inject constructor(val sourceDirectorySet: SourceDirectorySet) : ThriftSourceDirectory {
+open class DefaultThriftSourceDirectory @Inject constructor(
+    val sourceDirectorySet: SourceDirectorySet,
+) : ThriftSourceDirectory {
     private var didClearDefaults = false
 
     override fun include(pattern: String) {

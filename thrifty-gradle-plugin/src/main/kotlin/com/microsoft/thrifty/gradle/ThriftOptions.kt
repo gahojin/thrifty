@@ -58,7 +58,7 @@ abstract class ThriftOptions : Serializable {
     fun setNameStyle(styleName: String) {
         val styles = TreeMap<String, FieldNameStyle>(String.CASE_INSENSITIVE_ORDER)
         for (style in FieldNameStyle.entries) {
-            styles.put(style.name, style)
+            styles[style.name] = style
         }
 
         this.nameStyle = requireNotNull(styles[styleName]) {
@@ -70,5 +70,9 @@ abstract class ThriftOptions : Serializable {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val serialVersionUID = 1L
     }
 }

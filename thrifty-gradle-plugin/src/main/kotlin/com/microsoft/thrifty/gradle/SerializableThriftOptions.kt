@@ -41,11 +41,19 @@ class SerializableThriftOptions @JvmOverloads constructor(
     class Kotlin @JvmOverloads constructor(
         val serviceClientStyle: ClientStyle = ClientStyle.DEFAULT,
         val isGenerateServer: Boolean = false,
-    ) : Serializable
+    ) : Serializable {
+        companion object {
+            private const val serialVersionUID = 1L
+        }
+    }
 
     class Java @JvmOverloads constructor(
         val nullabilityAnnotations: NullabilityAnnotations = NullabilityAnnotations.NONE,
-    ) : Serializable
+    ) : Serializable {
+        companion object {
+            private const val serialVersionUID = 1L
+        }
+    }
 
     constructor(options: ThriftOptions) : this(
         isGenerateServiceClients = options.generateServiceClients,
@@ -68,4 +76,8 @@ class SerializableThriftOptions @JvmOverloads constructor(
 
     val isKotlin: Boolean
         get() = kotlinOpts != null
+
+    companion object {
+        private const val serialVersionUID = 1L
+    }
 }
