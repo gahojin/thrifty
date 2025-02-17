@@ -27,6 +27,7 @@ import javax.inject.Inject
 
 plugins {
     id 'idea'
+    alias libs.plugins.detekt
     alias libs.plugins.kotlin.mpp
     alias libs.plugins.kotlinx.kover
     alias libs.plugins.dokka

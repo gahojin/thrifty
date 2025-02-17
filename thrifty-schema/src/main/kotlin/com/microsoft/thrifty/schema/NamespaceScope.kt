@@ -21,9 +21,6 @@
  */
 package com.microsoft.thrifty.schema
 
-import com.microsoft.thrifty.schema.NamespaceScope.*
-
-
 /**
  * An enumeration of all namespace-having programming languages recognized by
  * Thrifty.

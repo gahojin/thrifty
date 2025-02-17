@@ -32,54 +32,39 @@ class ThriftTypeTest {
         val ctr = AtomicInteger(0)
 
         val v = object : ThriftType.Visitor<Unit> {
-            override fun visitVoid(voidType: BuiltinType) {
-            }
+            override fun visitVoid(voidType: BuiltinType) = Unit
 
-            override fun visitBool(boolType: BuiltinType) {
-            }
+            override fun visitBool(boolType: BuiltinType) = Unit
 
             override fun visitByte(byteType: BuiltinType) {
                 ctr.incrementAndGet()
             }
 
-            override fun visitI16(i16Type: BuiltinType) {
-            }
+            override fun visitI16(i16Type: BuiltinType) = Unit
 
-            override fun visitI32(i32Type: BuiltinType) {
-            }
+            override fun visitI32(i32Type: BuiltinType) = Unit
 
-            override fun visitI64(i64Type: BuiltinType) {
-            }
+            override fun visitI64(i64Type: BuiltinType) = Unit
 
-            override fun visitDouble(doubleType: BuiltinType) {
-            }
+            override fun visitDouble(doubleType: BuiltinType) = Unit
 
-            override fun visitString(stringType: BuiltinType) {
-            }
+            override fun visitString(stringType: BuiltinType) = Unit
 
-            override fun visitBinary(binaryType: BuiltinType) {
-            }
+            override fun visitBinary(binaryType: BuiltinType) = Unit
 
-            override fun visitEnum(enumType: EnumType) {
-            }
+            override fun visitEnum(enumType: EnumType) = Unit
 
-            override fun visitList(listType: ListType) {
-            }
+            override fun visitList(listType: ListType) = Unit
 
-            override fun visitSet(setType: SetType) {
-            }
+            override fun visitSet(setType: SetType) = Unit
 
-            override fun visitMap(mapType: MapType) {
-            }
+            override fun visitMap(mapType: MapType) = Unit
 
-            override fun visitStruct(structType: StructType) {
-            }
+            override fun visitStruct(structType: StructType) = Unit
 
-            override fun visitTypedef(typedefType: TypedefType) {
-            }
+            override fun visitTypedef(typedefType: TypedefType) = Unit
 
-            override fun visitService(serviceType: ServiceType) {
-            }
+            override fun visitService(serviceType: ServiceType) = Unit
         }
 
         BuiltinType.I8.accept(v)

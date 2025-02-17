@@ -21,7 +21,13 @@
  */
 package com.microsoft.thrifty.schema.render
 
-import com.microsoft.thrifty.schema.*
+import com.microsoft.thrifty.schema.Field
+import com.microsoft.thrifty.schema.ListType
+import com.microsoft.thrifty.schema.Location
+import com.microsoft.thrifty.schema.MapType
+import com.microsoft.thrifty.schema.SetType
+import com.microsoft.thrifty.schema.ThriftType
+import com.microsoft.thrifty.schema.UserElement
 import java.io.File
 
 internal val NEWLINE = System.lineSeparator()
@@ -91,7 +97,7 @@ internal fun <T, A : Appendable> Iterable<T>.joinEachTo(
             action?.invoke(buffer, element)
         } else break
     }
-    if (limit in 0..(count - 1)) buffer.append(truncated)
+    if (limit in 0..<count) buffer.append(truncated)
     buffer.append(postfix)
     return buffer
 }

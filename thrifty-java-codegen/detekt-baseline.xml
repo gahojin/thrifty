@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:GenerateReaderVisitor.kt$GenerateReaderVisitor$type.isBuiltin || type.isList || type.isMap || type.isSet || type.isTypedef</ID>
+    <ID>CyclomaticComplexMethod:ThriftyCodeGenerator.kt$ThriftyCodeGenerator$private fun buildStruct(type: StructType): TypeSpec</ID>
+    <ID>CyclomaticComplexMethod:ThriftyCodeGenerator.kt$ThriftyCodeGenerator$private fun builderFor( structType: StructType, structClassName: ClassName, builderClassName: ClassName, ): TypeSpec</ID>
+    <ID>CyclomaticComplexMethod:TypeNames.kt$TypeNames$fun getTypeCodeName(code: Byte): String</ID>
+    <ID>InvalidPackageDeclaration:ConstantBuilder.kt$package com.microsoft.thrifty.gen</ID>
+    <ID>InvalidPackageDeclaration:FieldNamer.kt$package com.microsoft.thrifty.gen</ID>
+    <ID>InvalidPackageDeclaration:GenerateReaderVisitor.kt$package com.microsoft.thrifty.gen</ID>
+    <ID>InvalidPackageDeclaration:GenerateWriterVisitor.kt$package com.microsoft.thrifty.gen</ID>
+    <ID>InvalidPackageDeclaration:ServiceBuilder.kt$package com.microsoft.thrifty.gen</ID>
+    <ID>InvalidPackageDeclaration:SimpleVisitor.kt$package com.microsoft.thrifty.gen</ID>
+    <ID>InvalidPackageDeclaration:ThriftyCodeGenerator.kt$package com.microsoft.thrifty.gen</ID>
+    <ID>InvalidPackageDeclaration:TypeNames.kt$package com.microsoft.thrifty.gen</ID>
+    <ID>InvalidPackageDeclaration:TypeResolver.kt$package com.microsoft.thrifty.gen</ID>
+    <ID>LargeClass:ThriftyCodeGenerator.kt$ThriftyCodeGenerator</ID>
+    <ID>LongMethod:ServiceBuilder.kt$ServiceBuilder$private fun buildReceiveMethod(method: ServiceMethod, hasReturnType: Boolean): MethodSpec</ID>
+    <ID>LongMethod:ThriftyCodeGenerator.kt$ThriftyCodeGenerator$private fun adapterFor(structType: StructType, structClassName: ClassName, builderClassName: ClassName): TypeSpec</ID>
+    <ID>LongMethod:ThriftyCodeGenerator.kt$ThriftyCodeGenerator$private fun buildStruct(type: StructType): TypeSpec</ID>
+    <ID>LongMethod:ThriftyCodeGenerator.kt$ThriftyCodeGenerator$private fun buildToStringFor(struct: StructType): MethodSpec</ID>
+    <ID>LongMethod:ThriftyCodeGenerator.kt$ThriftyCodeGenerator$private fun builderFor( structType: StructType, structClassName: ClassName, builderClassName: ClassName, ): TypeSpec</ID>
+    <ID>LongParameterList:ConstantBuilder.kt$ConstantBuilder$( initializer: CodeBlock.Builder, allocator: NameAllocator, scope: AtomicInteger, name: String, tt: ThriftType, value: ConstValueElement, needsDeclaration: Boolean, )</ID>
+    <ID>MaxLineLength:ServiceBuilder.kt$ServiceBuilder$"${method.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}Call"</ID>
+    <ID>MaxLineLength:ThriftyCodeGenerator.kt$ThriftyCodeGenerator$field.addJavadoc("\$L", "${constant.documentation}\n\nGenerated from: ${constant.location.path} at ${constant.location.line}:${constant.location.column}\n")</ID>
+    <ID>SpreadOperator:ThriftyCodeGenerator.kt$ThriftyCodeGenerator$(chunk.format, *chunk.args)</ID>
+    <ID>TooManyFunctions:ConstantBuilder.kt$ConstantBuilder$ConstRenderingVisitor : Visitor</ID>
+    <ID>TooManyFunctions:GenerateReaderVisitor.kt$GenerateReaderVisitor : Visitor</ID>
+    <ID>TooManyFunctions:GenerateWriterVisitor.kt$GenerateWriterVisitor : Visitor</ID>
+    <ID>TooManyFunctions:ThriftyCodeGenerator.kt$ThriftyCodeGenerator</ID>
+    <ID>TooManyFunctions:TypeResolver.kt$TypeCodeVisitor : Visitor</ID>
+    <ID>TooManyFunctions:TypeResolver.kt$TypeNameVisitor : Visitor</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -1175,10 +1175,12 @@ class KotlinCodeGeneratorTest {
         """.trimMargin()
     }
 
-    private fun generate(thrift: String, config: (KotlinCodeGenerator.() -> KotlinCodeGenerator)? = null): List<FileSpec> {
-        val configOrDefault = config ?: { emitFileComment(false) }
+    private fun generate(
+        thrift: String,
+        config: (KotlinCodeGenerator.() -> KotlinCodeGenerator) = { emitFileComment(false) },
+    ): List<FileSpec> {
         return KotlinCodeGenerator()
-                .run(configOrDefault)
+                .run(config)
                 .generate(load(thrift))
     }
 

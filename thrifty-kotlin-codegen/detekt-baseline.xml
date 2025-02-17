@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$fun generate(schema: Schema): List&lt;FileSpec></ID>
+    <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateAdapterFor( struct: StructType, adapterName: ClassName, adapterInterfaceName: TypeName, ): TypeSpec</ID>
+    <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateDataClass(schema: Schema, struct: StructType): TypeSpec</ID>
+    <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateEnumClass(enumType: EnumType): TypeSpec</ID>
+    <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateSealedClass(schema: Schema, struct: StructType): TypeSpec</ID>
+    <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun buildCallType(schema: Schema, method: ServiceMethod): TypeSpec</ID>
+    <ID>ForbiddenComment:KotlinCodeGenerator.kt$KotlinCodeGenerator$// TODO: This assumes that the client and server share the same belief about the default value.</ID>
+    <ID>ForbiddenComment:KotlinCodeGenerator.kt$KotlinCodeGenerator.&lt;no name provided>$// TODO: Implement support for binary constants in the ANTLR grammar</ID>
+    <ID>LargeClass:KotlinCodeGenerator.kt$KotlinCodeGenerator</ID>
+    <ID>LargeClass:KotlinCodeGeneratorTest.kt$KotlinCodeGeneratorTest</ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$fun generate(schema: Schema): List&lt;FileSpec></ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$fun generateRecursiveWrite(source: String, type: ThriftType, scope: Int)</ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$fun recursivelyRenderConstValue(block: CodeBlock.Builder, type: ThriftType, value: ConstValueElement)</ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateAdapterFor( struct: StructType, adapterName: ClassName, adapterInterfaceName: TypeName, ): TypeSpec</ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateAdapterForSealed( struct: StructType, adapterName: ClassName, adapterInterfaceName: TypeName, ): TypeSpec</ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateCoroServiceImplementation( schema: Schema, serviceType: ServiceType, serviceInterface: TypeSpec, ): TypeSpec</ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateDataClass(schema: Schema, struct: StructType): TypeSpec</ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateEnumClass(enumType: EnumType): TypeSpec</ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateSealedClass(schema: Schema, struct: StructType): TypeSpec</ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun buildCallType(schema: Schema, method: ServiceMethod): TypeSpec</ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun generateProcessorImplementation( schema: Schema, serviceType: ServiceType, serviceInterface: TypeSpec, ): TypeSpec</ID>
+    <ID>LongMethod:KotlinCodeGeneratorTest.kt$KotlinCodeGeneratorTest$@Test fun `union generate read function`()</ID>
+    <ID>LongParameterList:KotlinCodeGenerator.kt$KotlinCodeGenerator$( block: CodeBlock.Builder, name: String, type: ThriftType, scope: Int = 0, localNamePrefix: String = "", failOnUnknownEnumValues: Boolean = true, )</ID>
+    <ID>MaxLineLength:KotlinCodeGenerator.kt$KotlinCodeGenerator.&lt;no name provided>$"%1T.findByValue(it) ?: throw %2T(%3T.PROTOCOL_ERROR, \"Unexpected·value·for·enum·type·%1T:·\$it\")"</ID>
+    <ID>NestedBlockDepth:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateCoroServiceInterface(serviceType: ServiceType): TypeSpec</ID>
+    <ID>NestedBlockDepth:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun buildCallType(schema: Schema, method: ServiceMethod): TypeSpec</ID>
+    <ID>SpreadOperator:KotlinCodeGenerator.kt$KotlinCodeGenerator$( "return %T.%N(handler.%N($format))", parentTypeName, concreteResultTypeName, interfaceFun, *names.toTypedArray(), )</ID>
+    <ID>SpreadOperator:KotlinCodeGenerator.kt$KotlinCodeGenerator$("handler.%N($format)", interfaceFun, *names.toTypedArray())</ID>
+    <ID>TooManyFunctions:KotlinCodeGenerator.kt$KotlinCodeGenerator</ID>
+    <ID>TooManyFunctions:TypeUtils.kt$TypeCodeVisitor : Visitor</ID>
+    <ID>TooManyFunctions:TypeUtils.kt$TypeNameVisitor : Visitor</ID>
+  </CurrentIssues>
+</SmellBaseline>

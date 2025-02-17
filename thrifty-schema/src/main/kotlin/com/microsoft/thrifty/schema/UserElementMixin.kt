@@ -21,7 +21,15 @@
  */
 package com.microsoft.thrifty.schema
 
-import com.microsoft.thrifty.schema.parser.*
+import com.microsoft.thrifty.schema.parser.AnnotationElement
+import com.microsoft.thrifty.schema.parser.ConstElement
+import com.microsoft.thrifty.schema.parser.EnumElement
+import com.microsoft.thrifty.schema.parser.EnumMemberElement
+import com.microsoft.thrifty.schema.parser.FieldElement
+import com.microsoft.thrifty.schema.parser.FunctionElement
+import com.microsoft.thrifty.schema.parser.ServiceElement
+import com.microsoft.thrifty.schema.parser.StructElement
+import com.microsoft.thrifty.schema.parser.TypedefElement
 import java.util.*
 
 /**

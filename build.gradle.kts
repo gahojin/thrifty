@@ -19,12 +19,26 @@
  *
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
+import io.gitlab.arturbosch.detekt.Detekt
 
 plugins {
-    alias libs.plugins.kotlin.jvm apply false
-    alias libs.plugins.kotlin.mpp apply false
-    alias libs.plugins.kotlinx.kover apply false
-    alias libs.plugins.dokka apply false
-    alias libs.plugins.shadow apply false
-    alias libs.plugins.maven.publish apply false
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.mpp) apply false
+    alias(libs.plugins.kotlinx.kover) apply false
+    alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.dokka) apply false
+    alias(libs.plugins.shadow) apply false
+    alias(libs.plugins.maven.publish) apply false
+}
+
+subprojects {
+    tasks.withType<Detekt>().configureEach {
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+            txt.required.set(true)
+            sarif.required.set(true)
+            md.required.set(true)
+        }
+    }
 }

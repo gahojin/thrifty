@@ -2,6 +2,7 @@
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
  *
@@ -24,7 +25,7 @@ import com.microsoft.thrifty.schema.Field
 import com.microsoft.thrifty.schema.FieldNamingPolicy
 
 internal class FieldNamer(
-        private val namingPolicy: FieldNamingPolicy
+    private val namingPolicy: FieldNamingPolicy,
 ) {
     private val nameCache = mutableMapOf<Field, String>()
 

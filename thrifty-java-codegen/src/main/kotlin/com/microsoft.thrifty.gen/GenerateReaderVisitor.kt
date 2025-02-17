@@ -46,11 +46,11 @@ import com.squareup.javapoet.ParameterizedTypeName
  * the struct builder.
  */
 internal open class GenerateReaderVisitor(
-        private val resolver: TypeResolver,
-        private val read: MethodSpec.Builder,
-        private val fieldName: String,
-        private val fieldType: ThriftType,
-        private val failOnUnknownEnumValues: Boolean = true,
+    private val resolver: TypeResolver,
+    private val read: MethodSpec.Builder,
+    private val fieldName: String,
+    private val fieldType: ThriftType,
+    private val failOnUnknownEnumValues: Boolean = true,
 ) : ThriftType.Visitor<Unit> {
 
     private val nameStack = ArrayDeque<String>()

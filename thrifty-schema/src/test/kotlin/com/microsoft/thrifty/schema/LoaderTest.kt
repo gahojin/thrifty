@@ -21,7 +21,10 @@
  */
 package com.microsoft.thrifty.schema
 
-import com.microsoft.thrifty.schema.parser.*
+import com.microsoft.thrifty.schema.parser.IdentifierValueElement
+import com.microsoft.thrifty.schema.parser.ListValueElement
+import com.microsoft.thrifty.schema.parser.LiteralValueElement
+import com.microsoft.thrifty.schema.parser.MapValueElement
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.assertions.throwables.shouldThrowExactly
@@ -1188,18 +1191,13 @@ class LoaderTest {
                             "membership" -> {
                                 assertTrue((locVal as IdentifierValueElement).value == "Membership.MEMBER")
                             }
-                            else -> {
-                                fail("Invalid const key; must be currencyCode, languages or membership")
-                            }
+                            else -> fail("Invalid const key; must be currencyCode, languages or membership")
                         }
                     }
                 }
-                "isActive" -> {
-                    assertTrue((value as IdentifierValueElement).value == "true")
-                }
-                else -> {
-                    fail("Invalid const key; must be either locations or isActive")
-                }
+                "isActive" -> assertTrue((value as IdentifierValueElement).value == "true")
+
+                else -> fail("Invalid const key; must be either locations or isActive")
             }
         }
     }
@@ -1290,8 +1288,9 @@ class LoaderTest {
 
         """.trimIndent()
 
-        val e = shouldThrow<LoadFailedException> { load(thrift) }
-        e.message shouldContain "'Membership.WRONG' is not a member of enum type Membership: members=[MEMBER, NON_MEMBER, UNDER_REVIEW]"
+        shouldThrow<LoadFailedException> {
+            load(thrift)
+        }.message shouldContain "'Membership.WRONG' is not a member of enum type Membership: members=[MEMBER, NON_MEMBER, UNDER_REVIEW]"
     }
 
     @Test
@@ -1312,7 +1311,9 @@ class LoaderTest {
 
         val schema = load(thrift)
         val consts = schema.constants
-        val theContainer = checkNotNull(consts.find { it.name == "THE_CONTAINER" }) { "Expected a constant named THE_CONTAINER" }
+        val theContainer = checkNotNull(consts.find { it.name == "THE_CONTAINER" }) {
+            "Expected a constant named THE_CONTAINER"
+        }
 
         val elements = (theContainer.value as MapValueElement).value
         val singleValue = elements.values.single()
