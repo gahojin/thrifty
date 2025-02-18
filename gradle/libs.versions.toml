@@ -62,7 +62,7 @@ shadow = "8.3.6"
 
 slf4j = "2.0.16"
 
-tomcat = "11.0.3"
+tomcat = "11.0.4"
 
 [libraries]
 
