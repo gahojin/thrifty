@@ -356,12 +356,16 @@ class KotlinCodeGeneratorTest {
         val struct = file.members.single { it is TypeSpec && it.name == "Foo" } as TypeSpec
         val anEnum = file.members.single { it is TypeSpec && it.name == "AnEnum" } as TypeSpec
         val svc = file.members.single { it is TypeSpec && it.name == "SvcClient" } as TypeSpec
-
-        val parcelize = ClassName("kotlinx.android.parcel", "Parcelize")
+        val parcelize = ClassName("kotlinx.parcelize", "Parcelize")
+        val parcelable = ClassName("android.os", "Parcelable")
 
         struct.annotations.any { it.typeName == parcelize } shouldBe true
         anEnum.annotations.any { it.typeName == parcelize } shouldBe true
         svc.annotations.any { it.typeName == parcelize } shouldBe false
+
+        struct.superinterfaces.any { it.key == parcelable } shouldBe true
+        anEnum.superinterfaces.any { it.key == parcelable } shouldBe true
+        svc.superinterfaces.any { it.key == parcelable } shouldBe false
     }
 
     @Test
