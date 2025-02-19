@@ -221,6 +221,10 @@ object ThriftyCompiler {
             .help("When set, unknown values found when decoding will throw an exception. Otherwise, it uses null/default values.")
             .flag("--no-fail-on-unknown-enum-values", default = true)
 
+        val mutableFields by option("--mutable-fields")
+            .help("When set, Field is set to Mutable.")
+            .flag("--no-mutable-fields", default = false)
+
         override fun help(context: Context) = "Generate Java or Kotlin code from .thrift files"
 
         override fun run() {
@@ -285,6 +289,7 @@ object ThriftyCompiler {
             gen.emitFileComment(!omitFileComments)
             gen.emitParcelable(emitParcelable)
             gen.failOnUnknownEnumValues(failOnUnknownEnumValues)
+            gen.mutableFields(mutableFields)
 
             gen.generate(outputDirectory)
         }
@@ -341,6 +346,7 @@ object ThriftyCompiler {
             }
 
             gen.failOnUnknownEnumValues(failOnUnknownEnumValues)
+            gen.mutableFields(mutableFields)
 
             listTypeName?.let { gen.listClassName(it) }
             setTypeName?.let { gen.setClassName(it) }

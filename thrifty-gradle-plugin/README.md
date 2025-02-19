@@ -72,6 +72,10 @@ thrifty {
         // Default is false.
         allowUnknownEnumValues = true
 
+        // Generate mutable fields.
+        // Default is false.
+        mutableFields = true
+
         // The above options are also applicable to the 'java' block;
         // Kotlin-specific options follow.
 

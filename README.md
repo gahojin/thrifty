@@ -2,6 +2,9 @@ Thrifty
 =======
 
 [![Pre-merge checks](https://github.com/gahojin/thrifty/actions/workflows/pre-merge.yml/badge.svg)](https://github.com/gahojin/thrifty/actions/workflows/pre-merge.yml)
+[![Maven Central Version](https://img.shields.io/maven-central/v/jp.co.gahojin.thrifty/jp.co.gahojin.thrifty.gradle.plugin)](https://central.sonatype.com/artifact/jp.co.gahojin.thrifty/jp.co.gahojin.thrifty.gradle.plugin)
+[![javadoc](https://javadoc.io/badge2/jp.co.gahojin.thrifty/thrifty-runtime-jvm/javadoc.svg)](https://javadoc.io/doc/jp.co.gahojin.thrifty/thrifty-runtime-jvm)
+[![GitHub License](https://img.shields.io/github/license/gahojin/thrifty)](LICENSE)
 
 Thrifty is an implementation of the Apache Thrift software stack, which uses 1/4 of the method count taken by
 the Apache Thrift compiler, which makes it especially appealing for use on Android.
@@ -27,13 +30,10 @@ In `build.gradle`:
 ```groovy
 repositories {
   mavenCentral()
-
-  // For snapshot builds
-  maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 }
 
 dependencies {
-  implementation 'jp.co.gahojin.thrifty:thrifty-runtime-jvm:3.1.0'
+  implementation 'jp.co.gahojin.thrifty:thrifty-runtime-jvm:4.1.0'
 }
 ```
 
@@ -51,7 +51,7 @@ Or, with the Gradle plugin:
 
 buildscript {
   dependencies {
-    classpath 'jp.co.gahojin.thrifty:thrifty-gradle-plugin:3.1.0'
+    classpath 'jp.co.gahojin.thrifty:thrifty-gradle-plugin:4.1.0'
   }
 }
 
@@ -181,7 +181,7 @@ public data class SearchResult(
   @ThriftField(fieldId = 3, isRequired = true)
   public val lastUpdatedMillis: Long
 ) : Struct {
-  public override fun write(protocol: Protocol): Unit {
+  public override fun write(protocol: Protocol) {
     ADAPTER.write(protocol, this)
   }
 
