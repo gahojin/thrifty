@@ -4,10 +4,10 @@
   <CurrentIssues>
     <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$fun generate(schema: Schema): List&lt;FileSpec></ID>
     <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateAdapterFor( struct: StructType, adapterName: ClassName, adapterInterfaceName: TypeName, ): TypeSpec</ID>
-    <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateDataClass(schema: Schema, struct: StructType): TypeSpec</ID>
-    <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateEnumClass(enumType: EnumType): TypeSpec</ID>
     <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateSealedClass(schema: Schema, struct: StructType): TypeSpec</ID>
     <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun buildCallType(schema: Schema, method: ServiceMethod): TypeSpec</ID>
+    <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun generateDataClass(schema: Schema, struct: StructType): TypeSpec</ID>
+    <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun generateEnumClass(enumType: EnumType): TypeSpec</ID>
     <ID>ForbiddenComment:KotlinCodeGenerator.kt$KotlinCodeGenerator$// TODO: This assumes that the client and server share the same belief about the default value.</ID>
     <ID>ForbiddenComment:KotlinCodeGenerator.kt$KotlinCodeGenerator.&lt;no name provided>$// TODO: Implement support for binary constants in the ANTLR grammar</ID>
     <ID>LargeClass:KotlinCodeGenerator.kt$KotlinCodeGenerator</ID>
@@ -18,10 +18,10 @@
     <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateAdapterFor( struct: StructType, adapterName: ClassName, adapterInterfaceName: TypeName, ): TypeSpec</ID>
     <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateAdapterForSealed( struct: StructType, adapterName: ClassName, adapterInterfaceName: TypeName, ): TypeSpec</ID>
     <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateCoroServiceImplementation( schema: Schema, serviceType: ServiceType, serviceInterface: TypeSpec, ): TypeSpec</ID>
-    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateDataClass(schema: Schema, struct: StructType): TypeSpec</ID>
-    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateEnumClass(enumType: EnumType): TypeSpec</ID>
     <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateSealedClass(schema: Schema, struct: StructType): TypeSpec</ID>
     <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun buildCallType(schema: Schema, method: ServiceMethod): TypeSpec</ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun generateDataClass(schema: Schema, struct: StructType): TypeSpec</ID>
+    <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun generateEnumClass(enumType: EnumType): TypeSpec</ID>
     <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun generateProcessorImplementation( schema: Schema, serviceType: ServiceType, serviceInterface: TypeSpec, ): TypeSpec</ID>
     <ID>LongMethod:KotlinCodeGeneratorTest.kt$KotlinCodeGeneratorTest$@Test fun `union generate read function`()</ID>
     <ID>LongParameterList:KotlinCodeGenerator.kt$KotlinCodeGenerator$( block: CodeBlock.Builder, name: String, type: ThriftType, scope: Int = 0, localNamePrefix: String = "", failOnUnknownEnumValues: Boolean = true, )</ID>

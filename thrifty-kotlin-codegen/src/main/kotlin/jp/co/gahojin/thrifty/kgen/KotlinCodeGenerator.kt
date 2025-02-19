@@ -123,6 +123,8 @@ private object ClassNames {
     val LINKED_HASH_SET = ClassName("kotlin.collections", "LinkedHashSet")
     val LINKED_HASH_MAP = ClassName("kotlin.collections", "LinkedHashMap")
     val IO_EXCEPTION = ClassName("okio", "IOException")
+    val ANDROID_PARCELABLE = ClassName("android.os", "Parcelable")
+    val KOTLINX_PARCELIZE = ClassName("kotlinx.parcelize", "Parcelize")
 }
 
 /**
@@ -382,7 +384,7 @@ class KotlinCodeGenerator(
 
     // region Aliases
 
-    internal fun generateTypeAlias(typedef: TypedefType): TypeAliasSpec {
+    private fun generateTypeAlias(typedef: TypedefType): TypeAliasSpec {
         return TypeAliasSpec.builder(typedef.name, typedef.oldType.typeName).run {
             if (typedef.hasJavadoc) {
                 addKdoc("%L", typedef.documentation)
@@ -395,7 +397,7 @@ class KotlinCodeGenerator(
 
     // region Enums
 
-    internal fun generateEnumClass(enumType: EnumType): TypeSpec {
+    private fun generateEnumClass(enumType: EnumType): TypeSpec {
         val typeBuilder = TypeSpec.enumBuilder(enumType.name)
 
         if (!emitBigEnums) {
@@ -413,7 +415,7 @@ class KotlinCodeGenerator(
 
         if (parcelize) {
             typeBuilder.addAnnotation(makeParcelable())
-            typeBuilder.addAnnotation(suppressLint("ParcelCreator")) // Android Studio bug
+            typeBuilder.addSuperinterface(ClassNames.ANDROID_PARCELABLE)
         }
 
         val findByValue = FunSpec.builder("findByValue")
@@ -480,7 +482,7 @@ class KotlinCodeGenerator(
     // in order to be able to refer to them later
     data class FieldIdMarker(val fieldId: Int)
 
-    internal fun generateDataClass(schema: Schema, struct: StructType): TypeSpec {
+    private fun generateDataClass(schema: Schema, struct: StructType): TypeSpec {
         val structClassName = ClassName(struct.kotlinNamespace, struct.name)
         val typeBuilder = TypeSpec.classBuilder(structClassName).apply {
             if (struct.fields.isNotEmpty()) {
@@ -492,7 +494,7 @@ class KotlinCodeGenerator(
             if (struct.isException) superclass(ClassNames.EXCEPTION)
             if (parcelize) {
                 addAnnotation(makeParcelable())
-                addAnnotation(suppressLint("ParcelCreator")) // Android Studio bug with Parcelize
+                addSuperinterface(ClassNames.ANDROID_PARCELABLE)
             }
         }
 
@@ -2254,14 +2256,7 @@ class KotlinCodeGenerator(
     }
 
     private fun makeParcelable(): AnnotationSpec {
-        return AnnotationSpec.builder(ClassName("kotlinx.android.parcel", "Parcelize"))
-            .build()
-    }
-
-    @Suppress("SameParameterValue")
-    private fun suppressLint(toSuppress: String): AnnotationSpec {
-        return AnnotationSpec.builder(ClassName("android.annotation", "SuppressLint"))
-            .addMember("%S", toSuppress)
+        return AnnotationSpec.builder(ClassNames.KOTLINX_PARCELIZE)
             .build()
     }
 

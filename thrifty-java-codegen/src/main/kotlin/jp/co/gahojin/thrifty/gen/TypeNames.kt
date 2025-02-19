@@ -105,17 +105,17 @@ internal object TypeNames {
 
     val JETBRAINS_NOT_NULL = classNameOf<org.jetbrains.annotations.NotNull>()
     val JETBRAINS_NULLABLE = classNameOf<org.jetbrains.annotations.Nullable>()
-    val ANDROIDX_NOT_NULL = ClassName.get("androidx.annotation", "NonNull")
-    val ANDROIDX_NULLABLE = ClassName.get("androidx.annotation", "Nullable")
+    val ANDROIDX_NOT_NULL: ClassName = ClassName.get("androidx.annotation", "NonNull")
+    val ANDROIDX_NULLABLE: ClassName = ClassName.get("androidx.annotation", "Nullable")
 
     val SERVICE_CALLBACK = classNameOf<ServiceMethodCallback<*>>()
     val SERVICE_CLIENT_BASE = classNameOf<AsyncClientBase>()
     val SERVICE_CLIENT_LISTENER = classNameOf<AsyncClientBase.Listener>()
     val SERVICE_METHOD_CALL = classNameOf<MethodCall<*>>()
 
-    val PARCEL = ClassName.get("android.os", "Parcel")
-    val PARCELABLE = ClassName.get("android.os", "Parcelable")
-    val PARCELABLE_CREATOR = ClassName.get("android.os", "Parcelable", "Creator")
+    val PARCEL: ClassName = ClassName.get("android.os", "Parcel")
+    val PARCELABLE: ClassName = ClassName.get("android.os", "Parcelable")
+    val PARCELABLE_CREATOR: ClassName = ClassName.get("android.os", "Parcelable", "Creator")
 
     val OBFUSCATION_UTIL = classNameOf<ObfuscationUtil>()
 
