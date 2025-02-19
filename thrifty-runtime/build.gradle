@@ -20,6 +20,7 @@
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
 
+import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.attributes.java.TargetJvmVersion
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -27,6 +28,7 @@ import javax.inject.Inject
 
 plugins {
     id 'idea'
+    id 'signing'
     alias libs.plugins.detekt
     alias libs.plugins.kotlin.mpp
     alias libs.plugins.kotlinx.kover
@@ -225,7 +227,15 @@ configurations {
     }
 }
 
+signing {
+    def versionName = (String) project.findProperty("VERSION_NAME")
+    if (!versionName?.endsWith("-SNAPSHOT")) {
+        useGpgCmd()
+    }
+    sign(publishing.publications)
+}
+
 mavenPublishing {
-    publishToMavenCentral()
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 }
