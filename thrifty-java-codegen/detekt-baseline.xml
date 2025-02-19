@@ -6,15 +6,6 @@
     <ID>CyclomaticComplexMethod:ThriftyCodeGenerator.kt$ThriftyCodeGenerator$private fun buildStruct(type: StructType): TypeSpec</ID>
     <ID>CyclomaticComplexMethod:ThriftyCodeGenerator.kt$ThriftyCodeGenerator$private fun builderFor( structType: StructType, structClassName: ClassName, builderClassName: ClassName, ): TypeSpec</ID>
     <ID>CyclomaticComplexMethod:TypeNames.kt$TypeNames$fun getTypeCodeName(code: Byte): String</ID>
-    <ID>InvalidPackageDeclaration:ConstantBuilder.kt$package com.microsoft.thrifty.gen</ID>
-    <ID>InvalidPackageDeclaration:FieldNamer.kt$package com.microsoft.thrifty.gen</ID>
-    <ID>InvalidPackageDeclaration:GenerateReaderVisitor.kt$package com.microsoft.thrifty.gen</ID>
-    <ID>InvalidPackageDeclaration:GenerateWriterVisitor.kt$package com.microsoft.thrifty.gen</ID>
-    <ID>InvalidPackageDeclaration:ServiceBuilder.kt$package com.microsoft.thrifty.gen</ID>
-    <ID>InvalidPackageDeclaration:SimpleVisitor.kt$package com.microsoft.thrifty.gen</ID>
-    <ID>InvalidPackageDeclaration:ThriftyCodeGenerator.kt$package com.microsoft.thrifty.gen</ID>
-    <ID>InvalidPackageDeclaration:TypeNames.kt$package com.microsoft.thrifty.gen</ID>
-    <ID>InvalidPackageDeclaration:TypeResolver.kt$package com.microsoft.thrifty.gen</ID>
     <ID>LargeClass:ThriftyCodeGenerator.kt$ThriftyCodeGenerator</ID>
     <ID>LongMethod:ServiceBuilder.kt$ServiceBuilder$private fun buildReceiveMethod(method: ServiceMethod, hasReturnType: Boolean): MethodSpec</ID>
     <ID>LongMethod:ThriftyCodeGenerator.kt$ThriftyCodeGenerator$private fun adapterFor(structType: StructType, structClassName: ClassName, builderClassName: ClassName): TypeSpec</ID>

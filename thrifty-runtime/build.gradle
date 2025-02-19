@@ -44,7 +44,7 @@ def compileTestThrift = tasks.register("compileTestThrift", JavaExec) { t ->
 
     t.classpath = project(":thrifty-compiler").sourceSets.main.runtimeClasspath
 
-    mainClass = "com.microsoft.thrifty.compiler.ThriftyCompiler"
+    mainClass = "jp.co.gahojin.thrifty.compiler.ThriftyCompiler"
 
     args = [
             "--out=$projectDir/build/generated-src/thrifty-kotlin/kotlin",
@@ -186,7 +186,7 @@ abstract class IosTestTask extends DefaultTask {
 
     private Process startServer() {
         Process process = new ProcessBuilder()
-                .command(["java", "-cp", serverClasspath.get().getAsPath(), "com.microsoft.thrifty.mains.HttpServerMain"])
+                .command(["java", "-cp", serverClasspath.get().getAsPath(), "jp.co.gahojin.thrifty.mains.HttpServerMain"])
                 .start()
 
         def reader = new InputStreamReader(process.getInputStream())

@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'com.microsoft.thrifty:thrifty-runtime-jvm:3.1.0'
+  implementation 'jp.co.gahojin.thrifty:thrifty-runtime-jvm:3.1.0'
 }
 ```
 
@@ -51,11 +51,11 @@ Or, with the Gradle plugin:
 
 buildscript {
   dependencies {
-    classpath 'com.microsoft.thrifty:thrifty-gradle-plugin:3.1.0'
+    classpath 'jp.co.gahojin.thrifty:thrifty-gradle-plugin:3.1.0'
   }
 }
 
-apply plugin: 'com.microsoft.thrifty'
+apply plugin: 'jp.co.gahojin.thrifty'
 
 thrifty {
   // Optionally configure things, see thrifty-gradle-plugin/README.md
@@ -157,12 +157,12 @@ The latter looks like this:
 ```kotlin
 package com.foo.bar
 
-import com.microsoft.thrifty.Struct
-import com.microsoft.thrifty.TType
-import com.microsoft.thrifty.ThriftField
-import com.microsoft.thrifty.kotlin.Adapter
-import com.microsoft.thrifty.protocol.Protocol
-import com.microsoft.thrifty.util.ProtocolUtil
+import jp.co.gahojin.thrifty.Struct
+import jp.co.gahojin.thrifty.TType
+import jp.co.gahojin.thrifty.ThriftField
+import jp.co.gahojin.thrifty.kotlin.Adapter
+import jp.co.gahojin.thrifty.protocol.Protocol
+import jp.co.gahojin.thrifty.util.ProtocolUtil
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
@@ -339,7 +339,7 @@ Thrifty generates a `Processor` implementation that you pass an input `Protocol`
 and the code will take care of reading the request, passing it to the handler and returning the correct response to the output.
 
 If you want to use it, you need to wrap an appropriate communication layer around it, e.g. an HTTP server.
-You can have a look at the [integration tests](thrifty-integration-tests/src/test/kotlin/com/microsoft/thrifty/integration/conformance/server/TestServer.kt) for a basic example.
+You can have a look at the [integration tests](thrifty-integration-tests/src/test/kotlin/jp/co/gahojin/thrifty/integration/conformance/server/TestServer.kt) for a basic example.
 
 ### Java-specific command-line options
 

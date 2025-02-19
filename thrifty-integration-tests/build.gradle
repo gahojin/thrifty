@@ -83,7 +83,7 @@ shadowJar {
 }
 
 application {
-    mainClass = 'com.microsoft.thrifty.compiler.ThriftyCompiler'
+    mainClass = 'jp.co.gahojin.thrifty.compiler.ThriftyCompiler'
 }
 
 def compileTestThrift = tasks.register("compileTestThrift", JavaExec) { t ->

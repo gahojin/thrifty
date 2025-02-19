@@ -33,6 +33,7 @@ plugins {
 
 subprojects {
     tasks.withType<Detekt>().configureEach {
+        jvmTarget = "21"
         reports {
             xml.required.set(true)
             html.required.set(true)

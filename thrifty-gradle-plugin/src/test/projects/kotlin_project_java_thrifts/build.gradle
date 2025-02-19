@@ -1,5 +1,5 @@
 plugins {
-    id 'com.microsoft.thrifty' // order matters, apparently
+    id 'jp.co.gahojin.thrifty' // order matters, apparently
     id 'org.jetbrains.kotlin.jvm'
 }
 

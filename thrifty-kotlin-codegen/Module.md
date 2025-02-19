@@ -2,6 +2,6 @@
 
 Generates Kotlin code from thrifty-schema Schema objects.
 
-# Package com.microsoft.thrifty.kgen
+# Package jp.co.gahojin.thrifty.kgen
 
 Contains all code implementing Kotlin code generation.

@@ -1,4 +1,4 @@
-namespace jvm com.microsoft.thrifty.test;
+namespace jvm jp.co.gahojin.thrifty.test;
 
 include "common.thrift";
 

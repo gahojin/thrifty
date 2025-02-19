@@ -55,12 +55,9 @@
     <ID>TooManyFunctions:Constant.kt$Constant$ConstantReferenceVisitor : Visitor</ID>
     <ID>TooManyFunctions:Linker.kt$Linker : SymbolTable</ID>
     <ID>TooManyFunctions:Loader.kt$Loader</ID>
-    <ID>TooManyFunctions:SchemaFunctionalEquality.kt$com.microsoft.thrifty.schema.SchemaFunctionalEquality.kt</ID>
-    <ID>TooManyFunctions:SchemaRendering.kt$com.microsoft.thrifty.schema.render.SchemaRendering.kt</ID>
+    <ID>TooManyFunctions:SchemaFunctionalEquality.kt$jp.co.gahojin.thrifty.schema.SchemaFunctionalEquality.kt</ID>
+    <ID>TooManyFunctions:SchemaRendering.kt$jp.co.gahojin.thrifty.schema.render.SchemaRendering.kt</ID>
     <ID>TooManyFunctions:ThriftListener.kt$ThriftListener : AntlrThriftBaseListener</ID>
     <ID>TooManyFunctions:ThriftType.kt$ThriftType$Visitor&lt;T></ID>
-    <ID>WildcardImport:Constant.kt$import com.microsoft.thrifty.schema.parser.*</ID>
-    <ID>WildcardImport:Linker.kt$import com.microsoft.thrifty.schema.parser.*</ID>
-    <ID>WildcardImport:ThriftParser.kt$import org.antlr.v4.runtime.*</ID>
   </CurrentIssues>
 </SmellBaseline>
