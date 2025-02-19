@@ -65,8 +65,7 @@ import kotlin.system.exitProcess
  * [--kt-jvm-static]
  * [--kt-big-enums]
  * [--parcelable]
- * [--use-android-annotations]
- * [--nullability-annotation-type=[none|android-support|androidx]]
+ * [--nullability-annotation-type=[none|jetbrains|androidx]]
  * [--omit-service-clients]
  * [--omit-file-comments]
  * file1.thrift
@@ -112,18 +111,11 @@ import kotlin.system.exitProcess
  * `--parcelable` is optional.  When provided, generated types will contain a
  * `Parcelable` implementation.  Kotlin types will use the `@Parcelize` extension.
  *
- * `--use-android-annotations` (deprecated) is optional.  When specified, generated Java classes
- * will have `@android.support.annotation.Nullable` or `@android.support.annotation.NotNull`
- * annotations, as appropriate.  Has no effect on Kotlin code.  Note: This option is superseded by
- * `--nullability-annotation-type`.  Setting this is equivalent to
- * `--nullability-annotation-type=android-support`.
- *
- * `--nullability-annotation-type=[none|android-support|androidx]` is optional, defaulting to
+ * `--nullability-annotation-type=[none|jetbrains|androidx]` is optional, defaulting to
  * `none`.  When specified as something other than `none`, generated Java classes will have
- * `@Nullable` or `@NotNull` annotations, as appropriate.  Since AndroidX was introduced, these
- * annotations were repackaged from `android.support.annotation` to `androidx.annotation`.  Use
- * the `android-support` option for projects that are using the Android Support Library and have
- * not migrated to AndroidX.  Use the `androidx` option for projects that have migrated to AndroidX.
+ * `@Nullable` or `@NotNull` annotations, as appropriate.
+ * Use the `jetbrain` option for projects that are using the JetBrains Annotation Library.
+ * Use the `androidx` option for projects that have migrated to AndroidX.
  * Has no effect on Kotlin code.  This flag implies '--lang=java'.
  *
  * `--omit-service-clients` is optional.  When specified, no service clients are generated.
@@ -170,23 +162,15 @@ object ThriftyCompiler {
         val mapTypeName: String? by option("--map-type")
             .help("when specified, the concrete type to use for maps")
 
-        val emitNullabilityAnnotations: Boolean by option("--use-android-annotations", hidden = true)
-            .flag(default = false)
-            .deprecated("Equivalent to --nullability-annotation-type=android-support")
-
         val nullabilityAnnotationType: NullabilityAnnotationType by option("--nullability-annotation-type")
             .help("the type of nullability annotations, if any, to add to fields.  Default is none.  Implies --lang=java.")
             .choice(
                 "none" to NullabilityAnnotationType.NONE,
-                "android-support" to NullabilityAnnotationType.ANDROID_SUPPORT,
+                "jetbrains" to NullabilityAnnotationType.JETBRAINS,
                 "androidx" to NullabilityAnnotationType.ANDROIDX,
             )
             .transformAll {
-                it.lastOrNull() ?: if (emitNullabilityAnnotations) {
-                    NullabilityAnnotationType.ANDROID_SUPPORT
-                } else {
-                    NullabilityAnnotationType.NONE
-                }
+                it.lastOrNull() ?: NullabilityAnnotationType.NONE
             }
 
         val emitParcelable: Boolean by option("--parcelable")
@@ -273,10 +257,6 @@ object ThriftyCompiler {
                     "You specified $language, but provided options implying $impliedLanguage (which will be ignored).",
                     err = true,
                 )
-            }
-
-            if (emitNullabilityAnnotations) {
-                echo("Warning: --use-android-annotations is deprecated and superseded by the --nullability-annotation-type option.")
             }
 
             when (language ?: impliedLanguage) {

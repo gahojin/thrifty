@@ -31,7 +31,7 @@ import java.util.*
 open class JavaThriftOptions : ThriftOptions(), Serializable {
     enum class NullabilityAnnotations(val label: String) {
         NONE("none"),
-        ANDROID_SUPPORT("android-support"),
+        JETBRAINS("jetbrains"),
         ANDROIDX("androidx"),
     }
 

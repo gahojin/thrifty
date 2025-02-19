@@ -72,7 +72,7 @@ thrifty {
         // follow.
 
         // When true, generated structs will be include 'Builder' inner classes.  This is
-        // for legacy compatibiltity only, and leads to larger code.
+        // for legacy compatibility only, and leads to larger code.
         structBuilders = false
 
         // The Kotlin code generator supports several different service-client API styles.
@@ -88,7 +88,7 @@ thrifty {
 
         // Specifies which kind of nullability annotations to add to generated code, if any.
         //
-        // valid values are 'none' (the default), 'android-support', and 'androidx'.
+        // valid values are 'none' (the default), 'jetbrains', and 'androidx'.
         nullabilityAnnotationKind 'none'
     }
 }

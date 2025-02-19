@@ -147,7 +147,7 @@ class ThriftyCodeGeneratorTest {
         """
 
         val schema = parse("enum_nullable.thrift", thrift)
-        val gen = ThriftyCodeGenerator(schema).nullabilityAnnotationType(NullabilityAnnotationType.ANDROID_SUPPORT)
+        val gen = ThriftyCodeGenerator(schema).nullabilityAnnotationType(NullabilityAnnotationType.JETBRAINS)
         val javaFiles = gen.generateTypes()
         val file = javaFiles[0].toString()
 
@@ -170,27 +170,27 @@ class ThriftyCodeGeneratorTest {
         val file = javaFiles[0].toString()
 
         file shouldNotContain "@Nullable"
-        file shouldNotContain "import android.support.annotation"
+        file shouldNotContain "import org.jetbrains.annotations"
         file shouldNotContain "import androidx.annotation"
     }
 
     @Test
-    fun nullableAndroidSupportAnnotations() {
+    fun nullableJetbrainsAnnotations() {
         val thrift = """
-            namespace java nullable_android_support
+            namespace java nullable_jetbrains
 
             struct foo {
                 1: string bar
             }
         """
 
-        val schema = parse("nullable_android_support.thrift", thrift)
-        val gen = ThriftyCodeGenerator(schema).nullabilityAnnotationType(NullabilityAnnotationType.ANDROID_SUPPORT)
+        val schema = parse("nullable_jetbrains.thrift", thrift)
+        val gen = ThriftyCodeGenerator(schema).nullabilityAnnotationType(NullabilityAnnotationType.JETBRAINS)
         val javaFiles = gen.generateTypes()
         val file = javaFiles[0].toString()
 
         file shouldContain "@Nullable\n  public final String bar"
-        file shouldContain "import android.support.annotation"
+        file shouldContain "import org.jetbrains.annotations"
         file shouldNotContain "import androidx.annotation"
     }
 
@@ -210,7 +210,7 @@ class ThriftyCodeGeneratorTest {
         val file = javaFiles[0].toString()
 
         file shouldContain "@Nullable\n  public final String bar"
-        file shouldNotContain "import android.support.annotation"
+        file shouldNotContain "import org.jetbrains.annotations"
         file shouldContain "import androidx.annotation"
     }
 
@@ -597,13 +597,13 @@ class ThriftyCodeGeneratorTest {
         """
 
         val schema = parse("structs_builder_ctor.thrift", thrift)
-        val gen = ThriftyCodeGenerator(schema).nullabilityAnnotationType(NullabilityAnnotationType.ANDROID_SUPPORT)
+        val gen = ThriftyCodeGenerator(schema).nullabilityAnnotationType(NullabilityAnnotationType.JETBRAINS)
         val javaFiles = gen.generateTypes()
         val file = javaFiles[0]
 
         val java = file.toString()
 
-        java shouldContain "public Builder(@NonNull Foo struct)"
+        java shouldContain "public Builder(@NotNull Foo struct)"
     }
 
     @Test

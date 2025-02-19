@@ -103,8 +103,8 @@ internal object TypeNames {
     val OBFUSCATED = classNameOf<Obfuscated>()
     val THRIFT_FIELD = classNameOf<ThriftField>()
 
-    val ANDROID_SUPPORT_NOT_NULL = ClassName.get("android.support.annotation", "NonNull")
-    val ANDROID_SUPPORT_NULLABLE = ClassName.get("android.support.annotation", "Nullable")
+    val JETBRAINS_NOT_NULL = classNameOf<org.jetbrains.annotations.NotNull>()
+    val JETBRAINS_NULLABLE = classNameOf<org.jetbrains.annotations.Nullable>()
     val ANDROIDX_NOT_NULL = ClassName.get("androidx.annotation", "NonNull")
     val ANDROIDX_NULLABLE = ClassName.get("androidx.annotation", "Nullable")
 
@@ -147,12 +147,12 @@ internal object TypeNames {
 
 enum class NullabilityAnnotationType(
     internal val notNullClassName: ClassName?,
-    internal val nullableClassName: ClassName?
+    internal val nullableClassName: ClassName?,
 ) {
     NONE(null, null),
-    ANDROID_SUPPORT(
-        notNullClassName = TypeNames.ANDROID_SUPPORT_NOT_NULL,
-        nullableClassName = TypeNames.ANDROID_SUPPORT_NULLABLE,
+    JETBRAINS(
+        notNullClassName = TypeNames.JETBRAINS_NOT_NULL,
+        nullableClassName = TypeNames.JETBRAINS_NULLABLE,
     ),
     ANDROIDX(
         notNullClassName = TypeNames.ANDROIDX_NOT_NULL,

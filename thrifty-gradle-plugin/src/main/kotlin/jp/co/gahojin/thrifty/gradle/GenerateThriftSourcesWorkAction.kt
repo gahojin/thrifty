@@ -186,7 +186,7 @@ abstract class GenerateThriftSourcesWorkAction : WorkAction<GenerateThriftSource
 
         when (jopt.nullabilityAnnotations) {
             NullabilityAnnotations.NONE -> gen.nullabilityAnnotationType(NullabilityAnnotationType.NONE)
-            NullabilityAnnotations.ANDROID_SUPPORT -> gen.nullabilityAnnotationType(NullabilityAnnotationType.ANDROID_SUPPORT)
+            NullabilityAnnotations.JETBRAINS -> gen.nullabilityAnnotationType(NullabilityAnnotationType.JETBRAINS)
             NullabilityAnnotations.ANDROIDX -> gen.nullabilityAnnotationType(NullabilityAnnotationType.ANDROIDX)
         }
 
