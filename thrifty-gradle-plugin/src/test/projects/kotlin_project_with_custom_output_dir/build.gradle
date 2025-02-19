@@ -9,6 +9,6 @@ thrifty {
 }
 
 dependencies {
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    api "org.jetbrains.kotlin:kotlin-stdlib"
     api msft.thrifty.runtime
 }
