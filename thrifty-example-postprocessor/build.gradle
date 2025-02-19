@@ -63,6 +63,6 @@ jar {
 
     // Make the compiler's main class the entry point
     manifest {
-        attributes("Main-Class": "com.microsoft.thrifty.compiler.ThriftyCompiler")
+        attributes("Main-Class": "jp.co.gahojin.thrifty.compiler.ThriftyCompiler")
     }
 }

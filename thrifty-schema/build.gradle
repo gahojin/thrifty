@@ -34,7 +34,7 @@ plugins {
 description = 'A simple Thrift IDL parser and validator'
 
 generateGrammarSource {
-    arguments += ["-package", "com.microsoft.thrifty.schema.antlr"]
+    arguments += ["-package", "jp.co.gahojin.thrifty.schema.antlr"]
 }
 
 dependencies {

@@ -1,4 +1,4 @@
 plugins {
-    id 'com.microsoft.thrifty' apply false
+    id 'jp.co.gahojin.thrifty' apply false
     id 'org.jetbrains.kotlin.jvm' apply false
 }

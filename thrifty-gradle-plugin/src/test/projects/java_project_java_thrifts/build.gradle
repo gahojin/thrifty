@@ -1,5 +1,5 @@
 plugins {
-    id 'com.microsoft.thrifty'
+    id 'jp.co.gahojin.thrifty'
     id 'java-library'
 }
 

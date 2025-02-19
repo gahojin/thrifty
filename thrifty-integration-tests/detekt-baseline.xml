@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>WildcardImport:CoroutineConformanceTests.kt$import io.ktor.client.*</ID>
+    <ID>WildcardImport:CoroutineConformanceTests.kt$import io.ktor.client.engine.cio.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -18,7 +18,7 @@
  *
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
-namespace java com.microsoft.thrifty.compiler.testcases
+namespace java jp.co.gahojin.thrifty.compiler.testcases
 
 typedef string EmailAddress
 

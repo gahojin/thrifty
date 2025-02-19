@@ -27,7 +27,7 @@
  * details.
  */
 
-namespace kt com.microsoft.thrifty.runtime.kgen.coro
+namespace kt jp.co.gahsssojin.thrifty.runtime.kgen.coro
 
 /**
  * Docstring!

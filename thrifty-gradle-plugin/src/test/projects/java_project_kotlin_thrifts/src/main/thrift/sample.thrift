@@ -1,4 +1,4 @@
-namespace jvm com.microsoft.thrifty.test;
+namespace jvm jp.co.gahojin.thrifty.test;
 
 struct Foo {
     1: optional string name;
