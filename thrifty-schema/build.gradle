@@ -1,3 +1,4 @@
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 /*
@@ -21,10 +22,13 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
  *
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     id 'java-library'
     id 'idea'
     id 'antlr'
+    id 'signing'
     alias libs.plugins.detekt
     alias libs.plugins.dokka
     alias libs.plugins.kotlin.jvm
@@ -69,8 +73,16 @@ tasks.withType(Test).configureEach {
     }
 }
 
+signing {
+    def versionName = (String) project.findProperty("VERSION_NAME")
+    if (!versionName?.endsWith("-SNAPSHOT")) {
+        useGpgCmd()
+    }
+    sign(publishing.publications)
+}
+
 mavenPublishing {
-    publishToMavenCentral()
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 }
 
