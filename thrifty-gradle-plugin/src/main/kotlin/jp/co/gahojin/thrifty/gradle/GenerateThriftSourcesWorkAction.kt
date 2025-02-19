@@ -142,6 +142,10 @@ abstract class GenerateThriftSourcesWorkAction : WorkAction<GenerateThriftSource
             gen.generateServer()
         }
 
+
+        if (kopt.jvmOverloads) {
+            gen.emitJvmOverloads()
+        }
         if (opts.listType != null) {
             gen.listClassName(opts.listType)
         }

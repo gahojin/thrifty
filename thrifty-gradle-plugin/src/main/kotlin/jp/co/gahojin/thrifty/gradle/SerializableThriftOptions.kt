@@ -41,6 +41,7 @@ class SerializableThriftOptions @JvmOverloads constructor(
     class Kotlin @JvmOverloads constructor(
         val serviceClientStyle: ClientStyle = ClientStyle.DEFAULT,
         val isGenerateServer: Boolean = false,
+        val jvmOverloads: Boolean = false,
     ) : Serializable {
         companion object {
             private const val serialVersionUID = 1L
@@ -67,6 +68,7 @@ class SerializableThriftOptions @JvmOverloads constructor(
             Kotlin(
                 serviceClientStyle = it.serviceClientStyle,
                 isGenerateServer = it.isGenerateServer,
+                jvmOverloads = it.jvmOverloads,
             )
         },
         javaOpts = (options as? JavaThriftOptions)?.let {

@@ -193,17 +193,21 @@ object ThriftyCompiler {
             .help("When set, don't add file comments to generated files")
             .flag(default = false)
 
-        val kotlinEmitJvmName: Boolean by option("--kt-emit-jvmname")
-            .help("When set, emit @JvmName annotations")
-            .flag(default = false)
-
         val kotlinFilePerType: Boolean by option("--kt-file-per-type")
             .help("Generate one .kt file per type; default is one per namespace.")
             .flag(default = false)
 
-        val kotlinEmitJvmStatic: Boolean by option("--kt-jvm-static")
+        val kotlinJvmName: Boolean by option("--kt-emit-jvmname")
+            .help("When set, emit @JvmName annotations")
+            .flag(default = false)
+
+        val kotlinJvmStatic: Boolean by option("--kt-jvm-static")
             .help("Add @JvmStatic annotations to companion-object functions.  For ease-of-use with Java code.")
             .flag("--kt-no-jvm-static", default = false)
+
+        val kotlinJvmOverloads: Boolean by option("--kt-jvm-overloads")
+            .help("When set, emit @JvmOverloads annotations")
+            .flag("--kt-no-jvm-overloads", default = false)
 
         val kotlinBigEnums: Boolean by option("--kt-big-enums")
             .flag("--kt-no-big-enums", default = false)
@@ -245,8 +249,9 @@ object ThriftyCompiler {
 
             val impliedLanguage = when {
                 kotlinFilePerType -> Language.KOTLIN
-                kotlinEmitJvmName -> Language.KOTLIN
-                kotlinEmitJvmStatic -> Language.KOTLIN
+                kotlinJvmName -> Language.KOTLIN
+                kotlinJvmStatic -> Language.KOTLIN
+                kotlinJvmOverloads -> Language.KOTLIN
                 kotlinBigEnums -> Language.KOTLIN
                 nullabilityAnnotationType != NullabilityAnnotationType.NONE -> Language.JAVA
                 else -> null
@@ -311,12 +316,16 @@ object ThriftyCompiler {
                 gen.generateServer()
             }
 
-            if (kotlinEmitJvmName) {
+            if (kotlinJvmName) {
                 gen.emitJvmName()
             }
 
-            if (kotlinEmitJvmStatic) {
+            if (kotlinJvmStatic) {
                 gen.emitJvmStatic()
+            }
+
+            if (kotlinJvmOverloads) {
+                gen.emitJvmOverloads()
             }
 
             if (kotlinBigEnums) {

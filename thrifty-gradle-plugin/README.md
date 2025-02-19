@@ -82,6 +82,9 @@ thrifty {
         // When true, generated server implements.
         // Default is true.
         generateServer = false
+
+        // When true, add @JvmOverloads annotation.
+        jvmOverloads = true
     }
 
     // On the other hand, if you want Java sources, then _don't_ add the kotlin block.  Add at

@@ -1,4 +1,12 @@
-4.0.0 (unreleased)
+4.1.0 (unreleased)
+------------------
+- BREAK(java-codegen): nullableアノテーションのAndroidSupportアノテーションを廃止し、代わりにJetBrainsのアノテーションを追加
+- BREAK(kotlin-codegen): parcelizeアノテーションをkotlinx.parcelizeプラグインに対応
+- BREAK(kotlin-codegen): dataクラスのプリミティブ値が必須の場合、その型の初期値をデフォルト値とする
+- Change: pluginテストのbuild.gradleに定義しているkotlin標準ライブラリをstdlib-jdk8からstdlibに変更
+- Doc: gradle-plugin説明修正
+
+4.0.0 (released 19 February 2025)
 ------------------
 - Change: 依存ライブラリアップデート
 - BREAK: 互換性確認テスト以外のJavaコードをKotlinに移行

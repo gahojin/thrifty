@@ -31,6 +31,9 @@ import com.squareup.kotlinpoet.asTypeName
 import io.kotest.matchers.shouldBe
 import jp.co.gahojin.thrifty.TType
 import jp.co.gahojin.thrifty.schema.BuiltinType
+import jp.co.gahojin.thrifty.schema.ListType
+import jp.co.gahojin.thrifty.schema.MapType
+import jp.co.gahojin.thrifty.schema.SetType
 import okio.ByteString
 import org.junit.jupiter.api.Test
 
@@ -59,5 +62,24 @@ class TypeUtilsTests {
         BuiltinType.STRING.typeName shouldBe String::class.asTypeName()
         BuiltinType.BINARY.typeName shouldBe ByteString::class.asTypeName()
         BuiltinType.VOID.typeName shouldBe UNIT
+    }
+
+    @Test fun `defaultValue of builtins`() {
+        BuiltinType.BOOL.defaultValue shouldBe "false"
+        BuiltinType.BYTE.defaultValue shouldBe "0"
+        BuiltinType.I8.defaultValue shouldBe "0"
+        BuiltinType.I16.defaultValue shouldBe "0"
+        BuiltinType.I32.defaultValue shouldBe "0"
+        BuiltinType.I64.defaultValue shouldBe "0L"
+        BuiltinType.DOUBLE.defaultValue shouldBe "0.0"
+        BuiltinType.STRING.defaultValue shouldBe "\"\""
+        BuiltinType.BINARY.defaultValue shouldBe null
+        BuiltinType.VOID.defaultValue shouldBe null
+        SetType.Builder(BuiltinType.I32, emptyMap()).build()
+            .defaultValue shouldBe "kotlin.collections.emptySet()"
+        MapType.Builder(BuiltinType.I32, BuiltinType.I32, emptyMap()).build()
+            .defaultValue shouldBe "kotlin.collections.emptyMap()"
+        ListType.Builder(BuiltinType.I32, emptyMap()).build()
+            .defaultValue shouldBe "kotlin.collections.emptyList()"
     }
 }
