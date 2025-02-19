@@ -3,7 +3,7 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>CyclomaticComplexMethod:GenerateThriftSourcesWorkAction.kt$GenerateThriftSourcesWorkAction$private fun generateKotlinThrifts(schema: Schema, opts: SerializableThriftOptions)</ID>
-    <ID>LongParameterList:SerializableThriftOptions.kt$SerializableThriftOptions$( val isGenerateServiceClients: Boolean = true, val nameStyle: FieldNameStyle = FieldNameStyle.DEFAULT, val listType: String? = null, val setType: String? = null, val mapType: String? = null, val isParcelable: Boolean = false, val isAllowUnknownEnumValues: Boolean = false, val kotlinOpts: Kotlin? = null, val javaOpts: Java? = null, )</ID>
+    <ID>LongParameterList:SerializableThriftOptions.kt$SerializableThriftOptions$( val isGenerateServiceClients: Boolean = true, val nameStyle: FieldNameStyle = FieldNameStyle.DEFAULT, val listType: String? = null, val setType: String? = null, val mapType: String? = null, val isParcelable: Boolean = false, val isAllowUnknownEnumValues: Boolean = false, val isMutableFields: Boolean = false, val kotlinOpts: Kotlin? = null, val javaOpts: Java? = null, )</ID>
     <ID>MaxLineLength:PluginTest.kt$PluginTest$it.appendLine(" library('thrifty-compilerPlugins', 'jp.co.gahojin.thrifty', 'thrifty-compiler-plugins').versionRef('thrifty')")</ID>
     <ID>MaxLineLength:PluginTest.kt$PluginTest$it.appendLine(" library('thrifty-runtime', 'jp.co.gahojin.thrifty', 'thrifty-runtime').versionRef('thrifty')")</ID>
     <ID>MaxLineLength:ThriftyExtension.kt$ThriftyExtension$private</ID>
