@@ -61,7 +61,7 @@ abstract class ThriftOptions : Serializable {
             styles[style.name] = style
         }
 
-        this.nameStyle = requireNotNull(styles[styleName]) {
+        nameStyle = requireNotNull(styles[styleName]) {
             buildString {
                 appendLine("Invalid name style; allowed values are:")
                 for (value in FieldNameStyle.entries) {
