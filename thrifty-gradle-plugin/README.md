@@ -82,6 +82,18 @@ thrifty {
         // When true, generated server implements.
         // Default is true.
         generateServer = false
+
+        // When true, add @JvmName annotation.
+        jvmName = true
+
+        // When true, add @JvmStatic annotation.
+        jvmStatic = true
+
+        // When true, add @JvmOverloads annotation.
+        jvmOverloads = true
+
+        // When true, generate the function to map an enum to an int value.
+        bigEnum = true
     }
 
     // On the other hand, if you want Java sources, then _don't_ add the kotlin block.  Add at

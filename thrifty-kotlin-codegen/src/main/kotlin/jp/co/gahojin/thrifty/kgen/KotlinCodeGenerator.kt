@@ -125,6 +125,7 @@ private object ClassNames {
     val IO_EXCEPTION = ClassName("okio", "IOException")
     val ANDROID_PARCELABLE = ClassName("android.os", "Parcelable")
     val KOTLINX_PARCELIZE = ClassName("kotlinx.parcelize", "Parcelize")
+    val KOTLIN_JVM_OVERLOADS = ClassName("kotlin.jvm", "JvmOverloads")
 }
 
 /**
@@ -145,6 +146,7 @@ class KotlinCodeGenerator(
     private var omitServiceClients: Boolean = false
     private var emitJvmName: Boolean = false
     private var emitJvmStatic: Boolean = false
+    private var emitJvmOverloads: Boolean = false
     private var emitBigEnums: Boolean = false
     private var emitFileComment: Boolean = true
     private var failOnUnknownEnumValues: Boolean = true
@@ -252,6 +254,10 @@ class KotlinCodeGenerator(
 
     fun emitJvmStatic(): KotlinCodeGenerator = apply {
         emitJvmStatic = true
+    }
+
+    fun emitJvmOverloads(): KotlinCodeGenerator = apply {
+        emitJvmOverloads = true
     }
 
     fun emitBigEnums(): KotlinCodeGenerator = apply {
@@ -502,6 +508,7 @@ class KotlinCodeGenerator(
 
         val companionBuilder = TypeSpec.companionObjectBuilder()
 
+        var existDefaultFields = false
         val nameAllocator = nameAllocators[struct]
         for (field in struct.fields) {
             val fieldName = nameAllocator[field]
@@ -522,10 +529,18 @@ class KotlinCodeGenerator(
             val param = ParameterSpec.builder(fieldName, typeName)
 
             field.defaultValue?.let {
+                existDefaultFields = true
                 param.defaultValue(renderConstValue(schema, field.type, it))
             } ?: run {
-                // 必須ではないフィールドはnullをデフォルト値とする
-                if (!field.required) {
+                if (field.required) {
+                    // 必須フィールドかつ、デフォルト値がない場合は、型の初期値(I32なら0)をセットする
+                    field.type.defaultValue?.also {
+                        existDefaultFields = true
+                        param.defaultValue(it)
+                    }
+                } else {
+                    // 必須ではないフィールドはnullをデフォルト値とする
+                    existDefaultFields = true
                     param.defaultValue("null")
                 }
             }
@@ -582,6 +597,11 @@ class KotlinCodeGenerator(
                     .addParameter("protocol", Protocol::class)
                     .addStatement("%L.write(protocol, this)", nameAllocator[Tags.ADAPTER])
                     .build())
+        }
+
+        // 初期値がセットされているパラメータが存在する場合、@JvmOverloadsアノテーションを付加する
+        if (existDefaultFields && emitJvmOverloads) {
+            ctorBuilder.addAnnotation(ClassNames.KOTLIN_JVM_OVERLOADS)
         }
 
         return typeBuilder
@@ -698,7 +718,7 @@ class KotlinCodeGenerator(
         struct.fields.singleOrNull { it.defaultValue != null }?.let { field ->
             checkNotNull(defaultValueTypeName)
 
-            val defaultValue = field.defaultValue!!
+            val defaultValue = checkNotNull(field.defaultValue)
             val renderedValue = renderConstValue(schema, field.type, defaultValue)
             val propBuilder = PropertySpec.builder("DEFAULT", structClassName)
                 .jvmField()
@@ -740,8 +760,7 @@ class KotlinCodeGenerator(
                 when {
                     field.isRedacted -> add("<REDACTED>")
                     field.isObfuscated -> {
-                        val type = field.type
-                        when (type) {
+                        when (val type = field.type) {
                             is ListType -> {
                                 val elementName = type.elementType.name
                                 add("\${%T.summarizeCollection($fieldName, %S, %S)}",

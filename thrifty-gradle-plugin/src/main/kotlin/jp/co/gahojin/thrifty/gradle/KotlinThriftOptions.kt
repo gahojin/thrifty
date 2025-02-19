@@ -64,6 +64,18 @@ open class KotlinThriftOptions : ThriftOptions(), Serializable {
     @get:Input
     var isGenerateServer: Boolean = false
 
+    @get:Input
+    var jvmName: Boolean = false
+
+    @get:Input
+    var jvmStatic: Boolean = false
+
+    @get:Input
+    var jvmOverloads: Boolean = false
+
+    @get:Input
+    var bigEnum: Boolean = false
+
     fun setServiceClientStyle(clientStyleName: String) {
         val stylesByName = TreeMap<String, ClientStyle>(String.CASE_INSENSITIVE_ORDER)
         for (style in ClientStyle.entries) {

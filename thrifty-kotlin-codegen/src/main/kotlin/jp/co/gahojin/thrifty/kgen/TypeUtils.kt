@@ -33,6 +33,15 @@ import com.squareup.kotlinpoet.UNIT
 import com.squareup.kotlinpoet.asTypeName
 import jp.co.gahojin.thrifty.TType
 import jp.co.gahojin.thrifty.schema.BuiltinType
+import jp.co.gahojin.thrifty.schema.BuiltinType.Companion
+import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.BINARY
+import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.BOOL
+import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.I16
+import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.I32
+import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.I64
+import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.I8
+import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.STRING
+import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.VOID
 import jp.co.gahojin.thrifty.schema.Constant
 import jp.co.gahojin.thrifty.schema.EnumType
 import jp.co.gahojin.thrifty.schema.ListType
@@ -73,6 +82,22 @@ internal val ThriftType.typeCodeName: String
         TType.STRUCT -> "STRUCT"
         TType.VOID -> "VOID"
         else -> error("Unexpected TType value: $typeCode")
+    }
+
+internal val ThriftType.defaultValue: String?
+    get() = when {
+        isBuiltin -> when (this) {
+            BOOL -> "false"
+            BuiltinType.BYTE, I8, I16, I32 -> "0"
+            I64 -> "0L"
+            BuiltinType.DOUBLE -> "0.0"
+            STRING -> "\"\""
+            else -> null
+        }
+        isList -> "kotlin.collections.emptyList()"
+        isSet -> "kotlin.collections.emptySet()"
+        isMap -> "kotlin.collections.emptyMap()"
+        else -> null
     }
 
 private object TypeCodeVisitor : ThriftType.Visitor<Byte> {

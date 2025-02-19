@@ -162,6 +162,10 @@ class KotlinCodeGeneratorTest {
 
             struct NonEmpty {
               1: required i32 Number
+              2: required string Text;
+              3: required set<i8> Bytes;
+              4: required list<list<string>> listOfStrings
+              5: required NonEmpty child;
             }
         """.trimIndent()
 
@@ -175,6 +179,102 @@ class KotlinCodeGeneratorTest {
         struct.funSpecs.any { it.name == "toString" } shouldBe false
         struct.funSpecs.any { it.name == "hashCode" } shouldBe false
         struct.funSpecs.any { it.name == "equals" } shouldBe false
+
+        struct.toString() shouldContain  """
+            |public data class NonEmpty(
+            |  @kotlin.jvm.JvmField
+            |  @jp.co.gahojin.thrifty.ThriftField(
+            |    fieldId = 1,
+            |    isRequired = true,
+            |  )
+            |  public val Number: kotlin.Int = 0,
+            |  @kotlin.jvm.JvmField
+            |  @jp.co.gahojin.thrifty.ThriftField(
+            |    fieldId = 2,
+            |    isRequired = true,
+            |  )
+            |  public val Text: kotlin.String = "",
+            |  @kotlin.jvm.JvmField
+            |  @jp.co.gahojin.thrifty.ThriftField(
+            |    fieldId = 3,
+            |    isRequired = true,
+            |  )
+            |  public val Bytes: kotlin.collections.Set<kotlin.Byte> = kotlin.collections.emptySet(),
+            |  @kotlin.jvm.JvmField
+            |  @jp.co.gahojin.thrifty.ThriftField(
+            |    fieldId = 4,
+            |    isRequired = true,
+            |  )
+            |  public val listOfStrings: kotlin.collections.List<kotlin.collections.List<kotlin.String>> = kotlin.collections.emptyList(),
+            |  @kotlin.jvm.JvmField
+            |  @jp.co.gahojin.thrifty.ThriftField(
+            |    fieldId = 5,
+            |    isRequired = true,
+            |  )
+            |  public val child: com.test.NonEmpty,
+            |) : jp.co.gahojin.thrifty.Struct {
+            """.trimMargin()
+    }
+
+    @Test
+    fun `Non-empty structs are data classes with jvmOverloads`() {
+        val thrift = """
+            namespace kt com.test
+
+            struct NonEmpty {
+              1: required i32 Number
+              2: required string Text;
+              3: required set<i8> Bytes;
+              4: required list<list<string>> listOfStrings
+              5: required NonEmpty child;
+            }
+        """.trimIndent()
+
+        val specs = generate(thrift) { emitJvmOverloads() }
+        specs.shouldCompile()
+
+        val struct = specs.single().members.single() as TypeSpec
+
+        struct.name shouldBe "NonEmpty"
+        struct.modifiers.any { it == KModifier.DATA } shouldBe true
+        struct.funSpecs.any { it.name == "toString" } shouldBe false
+        struct.funSpecs.any { it.name == "hashCode" } shouldBe false
+        struct.funSpecs.any { it.name == "equals" } shouldBe false
+
+        struct.toString() shouldContain  """
+            |public data class NonEmpty @kotlin.jvm.JvmOverloads constructor(
+            |  @kotlin.jvm.JvmField
+            |  @jp.co.gahojin.thrifty.ThriftField(
+            |    fieldId = 1,
+            |    isRequired = true,
+            |  )
+            |  public val Number: kotlin.Int = 0,
+            |  @kotlin.jvm.JvmField
+            |  @jp.co.gahojin.thrifty.ThriftField(
+            |    fieldId = 2,
+            |    isRequired = true,
+            |  )
+            |  public val Text: kotlin.String = "",
+            |  @kotlin.jvm.JvmField
+            |  @jp.co.gahojin.thrifty.ThriftField(
+            |    fieldId = 3,
+            |    isRequired = true,
+            |  )
+            |  public val Bytes: kotlin.collections.Set<kotlin.Byte> = kotlin.collections.emptySet(),
+            |  @kotlin.jvm.JvmField
+            |  @jp.co.gahojin.thrifty.ThriftField(
+            |    fieldId = 4,
+            |    isRequired = true,
+            |  )
+            |  public val listOfStrings: kotlin.collections.List<kotlin.collections.List<kotlin.String>> = kotlin.collections.emptyList(),
+            |  @kotlin.jvm.JvmField
+            |  @jp.co.gahojin.thrifty.ThriftField(
+            |    fieldId = 5,
+            |    isRequired = true,
+            |  )
+            |  public val child: com.test.NonEmpty,
+            |) : jp.co.gahojin.thrifty.Struct {
+            """.trimMargin()
     }
 
     @Test
@@ -990,9 +1090,7 @@ class KotlinCodeGeneratorTest {
             public enum class Foo(value: Int)
         """.trimIndent()
 
-        val file = generate(thrift) {
-            emitBigEnums()
-        }
+        val file = generate(thrift) { emitBigEnums() }
         file.single().toString() shouldContain expected
         file.single().toString() shouldNotContain notExpected
     }
