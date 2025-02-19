@@ -64,10 +64,13 @@ class SerializableThriftOptions @JvmOverloads constructor(
         isParcelable = options.parcelable,
         isAllowUnknownEnumValues = options.allowUnknownEnumValues,
         kotlinOpts = (options as? KotlinThriftOptions)?.let {
-            Kotlin(it.serviceClientStyle, it.isGenerateServer)
+            Kotlin(
+                serviceClientStyle = it.serviceClientStyle,
+                isGenerateServer = it.isGenerateServer,
+            )
         },
         javaOpts = (options as? JavaThriftOptions)?.let {
-            Java(it.nullabilityAnnotations)
+            Java(nullabilityAnnotations = it.nullabilityAnnotations)
         },
     )
 
