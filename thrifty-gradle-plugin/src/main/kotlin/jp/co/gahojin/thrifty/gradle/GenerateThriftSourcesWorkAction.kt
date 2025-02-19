@@ -142,10 +142,22 @@ abstract class GenerateThriftSourcesWorkAction : WorkAction<GenerateThriftSource
             gen.generateServer()
         }
 
+        if (kopt.jvmName) {
+            gen.emitJvmName()
+        }
+
+        if (kopt.jvmStatic) {
+            gen.emitJvmStatic()
+        }
 
         if (kopt.jvmOverloads) {
             gen.emitJvmOverloads()
         }
+
+        if (kopt.bigEnum) {
+            gen.emitBigEnums()
+        }
+
         if (opts.listType != null) {
             gen.listClassName(opts.listType)
         }

@@ -1090,9 +1090,7 @@ class KotlinCodeGeneratorTest {
             public enum class Foo(value: Int)
         """.trimIndent()
 
-        val file = generate(thrift) {
-            emitBigEnums()
-        }
+        val file = generate(thrift) { emitBigEnums() }
         file.single().toString() shouldContain expected
         file.single().toString() shouldNotContain notExpected
     }
