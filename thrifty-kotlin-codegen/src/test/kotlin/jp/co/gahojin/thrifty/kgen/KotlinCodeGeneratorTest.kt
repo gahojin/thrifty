@@ -1274,6 +1274,41 @@ class KotlinCodeGeneratorTest {
         """.trimMargin()
     }
 
+    @Test
+    fun `generate data class with mutable fields`() {
+        val thrift = """
+            |namespace kt test.struct_const.mutable_fields
+            |
+            |struct Foo {
+            |  1: string text = "FOO";
+            |  2: string text2;
+            |  3: i32 number;
+            |}
+            |
+            |const Foo THE_FOO = {"text": "FOO"}
+        """.trimMargin()
+
+        val file = generate(thrift) { mutableFields() }
+
+        file.toString() shouldContain """
+            |public val THE_FOO: Foo = Foo(
+            |      text = "FOO",
+            |    )
+            |
+            |public data class Foo(
+            |  @JvmField
+            |  @ThriftField(fieldId = 1)
+            |  public var text: String? = "FOO",
+            |  @JvmField
+            |  @ThriftField(fieldId = 2)
+            |  public var text2: String? = null,
+            |  @JvmField
+            |  @ThriftField(fieldId = 3)
+            |  public var number: Int? = null,
+            |) : Struct {
+        """.trimMargin()
+    }
+
     private fun generate(
         thrift: String,
         config: (KotlinCodeGenerator.() -> KotlinCodeGenerator) = { emitFileComment(false) },

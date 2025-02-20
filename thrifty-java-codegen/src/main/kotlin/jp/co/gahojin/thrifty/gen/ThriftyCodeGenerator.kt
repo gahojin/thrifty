@@ -73,6 +73,7 @@ class ThriftyCodeGenerator(
     private var emitParcelable: Boolean = false
     private var emitFileComment = true
     private var failOnUnknownEnumValues = true
+    private var mutableFields = false
 
     fun withListType(listClassName: String) = apply {
         typeResolver.listClass = ClassName.bestGuess(listClassName)
@@ -104,6 +105,10 @@ class ThriftyCodeGenerator(
 
     fun failOnUnknownEnumValues(failOnUnknownEnumValues: Boolean) = apply {
         this.failOnUnknownEnumValues = failOnUnknownEnumValues
+    }
+
+    fun mutableFields(mutableFields: Boolean) = apply {
+        this.mutableFields = mutableFields
     }
 
     fun generate(directory: Path) {
@@ -217,8 +222,14 @@ class ThriftyCodeGenerator(
 
             // Define field
             var fieldBuilder: FieldSpec.Builder = FieldSpec.builder(fieldTypeName, name)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addAnnotation(fieldAnnotation(field))
+                .addAnnotation(fieldAnnotation(field)).apply {
+                    // フィールドを可変にするか
+                    if (mutableFields) {
+                        addModifiers(Modifier.PUBLIC)
+                    } else {
+                        addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                    }
+                }
 
             if (nullabilityAnnotationType != NullabilityAnnotationType.NONE) {
                 val nullability = when {

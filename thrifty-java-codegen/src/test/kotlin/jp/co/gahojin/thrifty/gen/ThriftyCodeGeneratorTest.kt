@@ -630,6 +630,24 @@ class ThriftyCodeGeneratorTest {
         """.trimMargin()
     }
 
+    @Test
+    fun mutableField() {
+        val thrift = """
+            namespace java mutable_field
+
+            struct foo {
+                1: string bar
+            }
+        """
+
+        val schema = parse("mutable_field.thrift", thrift)
+        val gen = ThriftyCodeGenerator(schema).mutableFields(true)
+        val javaFiles = gen.generateTypes()
+        val file = javaFiles[0].toString()
+
+        file shouldContain "  public String bar"
+    }
+
     private fun compile(filename: String, text: String): List<JavaFile> {
         val schema = parse(filename, text)
         val gen = ThriftyCodeGenerator(schema).emitFileComment(false)

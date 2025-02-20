@@ -20,6 +20,7 @@
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
 import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 
 plugins {
     alias(libs.plugins.kotlin.jvm) apply false
@@ -41,5 +42,8 @@ subprojects {
             sarif.required.set(true)
             md.required.set(true)
         }
+    }
+    tasks.withType<DetektCreateBaselineTask>().configureEach {
+        jvmTarget = "21"
     }
 }

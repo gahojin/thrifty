@@ -1,4 +1,8 @@
-4.1.0 (unreleased)
+4.2.0 (unreleased)
+------------------
+- Add: フィールドを可変にするオプション追加
+
+4.1.0 (released 19 February 2025)
 ------------------
 - BREAK(java-codegen): nullableアノテーションのAndroidSupportアノテーションを廃止し、代わりにJetBrainsのアノテーションを追加
 - BREAK(kotlin-codegen): parcelizeアノテーションをkotlinx.parcelizeプラグインに対応

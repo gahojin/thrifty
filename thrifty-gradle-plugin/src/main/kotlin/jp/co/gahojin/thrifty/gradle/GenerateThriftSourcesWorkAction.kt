@@ -122,6 +122,7 @@ abstract class GenerateThriftSourcesWorkAction : WorkAction<GenerateThriftSource
             .emitJvmName()
             .filePerType()
             .failOnUnknownEnumValues(!opts.isAllowUnknownEnumValues)
+            .mutableFields(opts.isMutableFields)
 
         if (opts.isParcelable) {
             gen.parcelize()

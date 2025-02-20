@@ -144,13 +144,14 @@ class KotlinCodeGenerator(
     private var shouldImplementStruct: Boolean = true
     private var parcelize: Boolean = false
     private var omitServiceClients: Boolean = false
+    private var generateServer: Boolean = false
     private var emitJvmName: Boolean = false
     private var emitJvmStatic: Boolean = false
     private var emitJvmOverloads: Boolean = false
     private var emitBigEnums: Boolean = false
     private var emitFileComment: Boolean = true
     private var failOnUnknownEnumValues: Boolean = true
-    private var generateServer: Boolean = false
+    private var mutableFields: Boolean = false
 
     private var listClassName: ClassName? = null
     private var setClassName: ClassName? = null
@@ -270,6 +271,10 @@ class KotlinCodeGenerator(
 
     fun failOnUnknownEnumValues(value: Boolean = true): KotlinCodeGenerator = apply {
         failOnUnknownEnumValues = value
+    }
+
+    fun mutableFields(value: Boolean = true): KotlinCodeGenerator = apply {
+        mutableFields = value
     }
 
     private object NoTypeProcessor : KotlinTypeProcessor {
@@ -549,6 +554,7 @@ class KotlinCodeGenerator(
                 .initializer(fieldName)
                 .jvmField()
                 .addAnnotation(thriftField)
+                .mutable(mutable = mutableFields)
 
             if (field.hasJavadoc) prop.addKdoc("%L", field.documentation)
             if (field.isObfuscated) prop.addAnnotation(Obfuscated::class)
@@ -789,7 +795,7 @@ class KotlinCodeGenerator(
                             else -> add("\${%T.hash($fieldName)}", ObfuscationUtil::class)
                         }
                     }
-                    else -> add("\$$fieldName")
+                    else -> add("$$fieldName")
                 }
             }
 

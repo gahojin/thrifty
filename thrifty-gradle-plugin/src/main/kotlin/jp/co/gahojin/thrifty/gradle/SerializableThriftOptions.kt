@@ -35,6 +35,7 @@ class SerializableThriftOptions @JvmOverloads constructor(
     val mapType: String? = null,
     val isParcelable: Boolean = false,
     val isAllowUnknownEnumValues: Boolean = false,
+    val isMutableFields: Boolean = false,
     val kotlinOpts: Kotlin? = null,
     val javaOpts: Java? = null,
 ) : Serializable {
