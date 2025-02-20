@@ -522,16 +522,6 @@ class KotlinCodeGenerator(
             val fieldName = nameAllocator[field]
             val typeName = field.type.typeName.let {
                 if (!field.required) it.copy(nullable = true) else it
-            }.let {
-                // 可変フィールドが有効な場合、コレクション型は可変型にする
-                if (mutableFields) {
-                    when (field.type) {
-                        is ListType -> MUTABLE_LIST.parameterizedBy(it)
-                        is SetType -> MUTABLE_SET.parameterizedBy(it)
-                        is MapType -> MUTABLE_MAP.parameterizedBy(it)
-                        else -> it
-                    }
-                } else it
             }
 
             val thriftField = AnnotationSpec.builder(ThriftField::class).let { anno ->
@@ -856,10 +846,12 @@ class KotlinCodeGenerator(
         writer.addStatement("protocol.writeStructBegin(%S)", struct.name)
         for (field in struct.fields) {
             val name = nameAllocator[field]
+            var structFieldName = "struct.$name"
             val fieldType = field.type
 
             if (!field.required) {
-                writer.beginControlFlow("if (struct.%N != null)", name)
+                writer.beginControlFlow("struct.%N?.also {", name)
+                structFieldName = "it"
             }
 
             writer.addStatement("protocol.writeFieldBegin(%S, %L, %T.%L)",
@@ -869,7 +861,7 @@ class KotlinCodeGenerator(
                 fieldType.typeCodeName,
             )
 
-            generateWriteCall(writer, "struct.$name", fieldType)
+            generateWriteCall(writer, structFieldName, fieldType)
 
             writer.addStatement("protocol.writeFieldEnd()")
 
