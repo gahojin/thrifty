@@ -856,10 +856,12 @@ class KotlinCodeGenerator(
         writer.addStatement("protocol.writeStructBegin(%S)", struct.name)
         for (field in struct.fields) {
             val name = nameAllocator[field]
+            var structFieldName = "struct.$name"
             val fieldType = field.type
 
             if (!field.required) {
-                writer.beginControlFlow("if (struct.%N != null)", name)
+                writer.beginControlFlow("struct.%N?.also {", name)
+                structFieldName = "it"
             }
 
             writer.addStatement("protocol.writeFieldBegin(%S, %L, %T.%L)",
@@ -869,7 +871,7 @@ class KotlinCodeGenerator(
                 fieldType.typeCodeName,
             )
 
-            generateWriteCall(writer, "struct.$name", fieldType)
+            generateWriteCall(writer, structFieldName, fieldType)
 
             writer.addStatement("protocol.writeFieldEnd()")
 
