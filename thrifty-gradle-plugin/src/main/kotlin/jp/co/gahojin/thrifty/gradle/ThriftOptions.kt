@@ -55,6 +55,9 @@ abstract class ThriftOptions : Serializable {
     @get:Input
     var allowUnknownEnumValues: Boolean = false
 
+    @get:Input
+    var mutableFields: Boolean = false
+
     fun setNameStyle(styleName: String) {
         val styles = TreeMap<String, FieldNameStyle>(String.CASE_INSENSITIVE_ORDER)
         for (style in FieldNameStyle.entries) {

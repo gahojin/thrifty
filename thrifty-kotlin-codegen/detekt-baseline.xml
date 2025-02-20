@@ -28,6 +28,7 @@
     <ID>MaxLineLength:KotlinCodeGenerator.kt$KotlinCodeGenerator.&lt;no name provided>$"%1T.findByValue(it) ?: throw %2T(%3T.PROTOCOL_ERROR, \"Unexpected·value·for·enum·type·%1T:·\$it\")"</ID>
     <ID>NestedBlockDepth:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateCoroServiceInterface(serviceType: ServiceType): TypeSpec</ID>
     <ID>NestedBlockDepth:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun buildCallType(schema: Schema, method: ServiceMethod): TypeSpec</ID>
+    <ID>NestedBlockDepth:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun generateDataClass(schema: Schema, struct: StructType): TypeSpec</ID>
     <ID>SpreadOperator:KotlinCodeGenerator.kt$KotlinCodeGenerator$( "return %T.%N(handler.%N($format))", parentTypeName, concreteResultTypeName, interfaceFun, *names.toTypedArray(), )</ID>
     <ID>SpreadOperator:KotlinCodeGenerator.kt$KotlinCodeGenerator$("handler.%N($format)", interfaceFun, *names.toTypedArray())</ID>
     <ID>TooManyFunctions:KotlinCodeGenerator.kt$KotlinCodeGenerator</ID>
