@@ -33,6 +33,9 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.MUTABLE_LIST
+import com.squareup.kotlinpoet.MUTABLE_MAP
+import com.squareup.kotlinpoet.MUTABLE_SET
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.NameAllocator
 import com.squareup.kotlinpoet.ParameterSpec
@@ -519,6 +522,16 @@ class KotlinCodeGenerator(
             val fieldName = nameAllocator[field]
             val typeName = field.type.typeName.let {
                 if (!field.required) it.copy(nullable = true) else it
+            }.let {
+                // 可変フィールドが有効な場合、コレクション型は可変型にする
+                if (mutableFields) {
+                    when (field.type) {
+                        is ListType -> MUTABLE_LIST.parameterizedBy(it)
+                        is SetType -> MUTABLE_SET.parameterizedBy(it)
+                        is MapType -> MUTABLE_MAP.parameterizedBy(it)
+                        else -> it
+                    }
+                } else it
             }
 
             val thriftField = AnnotationSpec.builder(ThriftField::class).let { anno ->

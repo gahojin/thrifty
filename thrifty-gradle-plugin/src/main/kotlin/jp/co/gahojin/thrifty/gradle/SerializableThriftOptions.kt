@@ -68,6 +68,7 @@ class SerializableThriftOptions @JvmOverloads constructor(
         mapType = options.mapType,
         isParcelable = options.parcelable,
         isAllowUnknownEnumValues = options.allowUnknownEnumValues,
+        isMutableFields = options.mutableFields,
         kotlinOpts = (options as? KotlinThriftOptions)?.let {
             Kotlin(
                 serviceClientStyle = it.serviceClientStyle,
