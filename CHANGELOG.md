@@ -1,6 +1,15 @@
 4.3.0 (unreleased)
 ------------------
 
+4.2.2 (released 20 February 2025)
+------------------
+Fix(kotlin-codegen): mutableFieldsのオプション指定時のコレクション型を不変型に戻す
+Fix(kotlin-codegen): adapterのwriteメソッドがmutableFields=trueの場合に、optionalフィールド箇所でコンパイルエラーとなる
+
+4.2.1 (released 20 February 2025)
+------------------
+Fix: mutableFieldsのオプションがgradleプラグインから指定出来ていなかった
+
 4.2.0 (released 20 February 2025)
 ------------------
 Add: フィールドを可変にするオプション追加

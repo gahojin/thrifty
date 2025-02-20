@@ -522,16 +522,6 @@ class KotlinCodeGenerator(
             val fieldName = nameAllocator[field]
             val typeName = field.type.typeName.let {
                 if (!field.required) it.copy(nullable = true) else it
-            }.let {
-                // 可変フィールドが有効な場合、コレクション型は可変型にする
-                if (mutableFields) {
-                    when (field.type) {
-                        is ListType -> MUTABLE_LIST.parameterizedBy(it)
-                        is SetType -> MUTABLE_SET.parameterizedBy(it)
-                        is MapType -> MUTABLE_MAP.parameterizedBy(it)
-                        else -> it
-                    }
-                } else it
             }
 
             val thriftField = AnnotationSpec.builder(ThriftField::class).let { anno ->
