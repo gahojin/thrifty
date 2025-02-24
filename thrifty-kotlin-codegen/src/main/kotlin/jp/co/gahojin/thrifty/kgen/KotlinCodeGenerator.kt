@@ -1289,7 +1289,7 @@ class KotlinCodeGenerator(
                 block.addStatement("val $listMeta = protocol.readListBegin()")
                 block.addStatement("val $name = %T($listMeta.size)", listImplType)
 
-                block.beginControlFlow("for (i$scope in 0 until $listMeta.size)")
+                block.beginControlFlow("for (i$scope in 0..<$listMeta.size)")
                 generateReadCall(
                     block = block,
                     name = "item$scope",
@@ -1316,7 +1316,7 @@ class KotlinCodeGenerator(
                 block.addStatement("val $setMeta = protocol.readSetBegin()")
                 block.addStatement("val $name = %T($setMeta.size)", setImplType)
 
-                block.beginControlFlow("for (i$scope in 0 until $setMeta.size)")
+                block.beginControlFlow("for (i$scope in 0..<$setMeta.size)")
                 generateReadCall(
                     block = block,
                     name = "item$scope",
@@ -1344,7 +1344,7 @@ class KotlinCodeGenerator(
                 block.addStatement("val $mapMeta = protocol.readMapBegin()")
                 block.addStatement("val $name = %T($mapMeta.size)", mapImplType)
 
-                block.beginControlFlow("for (i$scope in 0 until $mapMeta.size)")
+                block.beginControlFlow("for (i$scope in 0..<$mapMeta.size)")
 
                 val keyName = "key$scope"
                 val valName = "val$scope"
