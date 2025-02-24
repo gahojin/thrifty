@@ -54,7 +54,7 @@ object ProtocolUtil {
 
             TType.LIST -> {
                 val listMetadata = protocol.readListBegin()
-                for (i in 0 until listMetadata.size) {
+                for (i in 0..<listMetadata.size) {
                     skip(protocol, listMetadata.elementTypeId)
                 }
                 protocol.readListEnd()
@@ -62,7 +62,7 @@ object ProtocolUtil {
 
             TType.SET -> {
                 val setMetadata = protocol.readSetBegin()
-                for (i in 0 until setMetadata.size) {
+                for (i in 0..<setMetadata.size) {
                     skip(protocol, setMetadata.elementTypeId)
                 }
                 protocol.readSetEnd()
@@ -70,7 +70,7 @@ object ProtocolUtil {
 
             TType.MAP -> {
                 val mapMetadata = protocol.readMapBegin()
-                for (i in 0 until mapMetadata.size) {
+                for (i in 0..<mapMetadata.size) {
                     skip(protocol, mapMetadata.keyTypeId)
                     skip(protocol, mapMetadata.valueTypeId)
                 }

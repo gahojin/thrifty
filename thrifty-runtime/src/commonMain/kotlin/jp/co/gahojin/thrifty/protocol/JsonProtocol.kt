@@ -119,7 +119,7 @@ class JsonProtocol @JvmOverloads constructor(
         context.write()
         transport.write(QUOTE)
         val len = b.size
-        for (i in 0 until len) {
+        for (i in 0..<len) {
             if (b[i].toInt() and 0x00FF >= 0x30) {
                 if (b[i] == BACKSLASH[0]) {
                     transport.write(BACKSLASH)
