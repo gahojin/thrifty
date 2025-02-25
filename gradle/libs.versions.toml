@@ -28,7 +28,7 @@ assertj = "3.27.3"
 
 clikt = "5.0.3"
 
-detekt = "1.23.7"
+detekt = "1.23.8"
 
 dokka = "2.0.0"
 
@@ -38,13 +38,13 @@ guava = "33.4.0-jre"
 
 java-poet = "1.13.0"
 
-junit = "5.11.4"
+junit = "5.12.0"
 
 kotest = "5.9.1"
 
 kotlin = "2.1.10"
 
-kotlin-poet = "2.0.0"
+kotlin-poet = "2.1.0"
 
 kotlinx-atomicfu = "0.27.0"
 
@@ -52,7 +52,7 @@ kotlinx-coroutines = "1.10.1"
 
 kotlinx-kover = "0.9.1"
 
-ktor = "3.1.0"
+ktor = "3.1.1"
 
 maven-publish = "0.30.0"
 
