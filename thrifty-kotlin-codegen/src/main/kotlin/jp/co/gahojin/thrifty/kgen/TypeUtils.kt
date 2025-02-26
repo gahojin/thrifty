@@ -25,23 +25,18 @@ import com.squareup.kotlinpoet.BYTE
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.DOUBLE
 import com.squareup.kotlinpoet.INT
+import com.squareup.kotlinpoet.LIST
 import com.squareup.kotlinpoet.LONG
+import com.squareup.kotlinpoet.MAP
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.SET
 import com.squareup.kotlinpoet.SHORT
+import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.UNIT
 import com.squareup.kotlinpoet.asTypeName
 import jp.co.gahojin.thrifty.TType
 import jp.co.gahojin.thrifty.schema.BuiltinType
-import jp.co.gahojin.thrifty.schema.BuiltinType.Companion
-import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.BINARY
-import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.BOOL
-import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.I16
-import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.I32
-import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.I64
-import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.I8
-import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.STRING
-import jp.co.gahojin.thrifty.schema.BuiltinType.Companion.VOID
 import jp.co.gahojin.thrifty.schema.Constant
 import jp.co.gahojin.thrifty.schema.EnumType
 import jp.co.gahojin.thrifty.schema.ListType
@@ -87,11 +82,11 @@ internal val ThriftType.typeCodeName: String
 internal val ThriftType.defaultValue: String?
     get() = when {
         isBuiltin -> when (this) {
-            BOOL -> "false"
-            BuiltinType.BYTE, I8, I16, I32 -> "0"
-            I64 -> "0L"
+            BuiltinType.BOOL -> "false"
+            BuiltinType.BYTE, BuiltinType.I8, BuiltinType.I16, BuiltinType.I32 -> "0"
+            BuiltinType.I64 -> "0L"
             BuiltinType.DOUBLE -> "0.0"
-            STRING -> "\"\""
+            BuiltinType.STRING -> "\"\""
             else -> null
         }
         isList -> "kotlin.collections.emptyList()"
@@ -134,7 +129,7 @@ private object TypeNameVisitor : ThriftType.Visitor<TypeName> {
 
     override fun visitDouble(doubleType: BuiltinType) = DOUBLE
 
-    override fun visitString(stringType: BuiltinType) = String::class.asTypeName()
+    override fun visitString(stringType: BuiltinType) = STRING
 
     override fun visitBinary(binaryType: BuiltinType) = ByteString::class.asTypeName()
 
@@ -142,18 +137,18 @@ private object TypeNameVisitor : ThriftType.Visitor<TypeName> {
 
     override fun visitList(listType: ListType): TypeName {
         val elementType = listType.elementType.accept(this)
-        return List::class.asTypeName().parameterizedBy(elementType)
+        return LIST.parameterizedBy(elementType)
     }
 
     override fun visitSet(setType: SetType): TypeName {
         val elementType = setType.elementType.accept(this)
-        return Set::class.asTypeName().parameterizedBy(elementType)
+        return SET.parameterizedBy(elementType)
     }
 
     override fun visitMap(mapType: MapType): TypeName {
         val keyType = mapType.keyType.accept(this)
         val valueType = mapType.valueType.accept(this)
-        return Map::class.asTypeName().parameterizedBy(keyType, valueType)
+        return MAP.parameterizedBy(keyType, valueType)
     }
 
     override fun visitStruct(structType: StructType): TypeName = userTypeName(structType)
