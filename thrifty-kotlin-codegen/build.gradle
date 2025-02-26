@@ -47,6 +47,7 @@ dependencies {
     testImplementation libs.kotlin.stdlib
     testImplementation libs.kotlin.compiler
     testImplementation libs.junit
+    testImplementation libs.junit.platform.launcher
     testImplementation libs.kotest.assertions.core
 }
 
