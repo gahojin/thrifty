@@ -99,6 +99,7 @@ dependencies {
     compileOnly project(':thrifty-schema')
 
     testImplementation libs.junit
+    testImplementation libs.junit.platform.launcher
     testImplementation libs.kotest.assertions.core
 }
 

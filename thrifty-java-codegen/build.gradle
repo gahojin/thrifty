@@ -46,6 +46,7 @@ dependencies {
     implementation project(':thrifty-runtime')
 
     testImplementation libs.junit
+    testImplementation libs.junit.platform.launcher
     testImplementation libs.kotest.assertions.core
 }
 
