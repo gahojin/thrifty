@@ -484,7 +484,7 @@ class JsonProtocol @JvmOverloads constructor(
     @Throws(IOException::class)
     private fun readJsonBase64(): ByteString {
         val str = readJsonString(false)
-        return str.utf8().decodeBase64()!!
+        return checkNotNull(str.utf8().decodeBase64())
     }
 
     @Throws(IOException::class)
@@ -642,6 +642,41 @@ class JsonProtocol @JvmOverloads constructor(
     @Throws(IOException::class)
     override fun readBinary(): ByteString {
         return readJsonBase64()
+    }
+
+    @Throws(IOException::class)
+    override fun skipBool() {
+        readJsonInteger()
+    }
+
+    @Throws(IOException::class)
+    override fun skipByte() {
+        readJsonInteger()
+    }
+
+    @Throws(IOException::class)
+    override fun skipI16() {
+        readJsonInteger()
+    }
+
+    @Throws(IOException::class)
+    override fun skipI32() {
+        readJsonInteger()
+    }
+
+    @Throws(IOException::class)
+    override fun skipI64() {
+        readJsonInteger()
+    }
+
+    @Throws(IOException::class)
+    override fun skipDouble() {
+        readJsonDouble()
+    }
+
+    @Throws(IOException::class)
+    override fun skipString() {
+        readJsonString(false)
     }
 
     // Holds up to one byte from the transport

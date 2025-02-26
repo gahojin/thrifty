@@ -69,7 +69,7 @@ internal open class GenerateReaderVisitor(
         useReadValue()
 
         read.nextControlFlow("else")
-        read.addStatement("\$T.skip(protocol, field.typeId)", TypeNames.PROTO_UTIL)
+        read.addStatement("protocol.skip(field.typeId)")
         read.endControlFlow()
 
     }

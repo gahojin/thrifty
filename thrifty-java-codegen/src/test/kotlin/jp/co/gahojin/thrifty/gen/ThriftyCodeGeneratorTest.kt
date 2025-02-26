@@ -453,7 +453,7 @@ class ThriftyCodeGeneratorTest {
               }
               builder.field(value);
             } else {
-              ProtocolUtil.skip(protocol, field.typeId);
+              protocol.skip(field.typeId);
             }
           }
           break;
@@ -486,7 +486,7 @@ class ThriftyCodeGeneratorTest {
                 builder.field1(value);
               }
             } else {
-              ProtocolUtil.skip(protocol, field.typeId);
+              protocol.skip(field.typeId);
             }
           }
           break;
@@ -499,7 +499,7 @@ class ThriftyCodeGeneratorTest {
               }
               builder.field2(value);
             } else {
-              ProtocolUtil.skip(protocol, field.typeId);
+              protocol.skip(field.typeId);
             }
           }
           break;

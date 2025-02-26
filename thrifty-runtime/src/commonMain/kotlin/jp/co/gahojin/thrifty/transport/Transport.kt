@@ -38,5 +38,8 @@ interface Transport : Closeable {
     fun flush()
 
     @Throws(IOException::class)
+    fun skip(count: Long)
+
+    @Throws(IOException::class)
     override fun close()
 }

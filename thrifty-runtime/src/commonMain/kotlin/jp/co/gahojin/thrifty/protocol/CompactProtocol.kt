@@ -454,6 +454,45 @@ class CompactProtocol(transport: Transport) : BaseProtocol(transport) {
     }
 
     @Throws(IOException::class)
+    override fun skipBool() {
+        readBool()
+    }
+
+    @Throws(IOException::class)
+    override fun skipByte() {
+        transport.skip(1)
+    }
+
+    @Throws(IOException::class)
+    override fun skipI16() {
+        readI16()
+    }
+
+    @Throws(IOException::class)
+    override fun skipI32() {
+        readI32()
+    }
+
+    @Throws(IOException::class)
+    override fun skipI64() {
+        readI64()
+    }
+
+    @Throws(IOException::class)
+    override fun skipDouble() {
+        transport.skip(8)
+    }
+
+    @Throws(IOException::class)
+    override fun skipString() {
+        val length = readVarint32()
+        if (length == 0) {
+            return
+        }
+        transport.skip(length.toLong())
+    }
+
+    @Throws(IOException::class)
     private fun readVarint32(): Int {
         var result = 0
         var shift = 0

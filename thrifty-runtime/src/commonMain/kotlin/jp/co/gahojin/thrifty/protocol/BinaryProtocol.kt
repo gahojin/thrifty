@@ -336,6 +336,45 @@ class BinaryProtocol @JvmOverloads constructor(
     }
 
     @Throws(IOException::class)
+    override fun skipBool() {
+        skipByte()
+    }
+
+    @Throws(IOException::class)
+    override fun skipByte() {
+        transport.skip(1)
+    }
+
+    @Throws(IOException::class)
+    override fun skipI16() {
+        transport.skip(2)
+    }
+
+    @Throws(IOException::class)
+    override fun skipI32() {
+        transport.skip(4)
+    }
+
+    @Throws(IOException::class)
+    override fun skipI64() {
+        transport.skip(8)
+    }
+
+    @Throws(IOException::class)
+    override fun skipDouble() {
+        skipI64()
+    }
+
+    @Throws(IOException::class)
+    override fun skipString() {
+        val sizeInBytes = readI32()
+        if (stringLengthLimit != -1L && sizeInBytes > stringLengthLimit) {
+            throw ProtocolException("String size limit exceeded")
+        }
+        transport.skip(sizeInBytes.toLong())
+    }
+
+    @Throws(IOException::class)
     private fun readStringWithSize(size: Int): String {
         val encoded = ByteArray(size)
         readFully(encoded, size)

@@ -26,7 +26,6 @@ import jp.co.gahojin.thrifty.Struct
 import jp.co.gahojin.thrifty.StructBuilder
 import jp.co.gahojin.thrifty.TType
 import jp.co.gahojin.thrifty.ThriftField
-import jp.co.gahojin.thrifty.util.ProtocolUtil.skip
 import okio.IOException
 import kotlin.jvm.JvmField
 
@@ -197,7 +196,7 @@ class Xtruct private constructor(builder: Builder) : Struct {
                             val value = protocol.readString()
                             builder.string_thing(value)
                         } else {
-                            skip(protocol, field.typeId)
+                            protocol.skip(field.typeId)
                         }
                     }
 
@@ -206,7 +205,7 @@ class Xtruct private constructor(builder: Builder) : Struct {
                             val value = protocol.readByte()
                             builder.byte_thing(value)
                         } else {
-                            skip(protocol, field.typeId)
+                            protocol.skip(field.typeId)
                         }
                     }
 
@@ -215,7 +214,7 @@ class Xtruct private constructor(builder: Builder) : Struct {
                             val value = protocol.readI32()
                             builder.i32_thing(value)
                         } else {
-                            skip(protocol, field.typeId)
+                            protocol.skip(field.typeId)
                         }
                     }
 
@@ -224,7 +223,7 @@ class Xtruct private constructor(builder: Builder) : Struct {
                             val value = protocol.readI64()
                             builder.i64_thing(value)
                         } else {
-                            skip(protocol, field.typeId)
+                            protocol.skip(field.typeId)
                         }
                     }
 
@@ -233,7 +232,7 @@ class Xtruct private constructor(builder: Builder) : Struct {
                             val value = protocol.readDouble()
                             builder.double_thing(value)
                         } else {
-                            skip(protocol, field.typeId)
+                            protocol.skip(field.typeId)
                         }
                     }
 
@@ -242,12 +241,12 @@ class Xtruct private constructor(builder: Builder) : Struct {
                             val value = protocol.readBool()
                             builder.bool_thing(value)
                         } else {
-                            skip(protocol, field.typeId)
+                            protocol.skip(field.typeId)
                         }
                     }
 
                     else -> {
-                        skip(protocol, field.typeId)
+                        protocol.skip(field.typeId)
                     }
                 }
                 protocol.readFieldEnd()

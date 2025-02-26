@@ -162,7 +162,6 @@ import jp.co.gahojin.thrifty.TType
 import jp.co.gahojin.thrifty.ThriftField
 import jp.co.gahojin.thrifty.kotlin.Adapter
 import jp.co.gahojin.thrifty.protocol.Protocol
-import jp.co.gahojin.thrifty.util.ProtocolUtil
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit

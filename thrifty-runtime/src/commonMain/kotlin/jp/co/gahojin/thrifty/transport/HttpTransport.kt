@@ -90,6 +90,10 @@ class HttpTransport(
         send(sendBuffer.readByteArray())
     }
 
+    override fun skip(count: Long) {
+        sendBuffer.skip(count)
+    }
+
     override fun close() {
         httpClient.close()
     }

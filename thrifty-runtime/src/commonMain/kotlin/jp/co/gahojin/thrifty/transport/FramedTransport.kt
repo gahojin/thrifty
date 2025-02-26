@@ -70,10 +70,10 @@ class FramedTransport(
     }
 
     override fun write(buffer: ByteArray, offset: Int, count: Int) {
-        if (pendingWrite == null) {
-            pendingWrite = SimpleBuffer(count)
+        val tmp = pendingWrite ?: SimpleBuffer(count).also {
+            pendingWrite = it
         }
-        pendingWrite!!.write(buffer, offset, count)
+        tmp.write(buffer, offset, count)
     }
 
     override fun flush() {
@@ -93,6 +93,8 @@ class FramedTransport(
         inner.flush()
         write.reset()
     }
+
+    override fun skip(count: Long) = inner.skip(count)
 
     private class SimpleBuffer(count: Int = 32) {
         var buf: ByteArray = ByteArray(count.coerceAtLeast(32))
