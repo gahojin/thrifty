@@ -22,7 +22,6 @@
 package jp.co.gahojin.thrifty
 
 import jp.co.gahojin.thrifty.protocol.Protocol
-import jp.co.gahojin.thrifty.util.ProtocolUtil.skip
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
@@ -117,16 +116,16 @@ class ThriftException(
                     1.toShort() -> if (field.typeId == TType.STRING) {
                         message = protocol.readString()
                     } else {
-                        skip(protocol, field.typeId)
+                        protocol.skip(field.typeId)
                     }
 
                     2.toShort() -> if (field.typeId == TType.I32) {
                         kind = Kind.findByValue(protocol.readI32())
                     } else {
-                        skip(protocol, field.typeId)
+                        protocol.skip(field.typeId)
                     }
 
-                    else -> skip(protocol, field.typeId)
+                    else -> protocol.skip(field.typeId)
                 }
                 protocol.readFieldEnd()
             }

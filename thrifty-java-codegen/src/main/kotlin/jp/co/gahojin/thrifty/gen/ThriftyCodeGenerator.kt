@@ -600,7 +600,7 @@ class ThriftyCodeGenerator(
 
         if (structType.fields.isNotEmpty()) {
             read.beginControlFlow("default:")
-            read.addStatement("\$T.skip(protocol, field.typeId)", TypeNames.PROTO_UTIL)
+            read.addStatement("protocol.skip(field.typeId)")
             read.endControlFlow() // end default
             read.addStatement("break")
             read.endControlFlow() // end switch

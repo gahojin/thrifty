@@ -37,26 +37,23 @@ import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.deleteRecursively
 
-fun List<FileSpec>.shouldCompile() {
-    this should compile()
+fun List<FileSpec>.shouldCompile(debugLoggingEnabled: Boolean = false) {
+    this should compile(debugLoggingEnabled)
 }
 
-fun FileSpec.shouldCompile() {
-    listOf(this) should compile()
+fun FileSpec.shouldCompile(debugLoggingEnabled: Boolean = false) {
+    listOf(this) should compile(debugLoggingEnabled)
 }
 
-fun compile(): ShouldCompileMatcher {
-    return ShouldCompileMatcher()
+fun compile(debugLoggingEnabled: Boolean = false): ShouldCompileMatcher {
+    return ShouldCompileMatcher(debugLoggingEnabled)
 }
 
-open class ShouldCompileMatcher : Matcher<List<FileSpec>> {
+open class ShouldCompileMatcher(
+    protected val debugLoggingEnabled: Boolean = false,
+) : Matcher<List<FileSpec>> {
     private val collector = LogEverythingMessageCollector()
-    private var debugLoggingEnabled = false
 
-    fun withDebugLogging(): ShouldCompileMatcher {
-        debugLoggingEnabled = true
-        return this
-    }
     override fun test(value: List<FileSpec>): MatcherResult {
         return withTempDir { dir ->
             val code = compileKotlin(dir, value)

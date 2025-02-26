@@ -408,4 +408,39 @@ class SimpleJsonProtocol(transport: Transport) : BaseProtocol(transport) {
     override fun readBinary(): ByteString {
         throw UnsupportedOperationException()
     }
+
+    @Throws(IOException::class)
+    override fun skipBool() {
+        throw UnsupportedOperationException()
+    }
+
+    @Throws(IOException::class)
+    override fun skipByte() {
+        throw UnsupportedOperationException()
+    }
+
+    @Throws(IOException::class)
+    override fun skipI16() {
+        throw UnsupportedOperationException()
+    }
+
+    @Throws(IOException::class)
+    override fun skipI32() {
+        throw UnsupportedOperationException()
+    }
+
+    @Throws(IOException::class)
+    override fun skipI64() {
+        throw UnsupportedOperationException()
+    }
+
+    @Throws(IOException::class)
+    override fun skipDouble() {
+        throw UnsupportedOperationException()
+    }
+
+    @Throws(IOException::class)
+    override fun skipString() {
+        throw UnsupportedOperationException()
+    }
 }

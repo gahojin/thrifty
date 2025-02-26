@@ -91,7 +91,6 @@ import jp.co.gahojin.thrifty.service.server.ErrorHandler
 import jp.co.gahojin.thrifty.service.server.Processor
 import jp.co.gahojin.thrifty.service.server.ServerCall
 import jp.co.gahojin.thrifty.util.ObfuscationUtil
-import jp.co.gahojin.thrifty.util.ProtocolUtil
 import okio.ByteString
 import java.time.Instant
 import java.time.format.DateTimeFormatter
@@ -917,16 +916,16 @@ class KotlinCodeGenerator(
                         endControlFlow()
                     }
                     nextControlFlow("else")
-                    addStatement("%T.skip(protocol, fieldMeta.typeId)", ProtocolUtil::class)
+                    addStatement("protocol.skip(fieldMeta.typeId)")
                     endControlFlow()
                     addStatement("⇤}")
                 }
             }
 
-            reader.addStatement("else·-> %T.skip(protocol, fieldMeta.typeId)", ProtocolUtil::class)
+            reader.addStatement("else·-> protocol.skip(fieldMeta.typeId)")
             reader.endControlFlow() // when (fieldMeta.fieldId.toInt())
         } else {
-            reader.addStatement("%T.skip(protocol, fieldMeta.typeId)", ProtocolUtil::class)
+            reader.addStatement("protocol.skip(fieldMeta.typeId)")
         }
 
         reader.addStatement("protocol.readFieldEnd()")
@@ -1064,16 +1063,16 @@ class KotlinCodeGenerator(
                     addStatement("%N = $typeName($name)", localResult)
 
                     nextControlFlow("else")
-                    addStatement("%T.skip(protocol, fieldMeta.typeId)", ProtocolUtil::class)
+                    addStatement("protocol.skip(fieldMeta.typeId)")
                     endControlFlow()
                     addStatement("⇤}")
                 }
             }
 
-            reader.addStatement("else·->·%T.skip(protocol, fieldMeta.typeId)", ProtocolUtil::class)
+            reader.addStatement("else·->·protocol.skip(fieldMeta.typeId)")
             reader.endControlFlow() // when (fieldMeta.fieldId.toInt())
         } else {
-            reader.addStatement("%T.skip(protocol, fieldMeta.typeId)", ProtocolUtil::class)
+            reader.addStatement("protocol.skip(fieldMeta.typeId)")
         }
 
         reader.addStatement("protocol.readFieldEnd()")
@@ -2194,7 +2193,7 @@ class KotlinCodeGenerator(
                     addStatement("%N = value", resultName)
 
                     nextControlFlow("else")
-                    addStatement("%T.skip(protocol, %N.typeId)", ProtocolUtil::class, fieldMeta)
+                    addStatement("protocol.skip(%N.typeId)", fieldMeta)
                     endControlFlow()
                     addStatement("⇤}")
                 }
@@ -2211,17 +2210,17 @@ class KotlinCodeGenerator(
                     addStatement("$name = value")
 
                     nextControlFlow("else")
-                    addStatement("%T.skip(protocol, %N.typeId)", ProtocolUtil::class, fieldMeta)
+                    addStatement("protocol.skip(%N.typeId)", fieldMeta)
                     endControlFlow()
                     addStatement("⇤}")
                 }
             }
 
             if (readsSomething) {
-                recv.addStatement("else·-> %T.skip(protocol, %N.typeId)", ProtocolUtil::class, fieldMeta)
+                recv.addStatement("else·-> protocol.skip(%N.typeId)", fieldMeta)
                 recv.endControlFlow()
             } else {
-                recv.addStatement("%T.skip(protocol, %N.typeId)", ProtocolUtil::class, fieldMeta)
+                recv.addStatement("protocol.skip(%N.typeId)", fieldMeta)
             }
 
             recv.addStatement("protocol.readFieldEnd()")

@@ -41,7 +41,6 @@ import jp.co.gahojin.thrifty.service.MethodCall
 import jp.co.gahojin.thrifty.service.ServiceMethodCallback
 import jp.co.gahojin.thrifty.service.TMessageType
 import jp.co.gahojin.thrifty.util.ObfuscationUtil
-import jp.co.gahojin.thrifty.util.ProtocolUtil
 import okio.ByteString
 import java.io.IOException
 import java.net.ProtocolException
@@ -80,7 +79,6 @@ internal object TypeNames {
     val MAP_META = classNameOf<MapMetadata>()
 
     val PROTOCOL = classNameOf<Protocol>()
-    val PROTO_UTIL = classNameOf<ProtocolUtil>()
     val PROTOCOL_EXCEPTION = classNameOf<ProtocolException>()
     val IO_EXCEPTION = classNameOf<IOException>()
     val EXCEPTION = classNameOf<java.lang.Exception>()

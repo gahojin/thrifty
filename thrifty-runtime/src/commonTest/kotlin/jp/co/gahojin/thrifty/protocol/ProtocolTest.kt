@@ -2,6 +2,7 @@
  * Thrifty
  *
  * Copyright (c) Microsoft Corporation
+ * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
  *
@@ -18,22 +19,21 @@
  *
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
-package jp.co.gahojin.thrifty.util
+package jp.co.gahojin.thrifty.protocol
 
 import io.kotest.assertions.fail
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.throwable.shouldHaveMessage
 import jp.co.gahojin.thrifty.TType
-import jp.co.gahojin.thrifty.protocol.BinaryProtocol
-import jp.co.gahojin.thrifty.protocol.Xtruct
 import jp.co.gahojin.thrifty.transport.BufferTransport
 import okio.Buffer
 import okio.ByteString.Companion.encodeUtf8
 import okio.ProtocolException
+import kotlin.collections.iterator
 import kotlin.test.Test
 
-class ProtocolUtilTest {
+class ProtocolTest {
     private val buffer = Buffer()
     private val protocol = BinaryProtocol(BufferTransport(buffer))
 
@@ -45,7 +45,7 @@ class ProtocolUtilTest {
             protocol.writeString(string)
         }
         protocol.writeListEnd()
-        ProtocolUtil.skip(protocol, TType.LIST)
+        protocol.skip(TType.LIST)
         buffer.size shouldBe 0L
     }
 
@@ -61,7 +61,7 @@ class ProtocolUtilTest {
             protocol.writeBinary(bytes)
         }
         protocol.writeSetEnd()
-        ProtocolUtil.skip(protocol, TType.SET)
+        protocol.skip(TType.SET)
         buffer.size shouldBe 0L
     }
 
@@ -79,7 +79,7 @@ class ProtocolUtilTest {
             protocol.writeI64(value)
         }
         protocol.writeMapEnd()
-        ProtocolUtil.skip(protocol, TType.MAP)
+        protocol.skip(TType.MAP)
         buffer.size shouldBe 0L
     }
 
@@ -92,7 +92,7 @@ class ProtocolUtilTest {
                 .string_thing("testing")
                 .build()
         Xtruct.ADAPTER.write(protocol, struct)
-        ProtocolUtil.skip(protocol, TType.STRUCT)
+        protocol.skip(TType.STRUCT)
         buffer.size shouldBe 0L
     }
 
@@ -123,7 +123,7 @@ class ProtocolUtilTest {
             Xtruct.ADAPTER.write(protocol, struct)
         }
         protocol.writeListEnd()
-        ProtocolUtil.skip(protocol, TType.LIST)
+        protocol.skip(TType.LIST)
         buffer.size shouldBe 0L
     }
 
@@ -139,7 +139,7 @@ class ProtocolUtilTest {
         protocol.writeFieldStop()
         protocol.writeStructEnd()
         try {
-            ProtocolUtil.skip(protocol, TType.STRUCT)
+            protocol.skip(TType.STRUCT)
             fail("Expected a ProtocolException but nothing was thrown")
         } catch (ignored: ProtocolException) {
             ignored shouldHaveMessage "Unrecognized TType value: 84"
@@ -149,14 +149,14 @@ class ProtocolUtilTest {
     @Test
     fun skipsBools() {
         protocol.writeBool(true)
-        ProtocolUtil.skip(protocol, TType.BOOL)
+        protocol.skip(TType.BOOL)
         buffer.size shouldBe 0L
     }
 
     @Test
     fun skipsBytes() {
         protocol.writeByte(32)
-        ProtocolUtil.skip(protocol, TType.BYTE)
+        protocol.skip(TType.BYTE)
         buffer.size shouldBe 0L
     }
 
@@ -164,7 +164,7 @@ class ProtocolUtilTest {
     fun skipsShorts() {
         protocol.writeI16(16)
         buffer.size shouldNotBe 0
-        ProtocolUtil.skip(protocol, TType.I16)
+        protocol.skip(TType.I16)
         buffer.size shouldBe 0
     }
 
@@ -172,7 +172,7 @@ class ProtocolUtilTest {
     fun skipsInts() {
         protocol.writeI32(32)
         buffer.size shouldNotBe 0
-        ProtocolUtil.skip(protocol, TType.I32)
+        protocol.skip(TType.I32)
         buffer.size shouldBe 0
     }
 
@@ -180,7 +180,7 @@ class ProtocolUtilTest {
     fun skipsLongs() {
         protocol.writeI64(64)
         buffer.size shouldNotBe 0
-        ProtocolUtil.skip(protocol, TType.I64)
+        protocol.skip(TType.I64)
         buffer.size shouldBe 0
     }
 
@@ -188,7 +188,7 @@ class ProtocolUtilTest {
     fun skipsDoubles() {
         protocol.writeDouble(2.5)
         buffer.size shouldNotBe 0
-        ProtocolUtil.skip(protocol, TType.DOUBLE)
+        protocol.skip(TType.DOUBLE)
         buffer.size shouldBe 0
     }
 
@@ -196,7 +196,7 @@ class ProtocolUtilTest {
     fun skipsStrings() {
         protocol.writeString("skip me")
         buffer.size shouldNotBe 0
-        ProtocolUtil.skip(protocol, TType.STRING)
+        protocol.skip(TType.STRING)
         buffer.size shouldBe 0
     }
 }

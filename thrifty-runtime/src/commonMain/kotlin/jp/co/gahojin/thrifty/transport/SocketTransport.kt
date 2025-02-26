@@ -75,6 +75,12 @@ class SocketTransport @JvmOverloads constructor(
         }
     }
 
+    override fun skip(count: Long) {
+        runBlocking {
+            readChannel.peek(count.toInt())
+        }
+    }
+
     fun connect() {
         runBlocking {
             selectorManager = SelectorManager(context)

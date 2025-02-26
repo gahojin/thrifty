@@ -55,6 +55,8 @@ class TestServer(private val protocol: ServerProtocol = ServerProtocol.BINARY) :
             b.write(buffer, offset, count)
         }
 
+        override fun skip(count: Long) = b.skip(count)
+
         override fun flush() = b.flush()
 
         override fun close() = b.close()

@@ -21,9 +21,12 @@
  */
 package jp.co.gahojin.thrifty.protocol
 
+import jp.co.gahojin.thrifty.TType
 import okio.ByteString
 import okio.Closeable
 import okio.IOException
+import okio.ProtocolException
+import kotlin.Byte
 
 interface Protocol : Closeable {
 
@@ -151,6 +154,89 @@ interface Protocol : Closeable {
 
     @Throws(IOException::class)
     fun readBinary(): ByteString
+
+    //////////////
+
+    @Throws(IOException::class)
+    fun skipBool()
+
+    @Throws(IOException::class)
+    fun skipByte()
+
+    @Throws(IOException::class)
+    fun skipI16()
+
+    @Throws(IOException::class)
+    fun skipI32()
+
+    @Throws(IOException::class)
+    fun skipI64()
+
+    @Throws(IOException::class)
+    fun skipDouble()
+
+    @Throws(IOException::class)
+    fun skipString()
+
+    @Throws(IOException::class)
+    fun skipStruct() {
+        readStructBegin()
+        while (true) {
+            val fieldMetadata = readFieldBegin()
+            if (fieldMetadata.typeId == TType.STOP) {
+                break
+            }
+            skip(fieldMetadata.typeId)
+            readFieldEnd()
+        }
+        readStructEnd()
+    }
+
+    @Throws(IOException::class)
+    fun skipList() {
+        val listMetadata = readListBegin()
+        for (i in 0..<listMetadata.size) {
+            skip(listMetadata.elementTypeId)
+        }
+        readListEnd()
+    }
+
+    @Throws(IOException::class)
+    fun skipSet() {
+        val setMetadata = readSetBegin()
+        for (i in 0..<setMetadata.size) {
+            skip(setMetadata.elementTypeId)
+        }
+        readSetEnd()
+    }
+
+    @Throws(IOException::class)
+    fun skipMap() {
+        val mapMetadata = readMapBegin()
+        for (i in 0..<mapMetadata.size) {
+            skip(mapMetadata.keyTypeId)
+            skip(mapMetadata.valueTypeId)
+        }
+        readMapEnd()
+    }
+
+    @Throws(IOException::class)
+    fun skip(typeCode: Byte) {
+        when (typeCode) {
+            TType.BOOL -> skipBool()
+            TType.BYTE -> skipByte()
+            TType.I16 -> skipI16()
+            TType.I32 -> skipI32()
+            TType.I64 -> skipI64()
+            TType.DOUBLE -> skipDouble()
+            TType.STRING -> skipString()
+            TType.STRUCT -> skipStruct()
+            TType.LIST -> skipList()
+            TType.SET -> skipSet()
+            TType.MAP -> skipMap()
+            else -> throw ProtocolException("Unrecognized TType value: $typeCode")
+        }
+    }
 
     //////////////
 

@@ -768,7 +768,7 @@ class KotlinCodeGeneratorTest {
             |              val Foo = protocol.readI32()
             |              result = Foo(Foo)
             |            } else {
-            |              ProtocolUtil.skip(protocol, fieldMeta.typeId)
+            |              protocol.skip(fieldMeta.typeId)
             |            }
             |          }
             |          2 -> {
@@ -776,7 +776,7 @@ class KotlinCodeGeneratorTest {
             |              val Bar = protocol.readI64()
             |              result = Bar(Bar)
             |            } else {
-            |              ProtocolUtil.skip(protocol, fieldMeta.typeId)
+            |              protocol.skip(fieldMeta.typeId)
             |            }
             |          }
             |          3 -> {
@@ -784,7 +784,7 @@ class KotlinCodeGeneratorTest {
             |              val Baz = protocol.readString()
             |              result = Baz(Baz)
             |            } else {
-            |              ProtocolUtil.skip(protocol, fieldMeta.typeId)
+            |              protocol.skip(fieldMeta.typeId)
             |            }
             |          }
             |          4 -> {
@@ -792,10 +792,10 @@ class KotlinCodeGeneratorTest {
             |              val NotFoo = protocol.readI32()
             |              result = NotFoo(NotFoo)
             |            } else {
-            |              ProtocolUtil.skip(protocol, fieldMeta.typeId)
+            |              protocol.skip(fieldMeta.typeId)
             |            }
             |          }
-            |          else -> ProtocolUtil.skip(protocol, fieldMeta.typeId)
+            |          else -> protocol.skip(fieldMeta.typeId)
             |        }
             |        protocol.readFieldEnd()
             |      }
@@ -919,7 +919,7 @@ class KotlinCodeGeneratorTest {
               }
               _local_field = field_
             } else {
-              ProtocolUtil.skip(protocol, fieldMeta.typeId)
+              protocol.skip(fieldMeta.typeId)
             }
           }"""
 
@@ -951,7 +951,7 @@ class KotlinCodeGeneratorTest {
                 _local_field1 = it
               }
             } else {
-              ProtocolUtil.skip(protocol, fieldMeta.typeId)
+              protocol.skip(fieldMeta.typeId)
             }
           }
           2 -> {
@@ -961,7 +961,7 @@ class KotlinCodeGeneratorTest {
               }
               _local_field2 = field2
             } else {
-              ProtocolUtil.skip(protocol, fieldMeta.typeId)
+              protocol.skip(fieldMeta.typeId)
             }
           }"""
 

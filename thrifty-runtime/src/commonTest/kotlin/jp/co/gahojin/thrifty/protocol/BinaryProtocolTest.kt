@@ -27,7 +27,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.contain
 import jp.co.gahojin.thrifty.TType
 import jp.co.gahojin.thrifty.transport.BufferTransport
-import jp.co.gahojin.thrifty.util.ProtocolUtil.skip
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
@@ -290,28 +289,28 @@ class BinaryProtocolTest {
                 1 -> if (field.typeId == TType.BYTE) {
                     protocol.readByte()
                 } else {
-                    skip(protocol, field.typeId)
+                    protocol.skip(field.typeId)
                 }
 
                 2 -> if (field.typeId == TType.I16) {
                     protocol.readI16()
                 } else {
-                    skip(protocol, field.typeId)
+                    protocol.skip(field.typeId)
                 }
 
                 3 -> if (field.typeId == TType.I16) {
                     protocol.readI16()
                 } else {
-                    skip(protocol, field.typeId)
+                    protocol.skip(field.typeId)
                 }
 
                 4 -> if (field.typeId == TType.STRING) {
                     protocol.readBinary()
                 } else {
-                    skip(protocol, field.typeId)
+                    protocol.skip(field.typeId)
                 }
 
-                else -> skip(protocol, field.typeId)
+                else -> protocol.skip(field.typeId)
             }
             protocol.readFieldEnd()
         }

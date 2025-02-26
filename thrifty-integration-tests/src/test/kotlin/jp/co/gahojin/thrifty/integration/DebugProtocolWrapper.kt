@@ -241,4 +241,39 @@ class DebugProtocolWrapper(
         println("readBinary()")
         return protocol.readBinary()
     }
+
+    override fun skipBool() {
+        println("skipBool()")
+        protocol.skipBool()
+    }
+
+    override fun skipByte() {
+        println("skipByte()")
+        protocol.skipByte()
+    }
+
+    override fun skipI16() {
+        println("skipI16()")
+        protocol.skipI16()
+    }
+
+    override fun skipI32() {
+        println("skipI32()")
+        protocol.skipI32()
+    }
+
+    override fun skipI64() {
+        println("skipI64()")
+        protocol.skipI64()
+    }
+
+    override fun skipDouble() {
+        println("skipDouble()")
+        protocol.skipDouble()
+    }
+
+    override fun skipString() {
+        println("skipString()")
+        protocol.skipString()
+    }
 }

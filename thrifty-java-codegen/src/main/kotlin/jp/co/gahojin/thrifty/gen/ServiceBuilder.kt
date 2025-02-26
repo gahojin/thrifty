@@ -356,7 +356,7 @@ internal class ServiceBuilder(
             recv.addStatement("break")
         }
 
-        recv.addStatement("default: \$T.skip(protocol, field.typeId); break", TypeNames.PROTO_UTIL)
+        recv.addStatement("default: protocol.skip(field.typeId); break")
         recv.endControlFlow() // end switch
         recv.addStatement("protocol.readFieldEnd()")
         recv.endControlFlow() // end while
