@@ -631,6 +631,32 @@ class ThriftyCodeGeneratorTest {
     }
 
     @Test
+    fun structClear() {
+        val thrift = """
+            namespace java clear_method
+
+            struct foo {
+                1: string bar
+                2: required i32 number;
+                3: required i32 test = 100;
+            }
+        """
+
+        val schema = parse("clear_method.thrift", thrift)
+        val gen = ThriftyCodeGenerator(schema).mutableFields(true)
+        val javaFiles = gen.generateTypes()
+        val file = javaFiles[0].toString()
+
+        file shouldContain """
+            |  public void clear() {
+            |    this.bar = null;
+            |    this.number = null;
+            |    this.test = 100;
+            |  }
+            |""".trimMargin()
+    }
+
+    @Test
     fun mutableField() {
         val thrift = """
             namespace java mutable_field

@@ -293,6 +293,10 @@ class ThriftyCodeGenerator(
         structBuilder.addMethod(buildToStringFor(type))
         structBuilder.addMethod(buildWrite())
 
+        if (mutableFields) {
+            structBuilder.addMethod(buildClearFor(type))
+        }
+
         return structBuilder.build()
     }
 
@@ -1026,6 +1030,42 @@ class ThriftyCodeGenerator(
         builder.addMethod(fromCodeMethod.build())
 
         return builder.build()
+    }
+
+    /**
+     * Builds a #clear() method for the given struct.
+     */
+    private fun buildClearFor(struct: StructType): MethodSpec {
+        val clear = MethodSpec.methodBuilder("clear")
+            .addModifiers(Modifier.PUBLIC)
+            .apply {
+                // Add fields to the struct and set them in the ctor
+                val allocator = NameAllocator()
+                for (field in struct.fields) {
+                    val name = fieldNamer.getName(field)
+                    allocator.newName(name, name)
+                }
+                val scope = AtomicInteger(0) // used for temporaries in const collections
+                struct.fields.forEach { field ->
+                    val fieldName = fieldNamer.getName(field)
+                    field.defaultValue?.also { fieldDefaultValue ->
+                        val initializer = CodeBlock.builder()
+                        constantBuilder.generateFieldInitializer(
+                            initializer,
+                            allocator,
+                            scope,
+                            "this.${fieldName}",
+                            field.type.trueType,
+                            fieldDefaultValue,
+                            false)
+                        addCode(initializer.build())
+                    } ?: run {
+                        addStatement("this.\$N = null", fieldName)
+                    }
+                }
+            }
+
+        return clear.build()
     }
 
     companion object {

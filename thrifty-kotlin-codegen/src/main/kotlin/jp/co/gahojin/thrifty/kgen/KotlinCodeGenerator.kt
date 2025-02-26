@@ -33,9 +33,6 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.MUTABLE_LIST
-import com.squareup.kotlinpoet.MUTABLE_MAP
-import com.squareup.kotlinpoet.MUTABLE_SET
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.NameAllocator
 import com.squareup.kotlinpoet.ParameterSpec
@@ -515,6 +512,8 @@ class KotlinCodeGenerator(
 
         val companionBuilder = TypeSpec.companionObjectBuilder()
 
+        val clearFuncBuilder = FunSpec.builder("clear")
+
         var existDefaultFields = false
         val nameAllocator = nameAllocators[struct]
         for (field in struct.fields) {
@@ -537,18 +536,22 @@ class KotlinCodeGenerator(
 
             field.defaultValue?.let {
                 existDefaultFields = true
-                param.defaultValue(renderConstValue(schema, field.type, it))
+                val defaultValue = renderConstValue(schema, field.type, it)
+                param.defaultValue(defaultValue)
+                clearFuncBuilder.addStatement("%N = %L", fieldName, defaultValue)
             } ?: run {
                 if (field.required) {
                     // 必須フィールドかつ、デフォルト値がない場合は、型の初期値(I32なら0)をセットする
                     field.type.defaultValue?.also {
                         existDefaultFields = true
                         param.defaultValue(it)
+                        clearFuncBuilder.addStatement("%N = %L", fieldName, it)
                     }
                 } else {
                     // 必須ではないフィールドはnullをデフォルト値とする
                     existDefaultFields = true
                     param.defaultValue("null")
+                    clearFuncBuilder.addStatement("%N = null", fieldName)
                 }
             }
 
@@ -610,6 +613,10 @@ class KotlinCodeGenerator(
         // 初期値がセットされているパラメータが存在する場合、@JvmOverloadsアノテーションを付加する
         if (existDefaultFields && emitJvmOverloads) {
             ctorBuilder.addAnnotation(ClassNames.KOTLIN_JVM_OVERLOADS)
+        }
+
+        if (mutableFields) {
+            typeBuilder.addFunction(clearFuncBuilder.build())
         }
 
         return typeBuilder
