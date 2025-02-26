@@ -1309,6 +1309,28 @@ class KotlinCodeGeneratorTest {
         """.trimMargin()
     }
 
+    @Test
+    fun `generate data class with clear method`() {
+        val thrift = """
+            namespace java clear_method
+
+            struct foo {
+                1: string bar
+                2: required i32 number;
+                3: required i32 test = 100;
+            }
+        """
+
+        val file = generate(thrift) { mutableFields() }
+        file.toString() shouldContain """
+            |  public fun clear() {
+            |    bar = null
+            |    number = 0
+            |    test = 100
+            |  }
+            |""".trimMargin()
+    }
+
     private fun generate(
         thrift: String,
         config: (KotlinCodeGenerator.() -> KotlinCodeGenerator) = { emitFileComment(false) },
