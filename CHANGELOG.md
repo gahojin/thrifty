@@ -3,15 +3,17 @@
 
 4.4.0 (released 27 February 2025)
 ------------------
-feat: deepCopy機能追加
+- feat: deepCopy機能追加 (#39)
 
 4.3.0 (released 27 February 2025)
 ------------------
-- feat: skip処理がread処理と同一であるため、transport/protocolがskipをサポートしている場合、効率よくスキップ出来るようにする
-- build: junit5.12.0から、platform-launcherが依存にないとエラーが発生するため、追加
-- ci: pr作成時の自動author設定、gradle自動アップデートを追加
-- feat: inputstream/outputstreamからtransportを生成する拡張関数追加
-- feat: mutableFieldsオプション有効時に、内容をクリアするclearメソッド追加
+- feat: skip処理がread処理と同一であるため、transport/protocolがskipをサポートしている場合、効率よくスキップ出来るようにする (#32)
+- build: junit5.12.0から、platform-launcherが依存にないとエラーが発生するため、追加 (#33)
+- ci: pr作成時の自動author設定、gradle自動アップデートを追加 (#34)
+- build: Bump the all group across 1 directory with 9 updates (#35)
+- build: Update Gradle Wrapper from 8.12.1 to 8.13 (#36)
+- feat: inputstream/outputstreamからtransportを生成する拡張関数追加 (#37)
+- feat: mutableFieldsオプション有効時に、内容をクリアするclearメソッド追加 (#38)
 
 4.2.2 (released 20 February 2025)
 ------------------
