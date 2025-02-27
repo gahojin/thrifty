@@ -1,4 +1,9 @@
-4.4.0 (unreleased)
+4.5.0 (unreleased)
+------------------
+
+4.4.0 (released 27 February 2025)
+------------------
+feat: deepCopy機能追加
 
 4.3.0 (released 27 February 2025)
 ------------------

@@ -1312,7 +1312,47 @@ class KotlinCodeGeneratorTest {
     @Test
     fun `generate data class with clear method`() {
         val thrift = """
-            namespace java clear_method
+            namespace kt clear_method
+
+            // This is an enum
+            enum MyEnum {
+              MEMBER_ONE, // trailing doc
+              MEMBER_TWO
+            }
+            
+            struct foo {
+                1: string bar
+                2: required i32 number;
+                3: required i32 test = 100;
+                4: required foo foo;
+                5: MyEnum enumType;
+                6: set<i8> Bytes;
+                7: required list<list<string>> listOfStrings
+                8: map<i64, foo> Maps
+                9: map<set<i8>, foo> NestedMaps
+            }
+        """
+
+        val file = generate(thrift) { emitDeepCopyFunc() }
+        file.toString() shouldContain """
+            |  public fun deepCopy(): foo = foo(
+            |    bar = bar,
+            |    number = number,
+            |    test = test,
+            |    foo = foo.deepCopy(),
+            |    enumType = enumType,
+            |    Bytes = Bytes?.let { LinkedHashSet(it) },
+            |    listOfStrings = listOfStrings.map { i1 -> ArrayList(i1) },
+            |    Maps = Maps?.entries.associate { i1 -> i1.key to i1.value.deepCopy() },
+            |    NestedMaps = NestedMaps?.entries.associate { i1 -> LinkedHashSet(i1.key) to i1.value.deepCopy() },
+            |  )
+            |""".trimMargin()
+    }
+
+    @Test
+    fun `generate data class with deepCopy method`() {
+        val thrift = """
+            namespace kt deep_copy_method
 
             struct foo {
                 1: string bar

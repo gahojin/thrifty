@@ -149,6 +149,7 @@ class KotlinCodeGenerator(
     private var emitJvmOverloads: Boolean = false
     private var emitBigEnums: Boolean = false
     private var emitFileComment: Boolean = true
+    private var emitDeepCopyFunc: Boolean = false
     private var failOnUnknownEnumValues: Boolean = true
     private var mutableFields: Boolean = false
 
@@ -266,6 +267,10 @@ class KotlinCodeGenerator(
 
     fun emitFileComment(value: Boolean): KotlinCodeGenerator = apply {
         emitFileComment = value
+    }
+
+    fun emitDeepCopyFunc(): KotlinCodeGenerator = apply {
+        emitDeepCopyFunc = true
     }
 
     fun failOnUnknownEnumValues(value: Boolean = true): KotlinCodeGenerator = apply {
@@ -513,6 +518,10 @@ class KotlinCodeGenerator(
         val companionBuilder = TypeSpec.companionObjectBuilder()
 
         val clearFuncBuilder = FunSpec.builder("clear")
+        val deepCopyFuncBuilder = FunSpec.builder("deepCopy")
+            .addModifiers(KModifier.PUBLIC)
+            .returns(structClassName)
+            .addCode("return %T(⇥\n", structClassName)
 
         var existDefaultFields = false
         val nameAllocator = nameAllocators[struct]
@@ -554,6 +563,8 @@ class KotlinCodeGenerator(
                     clearFuncBuilder.addStatement("%N = null", fieldName)
                 }
             }
+
+            deepCopyFuncBuilder.addDeepCopyStatement(field, fieldName)
 
             val prop = PropertySpec.builder(fieldName, typeName)
                 .initializer(fieldName)
@@ -617,6 +628,11 @@ class KotlinCodeGenerator(
 
         if (mutableFields) {
             typeBuilder.addFunction(clearFuncBuilder.build())
+        }
+        if (emitDeepCopyFunc) {
+            typeBuilder.addFunction(deepCopyFuncBuilder
+                .addCode("⇤)")
+                .build())
         }
 
         return typeBuilder
@@ -753,6 +769,91 @@ class KotlinCodeGenerator(
         }
 
         return typeBuilder.addType(companionBuilder.build()).build()
+    }
+
+    private fun FunSpec.Builder.addDeepCopyStatement(field: Field, fieldName: String) = apply {
+        addStatement("%N = %L,", fieldName, buildCodeBlock {
+            addDeepCopyStatement(field.type.trueType, field.required, fieldName, 1)
+        })
+    }
+
+    private fun CodeBlock.Builder.addDeepCopyStatement(
+        fieldType: ThriftType,
+        required: Boolean,
+        fieldName: String,
+        index: Int,
+    ) {
+        val listImplClassName = listClassName ?: ClassNames.ARRAY_LIST
+        val setImplClassName = setClassName ?: ClassNames.LINKED_HASH_SET
+        val mapImplClassName = mapClassName ?: ClassNames.LINKED_HASH_MAP
+        val fieldNameForDot = if (required) "%L" else "%L?"
+
+        when (fieldType) {
+            is ListType -> {
+                val elementType = fieldType.elementType.trueType
+                addDeepCopyCollection(listImplClassName, fieldName, {
+                    elementType.isBuiltin || elementType.isEnum
+                }, required) {
+                    val entryName = "i${index}"
+                    add("${fieldNameForDot}.map { %N -> %L }", fieldName, entryName, buildCodeBlock {
+                        addDeepCopyStatement(elementType, true, entryName, index + 1)
+                    })
+                }
+            }
+            is SetType -> {
+                val elementType = fieldType.elementType.trueType
+                addDeepCopyCollection(setImplClassName, fieldName, {
+                    elementType.isBuiltin || elementType.isEnum
+                }, required) {
+                    val entryName = "i${index}"
+                    add("${fieldNameForDot}.map { %N -> %L }", fieldName, entryName, buildCodeBlock {
+                        addDeepCopyStatement(elementType, true, entryName, index + 1)
+                    })
+                }
+            }
+            is MapType -> {
+                val keyType = fieldType.keyType.trueType
+                val valueType = fieldType.valueType.trueType
+                addDeepCopyCollection(mapImplClassName, fieldName, {
+                    (keyType.isBuiltin || keyType.isEnum) && (valueType.isBuiltin || valueType.isEnum)
+                }, required) {
+                    val entryName = "i${index}"
+                    add("${fieldNameForDot}.entries.associate { %N -> %L to %L }", fieldName, entryName, buildCodeBlock {
+                       addDeepCopyStatement(keyType, true, "$entryName.key", index + 1)
+                    }, buildCodeBlock {
+                        addDeepCopyStatement(valueType, true, "$entryName.value", index + 1)
+                    })
+                }
+            }
+            is StructType -> {
+                if (fieldType.isUnion) {
+                    add("%L", fieldName)
+                } else {
+                    add("${fieldNameForDot}.deepCopy()", fieldName)
+                }
+            }
+            else -> {
+                add("%L", fieldName)
+            }
+        }
+    }
+
+    private fun CodeBlock.Builder.addDeepCopyCollection(
+        className: ClassName,
+        fieldName: String,
+        condition: () -> Boolean,
+        required: Boolean,
+        other: CodeBlock.Builder.() -> Unit,
+    ) {
+        if (condition()) {
+            if (required) {
+                add("%T(%L)", className, fieldName)
+            } else {
+                add("%L?.let { %T(it) }", fieldName, className)
+            }
+        } else {
+            other()
+        }
     }
 
     // endregion Structs
