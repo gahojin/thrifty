@@ -46,6 +46,7 @@ class SerializableThriftOptions @JvmOverloads constructor(
         val jvmStatic: Boolean = false,
         val jvmOverloads: Boolean = false,
         val bigEnum: Boolean = false,
+        val deepCopyFunc: Boolean = false,
     ) : Serializable {
         companion object {
             private const val serialVersionUID = 1L
@@ -77,6 +78,7 @@ class SerializableThriftOptions @JvmOverloads constructor(
                 jvmStatic = it.jvmStatic,
                 jvmOverloads = it.jvmOverloads,
                 bigEnum = it.bigEnum,
+                deepCopyFunc = it.deepCopyFunc,
             )
         },
         javaOpts = (options as? JavaThriftOptions)?.let {

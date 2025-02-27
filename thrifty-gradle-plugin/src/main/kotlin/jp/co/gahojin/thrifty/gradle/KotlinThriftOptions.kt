@@ -76,6 +76,9 @@ open class KotlinThriftOptions : ThriftOptions(), Serializable {
     @get:Input
     var bigEnum: Boolean = false
 
+    @get:Input
+    var deepCopyFunc: Boolean = false
+
     fun setServiceClientStyle(clientStyleName: String) {
         val stylesByName = TreeMap<String, ClientStyle>(String.CASE_INSENSITIVE_ORDER)
         for (style in ClientStyle.entries) {

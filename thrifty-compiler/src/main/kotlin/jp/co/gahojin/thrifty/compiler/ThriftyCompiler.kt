@@ -212,6 +212,9 @@ object ThriftyCompiler {
         val kotlinBigEnums: Boolean by option("--kt-big-enums")
             .flag("--kt-no-big-enums", default = false)
 
+        val kotlinDeepCopyFunc: Boolean by option("--kt-deep-copy-func")
+            .flag("--kt-no-deep-copy-func", default = false)
+
         val thriftFiles: List<Path> by argument()
             .help("All .thrift files to compile")
             .path(mustExist = true, canBeFile = true, canBeDir = false, mustBeReadable = true)
@@ -335,6 +338,10 @@ object ThriftyCompiler {
 
             if (kotlinBigEnums) {
                 gen.emitBigEnums()
+            }
+
+            if (kotlinDeepCopyFunc) {
+                gen.emitDeepCopyFunc()
             }
 
             gen.emitFileComment(!omitFileComments)

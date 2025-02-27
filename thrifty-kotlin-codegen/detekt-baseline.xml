@@ -5,6 +5,7 @@
     <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$fun generate(schema: Schema): List&lt;FileSpec></ID>
     <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateAdapterFor( struct: StructType, adapterName: ClassName, adapterInterfaceName: TypeName, ): TypeSpec</ID>
     <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateSealedClass(schema: Schema, struct: StructType): TypeSpec</ID>
+    <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun CodeBlock.Builder.addDeepCopyStatement( fieldType: ThriftType, required: Boolean, fieldName: String, index: Int, )</ID>
     <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun buildCallType(schema: Schema, method: ServiceMethod): TypeSpec</ID>
     <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun generateDataClass(schema: Schema, struct: StructType): TypeSpec</ID>
     <ID>CyclomaticComplexMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun generateEnumClass(enumType: EnumType): TypeSpec</ID>
@@ -25,10 +26,10 @@
     <ID>LongMethod:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun generateProcessorImplementation( schema: Schema, serviceType: ServiceType, serviceInterface: TypeSpec, ): TypeSpec</ID>
     <ID>LongMethod:KotlinCodeGeneratorTest.kt$KotlinCodeGeneratorTest$@Test fun `union generate read function`()</ID>
     <ID>LongParameterList:KotlinCodeGenerator.kt$KotlinCodeGenerator$( block: CodeBlock.Builder, name: String, type: ThriftType, scope: Int = 0, localNamePrefix: String = "", failOnUnknownEnumValues: Boolean = true, )</ID>
+    <ID>MaxLineLength:KotlinCodeGenerator.kt$KotlinCodeGenerator$add</ID>
     <ID>MaxLineLength:KotlinCodeGenerator.kt$KotlinCodeGenerator.&lt;no name provided>$"%1T.findByValue(it) ?: throw %2T(%3T.PROTOCOL_ERROR, \"Unexpected·value·for·enum·type·%1T:·\$it\")"</ID>
     <ID>NestedBlockDepth:KotlinCodeGenerator.kt$KotlinCodeGenerator$internal fun generateCoroServiceInterface(serviceType: ServiceType): TypeSpec</ID>
     <ID>NestedBlockDepth:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun buildCallType(schema: Schema, method: ServiceMethod): TypeSpec</ID>
-    <ID>NestedBlockDepth:KotlinCodeGenerator.kt$KotlinCodeGenerator$private fun generateDataClass(schema: Schema, struct: StructType): TypeSpec</ID>
     <ID>SpreadOperator:KotlinCodeGenerator.kt$KotlinCodeGenerator$( "return %T.%N(handler.%N($format))", parentTypeName, concreteResultTypeName, interfaceFun, *names.toTypedArray(), )</ID>
     <ID>SpreadOperator:KotlinCodeGenerator.kt$KotlinCodeGenerator$("handler.%N($format)", interfaceFun, *names.toTypedArray())</ID>
     <ID>TooManyFunctions:KotlinCodeGenerator.kt$KotlinCodeGenerator</ID>

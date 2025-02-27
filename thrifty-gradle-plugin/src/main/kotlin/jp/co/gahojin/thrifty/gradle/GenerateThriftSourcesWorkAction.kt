@@ -159,6 +159,10 @@ abstract class GenerateThriftSourcesWorkAction : WorkAction<GenerateThriftSource
             gen.emitBigEnums()
         }
 
+        if (kopt.deepCopyFunc) {
+            gen.emitDeepCopyFunc()
+        }
+
         if (opts.listType != null) {
             gen.listClassName(opts.listType)
         }
