@@ -36,6 +36,7 @@ concurrency:
 
 jobs:
   build:
+    timeout-minutes: 30
     name: Build and test (OS ${{ matrix.os }}, JDK ${{ matrix.jvm-version }})
     runs-on: ${{ matrix.os }}
     strategy:
