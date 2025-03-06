@@ -155,6 +155,10 @@ abstract class GenerateThriftSourcesWorkAction : WorkAction<GenerateThriftSource
             gen.emitJvmOverloads()
         }
 
+        if (kopt.jvmSuppressWildcards) {
+            gen.emitJvmSuppressWildcards()
+        }
+
         if (kopt.bigEnum) {
             gen.emitBigEnums()
         }

@@ -1371,6 +1371,31 @@ class KotlinCodeGeneratorTest {
             |""".trimMargin()
     }
 
+
+    @Test
+    fun `jvmSuppressWildcard to be attached to the collection type`() {
+        val thrift = """
+            |namespace kt test.lists
+            |
+            |const list<i32> FOO = [1, 2, 3];
+            |const map<i8, i8> BAR = { 1: 2 };
+            |const set<string> BAZ = ["foo", "bar", "baz"];
+            |
+            |struct HasCollections {
+            |  1: list<string> strs;
+            |  2: map<string, string> more_strs;
+            |  3: set<i16> shorts;
+            |}
+            |
+            |service HasListMethodArg {
+            |  list<i8> sendThatList(1: list<i8> byteList);
+            |}
+        """.trimMargin()
+
+        val file = generate(thrift) { emitJvmSuppressWildcards() }
+        file.toString() shouldContain ": @JvmSuppressWildcards "
+    }
+
     private fun generate(
         thrift: String,
         config: (KotlinCodeGenerator.() -> KotlinCodeGenerator) = { emitFileComment(false) },

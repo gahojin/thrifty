@@ -1,5 +1,9 @@
 4.5.0 (unreleased)
 ------------------
+- ci: checkout時に、persist-credentials=falseを設定する
+- ci: timeout-minutes をセットする
+- ci: Bump gradle-update/update-gradle-wrapper-action
+- feat: JvmSuppressWildcardsアノテーションを付与するオプション追加
 
 4.4.0 (released 27 February 2025)
 ------------------

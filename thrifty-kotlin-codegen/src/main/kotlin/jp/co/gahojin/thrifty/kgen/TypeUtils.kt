@@ -28,6 +28,7 @@ import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.LIST
 import com.squareup.kotlinpoet.LONG
 import com.squareup.kotlinpoet.MAP
+import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.SET
 import com.squareup.kotlinpoet.SHORT
@@ -35,6 +36,7 @@ import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.UNIT
 import com.squareup.kotlinpoet.asTypeName
+import com.squareup.kotlinpoet.jvm.jvmSuppressWildcards
 import jp.co.gahojin.thrifty.TType
 import jp.co.gahojin.thrifty.schema.BuiltinType
 import jp.co.gahojin.thrifty.schema.Constant
@@ -159,5 +161,12 @@ private object TypeNameVisitor : ThriftType.Visitor<TypeName> {
 
     private fun userTypeName(userType: UserType): TypeName {
         return ClassName(userType.kotlinNamespace, userType.name)
+    }
+}
+
+internal fun TypeName.withJvmSuppressWildcards(): TypeName {
+    return when (this) {
+        is ParameterizedTypeName -> jvmSuppressWildcards()
+        else -> this
     }
 }

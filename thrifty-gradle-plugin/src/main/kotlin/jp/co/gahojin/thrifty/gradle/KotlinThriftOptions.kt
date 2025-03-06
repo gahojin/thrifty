@@ -74,6 +74,9 @@ open class KotlinThriftOptions : ThriftOptions(), Serializable {
     var jvmOverloads: Boolean = false
 
     @get:Input
+    var jvmSuppressWildcards: Boolean = false
+
+    @get:Input
     var bigEnum: Boolean = false
 
     @get:Input
