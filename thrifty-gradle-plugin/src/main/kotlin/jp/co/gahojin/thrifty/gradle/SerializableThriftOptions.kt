@@ -45,6 +45,7 @@ class SerializableThriftOptions @JvmOverloads constructor(
         val jvmName: Boolean = false,
         val jvmStatic: Boolean = false,
         val jvmOverloads: Boolean = false,
+        val jvmSuppressWildcards: Boolean = false,
         val bigEnum: Boolean = false,
         val deepCopyFunc: Boolean = false,
     ) : Serializable {
@@ -77,6 +78,7 @@ class SerializableThriftOptions @JvmOverloads constructor(
                 jvmName = it.jvmName,
                 jvmStatic = it.jvmStatic,
                 jvmOverloads = it.jvmOverloads,
+                jvmSuppressWildcards = it.jvmSuppressWildcards,
                 bigEnum = it.bigEnum,
                 deepCopyFunc = it.deepCopyFunc,
             )

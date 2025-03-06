@@ -46,6 +46,7 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.jvm.jvmField
 import com.squareup.kotlinpoet.jvm.jvmStatic
+import com.squareup.kotlinpoet.jvm.jvmSuppressWildcards
 import com.squareup.kotlinpoet.tag
 import jp.co.gahojin.thrifty.Obfuscated
 import jp.co.gahojin.thrifty.Redacted
@@ -91,7 +92,7 @@ import jp.co.gahojin.thrifty.util.ObfuscationUtil
 import okio.ByteString
 import java.time.Instant
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Locale
 import jp.co.gahojin.thrifty.kotlin.Adapter as KtAdapter
 
 private object Tags {
@@ -125,6 +126,7 @@ private object ClassNames {
     val ANDROID_PARCELABLE = ClassName("android.os", "Parcelable")
     val KOTLINX_PARCELIZE = ClassName("kotlinx.parcelize", "Parcelize")
     val KOTLIN_JVM_OVERLOADS = ClassName("kotlin.jvm", "JvmOverloads")
+    val KOTLIN_JVM_SUPPRESS_WILDCARDS = ClassName("kotlin.jvm", "JvmSuppressWildcards")
 }
 
 /**
@@ -147,6 +149,7 @@ class KotlinCodeGenerator(
     private var emitJvmName: Boolean = false
     private var emitJvmStatic: Boolean = false
     private var emitJvmOverloads: Boolean = false
+    private var emitJvmSuppressWildcards: Boolean = false
     private var emitBigEnums: Boolean = false
     private var emitFileComment: Boolean = true
     private var emitDeepCopyFunc: Boolean = false
@@ -259,6 +262,10 @@ class KotlinCodeGenerator(
 
     fun emitJvmOverloads(): KotlinCodeGenerator = apply {
         emitJvmOverloads = true
+    }
+
+    fun emitJvmSuppressWildcards(): KotlinCodeGenerator = apply {
+        emitJvmSuppressWildcards = true
     }
 
     fun emitBigEnums(): KotlinCodeGenerator = apply {
@@ -529,6 +536,8 @@ class KotlinCodeGenerator(
             val fieldName = nameAllocator[field]
             val typeName = field.type.typeName.let {
                 if (!field.required) it.copy(nullable = true) else it
+            }.let {
+                if (emitJvmSuppressWildcards) it.withJvmSuppressWildcards() else it
             }
 
             val thriftField = AnnotationSpec.builder(ThriftField::class).let { anno ->
@@ -640,7 +649,6 @@ class KotlinCodeGenerator(
             .addType(companionBuilder.build())
             .build()
     }
-
 
     internal fun generateSealedClass(schema: Schema, struct: StructType): TypeSpec {
         if (struct.fields.isEmpty()) {
