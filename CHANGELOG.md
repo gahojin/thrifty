@@ -1,7 +1,11 @@
 4.6.0 (unreleased)
 ------------------
 
-4.5.0 (released 27 March 2025)
+4.5.1 (released 9 March 2025)
+------------------
+- build(deps): Bump the all group with 2 updates (#44)
+
+4.5.0 (released 6 March 2025)
 ------------------
 - ci: timeout-minutes をセットする (#40)
 - ci: checkout時に、persist-credentials=falseを設定する (#41)
