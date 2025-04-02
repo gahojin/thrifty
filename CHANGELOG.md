@@ -1,5 +1,20 @@
-4.6.0 (unreleased)
+4.7.0 (unreleased)
 ------------------
+
+4.6.0 (released 2 April 2025)
+------------------
+- build(deps): Bump the all group with 2 updates by @dependabot in #45
+- docs: changelog/readmeの修正 by @crow-misia in #46
+- ci: ios固有コードがないため、シミュレーターによるテストを行わない by @crow-misia in #48
+- build(deps): fastxml-woodstoxの脆弱性がDokka経由で取り込まれているため、強制的にバージョンを上げる by @crow-misia in #47
+- build(deps): Bump the all group with 8 updates by @dependabot in #50
+- build(deps): Bump com.google.guava:guava from 33.4.5-jre to 33.4.6-jre in the all group by @dependabot in #51
+- build(deps): Bump gradle/actions from 4.3.0 to 4.3.1 in the all group by @dependabot in #52
+- build(deps): Bump the all group with 4 updates by @dependabot in #53
+- build: gradleの依存ライブラリチェックを自社製のrefreshVersionsプラグインに更新 by @crow-misia in #54
+- build(deps): Bump jp.co.gahojin.refreshVersions from 0.1.1 to 0.1.3 in the all group by @dependabot in #55
+- chore: pomファイルのライセンス名をSPDX準拠に修正 by @crow-misia in #56
+- build: バージョンカタログの並び順を変更 by @crow-misia in #57
 
 4.5.1 (released 9 March 2025)
 ------------------
