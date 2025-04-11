@@ -1,6 +1,13 @@
 4.7.0 (unreleased)
 ------------------
 
+4.6.1 (released 11 April 2025)
+------------------
+- build(deps): Bump the all group with 3 updates by @dependabot in #58
+- build(deps): Bump actions/setup-java from 4.7.0 to 4.7.1 in the all group by @dependabot in #59
+- build(deps): Bump org.apache.tomcat.embed:tomcat-embed-core from 11.0.5 to 11.0.6 in the all group by @dependabot in #60
+- build(deps): Bump com.squareup.okio:okio from 3.10.2 to 3.11.0 in the all group by @dependabot in #61
+
 4.6.0 (released 2 April 2025)
 ------------------
 - build(deps): Bump the all group with 2 updates by @dependabot in #45
