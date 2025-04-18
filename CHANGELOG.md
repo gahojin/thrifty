@@ -1,6 +1,15 @@
 4.7.0 (unreleased)
 ------------------
 
+4.6.2 (released 11 April 2025)
+------------------
+- build: コミットメッセージチェックにlefthook + commitlint導入 by @crow-misia in #62
+- build(deps): Bump lefthook from 1.11.8 to 1.11.9 in the all group by @dependabot in #63
+- build(deps): Bump the all group with 2 updates by @dependabot in #64
+- build(deps): Bump lefthook from 1.11.9 to 1.11.10 in the all group by @dependabot in #65
+- build(deps): Bump com.google.guava:guava from 33.4.7-jre to 33.4.8-jre in the all group by @dependabot in #66
+
+
 4.6.1 (released 11 April 2025)
 ------------------
 - build(deps): Bump the all group with 3 updates by @dependabot in #58
