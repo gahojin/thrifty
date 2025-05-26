@@ -51,7 +51,7 @@ Or, with the Gradle plugin:
 
 buildscript {
   dependencies {
-    classpath 'jp.co.gahojin.thrifty:thrifty-gradle-plugin:4.6.2'
+    classpath 'jp.co.gahojin.thrifty:thrifty-gradle-plugin:4.6.3'
   }
 }
 

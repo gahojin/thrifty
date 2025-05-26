@@ -1,6 +1,15 @@
 4.7.0 (unreleased)
 ------------------
 
+4.6.3 (released 26 May 2025)
+------------------
+- build(deps): Bump io.ktor from 3.1.2 to 3.1.3 in the all group by @dependabot in #71
+- build(deps): Bump org.jetbrains.kotlin from 2.1.20 to 2.1.21 in the all group by @dependabot in #73
+- build(deps): Bump org.apache.tomcat.embed from 110.0.6 to 11.0.7 in the all group by @dependabot in #73
+- build(deps): Bump com.vanniktech.maven.publish from 0.31.0 to 0.32.0 in the all group by @dependabot in #74
+- build(deps): Bump com.squareup:kotlinpoet from 2.1.0 to 2.2.0 in the all group by @dependabot in #76
+- Update Gradle Wrapper from 8.13 to 8.14.1 by @dependabot in #69, #78
+
 4.6.2 (released 11 April 2025)
 ------------------
 - build: コミットメッセージチェックにlefthook + commitlint導入 by @crow-misia in #62
