@@ -20,7 +20,6 @@
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
 
-import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.attributes.java.TargetJvmVersion
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -236,6 +235,6 @@ signing {
 }
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
     signAllPublications()
 }
