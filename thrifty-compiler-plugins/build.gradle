@@ -54,6 +54,7 @@ tasks.withType(Test).configureEach {
         showStandardStreams = true
         events("passed", "skipped", "failed")
     }
+    failOnNoDiscoveredTests = false
 }
 
 signing {

@@ -131,6 +131,7 @@ jvmTest {
         showStandardStreams = true
         events("passed", "skipped", "failed")
     }
+    failOnNoDiscoveredTests = false
 }
 
 abstract class IosTestTask extends DefaultTask {
