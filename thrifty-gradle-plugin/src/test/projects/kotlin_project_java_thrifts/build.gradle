@@ -11,3 +11,7 @@ dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib"
     api msft.thrifty.runtime
 }
+
+tasks.withType(Test.class).configureEach {
+    failOnNoDiscoveredTests = false
+}
