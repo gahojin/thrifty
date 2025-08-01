@@ -46,7 +46,6 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.jvm.jvmField
 import com.squareup.kotlinpoet.jvm.jvmStatic
-import com.squareup.kotlinpoet.jvm.jvmSuppressWildcards
 import com.squareup.kotlinpoet.tag
 import jp.co.gahojin.thrifty.Obfuscated
 import jp.co.gahojin.thrifty.Redacted
