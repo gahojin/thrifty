@@ -140,6 +140,7 @@ data class Message(
 
 private class LogEverythingMessageCollector : MessageCollector {
     private val messageArrayList = arrayListOf<Message>()
+    private var hasErrors = false
 
     val messages: List<Message>
         get() = messageArrayList
@@ -149,14 +150,15 @@ private class LogEverythingMessageCollector : MessageCollector {
     }
 
     override fun hasErrors(): Boolean {
-        return messageArrayList.isNotEmpty()
+        return hasErrors
     }
 
     override fun report(
         severity: CompilerMessageSeverity,
         message: String,
-        location: CompilerMessageSourceLocation?
+        location: CompilerMessageSourceLocation?,
     ) {
+        hasErrors = hasErrors || severity.isError
         messageArrayList += Message(severity, message, location)
     }
 }
