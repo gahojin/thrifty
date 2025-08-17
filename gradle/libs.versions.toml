@@ -26,7 +26,7 @@ junit = "5.13.4"
 
 kotest = "5.9.1"
 
-kotlin = "2.2.0"
+kotlin = "2.2.10"
 
 kotlin-poet = "2.2.0"
 
@@ -42,7 +42,7 @@ maven-publish = "0.34.0"
 
 okio = "3.16.0"
 
-shadow = "9.0.1"
+shadow = "9.0.2"
 
 slf4j = "2.0.17"
 
