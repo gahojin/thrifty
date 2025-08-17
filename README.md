@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'jp.co.gahojin.thrifty:thrifty-runtime-jvm:4.6.2'
+  implementation 'jp.co.gahojin.thrifty:thrifty-runtime-jvm:4.6.3'
 }
 ```
 

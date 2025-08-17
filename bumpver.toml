@@ -17,4 +17,3 @@ push = false
 "bumpver.toml" = [
     'current_version = "{version}"',
 ]
-
