@@ -6,7 +6,7 @@ antlr = "4.13.2"
 
 apache-thrift = "0.22.0"
 
-assertj = "3.27.3"
+assertj = "3.27.4"
 
 clikt = "5.0.3"
 
@@ -26,11 +26,11 @@ junit = "5.13.4"
 
 kotest = "5.9.1"
 
-kotlin = "2.1.21"
+kotlin = "2.2.10"
 
 kotlin-poet = "2.2.0"
 
-kotlinx-atomicfu = "0.28.0"
+kotlinx-atomicfu = "0.29.0"
 
 kotlinx-coroutines = "1.10.2"
 
@@ -40,13 +40,13 @@ ktor = "3.2.3"
 
 maven-publish = "0.34.0"
 
-okio = "3.15.0"
+okio = "3.16.0"
 
-shadow = "8.3.8"
+shadow = "9.0.2"
 
 slf4j = "2.0.17"
 
-tomcat = "11.0.9"
+tomcat = "11.0.10"
 
 [libraries]
 
@@ -72,7 +72,9 @@ junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform
 
 kotest-assertions-core = { group = "io.kotest", name = "kotest-assertions-core", version.ref = "kotest" }
 
-kotlin-compiler = { group = "org.jetbrains.kotlin", name = "kotlin-compiler", version.ref = "kotlin" }
+kotlin-compiler = { group = "org.jetbrains.kotlin", name = "kotlin-compiler-embeddable", version.ref = "kotlin" }
+
+kotlin-scripting-compiler = { group = "org.jetbrains.kotlin", name = "kotlin-scripting-compiler-embeddable", version.ref = "kotlin" }
 
 kotlin-poet = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlin-poet" }
 
