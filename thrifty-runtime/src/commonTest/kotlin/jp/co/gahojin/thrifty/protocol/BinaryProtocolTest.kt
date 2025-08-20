@@ -21,7 +21,7 @@
  */
 package jp.co.gahojin.thrifty.protocol
 
-import io.kotest.assertions.fail
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.contain
@@ -52,11 +52,10 @@ class BinaryProtocolTest {
         buffer.writeInt(13)
         buffer.writeUtf8("foobarbazquux")
         val proto = BinaryProtocol(BufferTransport(buffer), 12)
-        try {
+        shouldThrow<ProtocolException> {
             proto.readString()
-            fail("Expected a ProtocolException")
-        } catch (e: ProtocolException) {
-            e.message should contain("String size limit exceeded")
+        } should {
+            it.message should contain("String size limit exceeded")
         }
     }
 
@@ -75,11 +74,10 @@ class BinaryProtocolTest {
         buffer.writeInt(6)
         buffer.writeUtf8("kaboom")
         val proto = BinaryProtocol(BufferTransport(buffer), 4)
-        try {
+        shouldThrow<ProtocolException> {
             proto.readBinary()
-            fail("Expected a ProtocolException")
-        } catch (e: ProtocolException) {
-            e.message should contain("Binary size limit exceeded")
+        } should {
+            it.message should contain("Binary size limit exceeded")
         }
     }
 

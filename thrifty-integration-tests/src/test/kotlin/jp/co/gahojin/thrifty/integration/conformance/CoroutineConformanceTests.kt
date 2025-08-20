@@ -21,7 +21,8 @@
  */
 package jp.co.gahojin.thrifty.integration.conformance
 
-import io.kotest.assertions.fail
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -352,22 +353,20 @@ abstract class CoroutineConformanceTests {
 
     @Test
     fun testExceptionNormalError(): Unit = runBlocking {
-        try {
+        shouldThrow<Xception> {
             client.testException("Xception")
-            fail("Expected an Xception")
-        } catch (e: Xception) {
-            e.errorCode shouldBe 1001
-            e.message_ shouldBe "Xception"
+        } should {
+            it.errorCode shouldBe 1001
+            it.message_ shouldBe "Xception"
         }
     }
 
     @Test
     fun testExceptionInternalError(): Unit = runBlocking {
-        try {
+        shouldThrow<ThriftException> {
             client.testException("TException")
-            fail("Expected a ThriftException")
-        } catch (e: ThriftException) {
-            e.kind shouldBe ThriftException.Kind.INTERNAL_ERROR
+        } should {
+            it.kind shouldBe ThriftException.Kind.INTERNAL_ERROR
         }
     }
 
@@ -389,26 +388,24 @@ abstract class CoroutineConformanceTests {
             message_ = "This is an Xception",
         )
 
-        try {
+        shouldThrow<Xception> {
             client.testMultiException("Xception", "nope")
-            fail("Expected an Xception")
-        } catch (e: Xception) {
-            e shouldBe expected
+        } should {
+            it shouldBe expected
         }
     }
 
     @Test
     fun testMultiExceptionErrorTwo(): Unit = runBlocking {
-        try {
+        shouldThrow<Xception2> {
             client.testMultiException("Xception2", "nope")
-            fail("Expected an Xception2")
-        } catch (e: Xception2) {
+        } should {
             // Note: We aren't asserting against an expected value because the members
             //       of 'struct_thing' are unspecified besides 'string_thing', and Thrift
             //       implementations differ on whether to return unset primitive values,
             //       depending on options set during codegen.
-            e.errorCode shouldBe 2002
-            e.struct_thing?.string_thing shouldBe "This is an Xception2"
+            it.errorCode shouldBe 2002
+            it.struct_thing?.string_thing shouldBe "This is an Xception2"
         }
     }
 
@@ -435,11 +432,10 @@ abstract class CoroutineConformanceTests {
         val d4 = async { client.testI64(Long.MAX_VALUE) shouldBe Long.MAX_VALUE }
         val d5 = async {
             val expected = Xception(errorCode = 1001, message_ = "This is an Xception")
-            try {
+            shouldThrow<Xception> {
                 client.testMultiException("Xception", "nope")
-                fail("Expected an Xception")
-            } catch (e: Xception) {
-                e shouldBe expected
+            } should {
+                it shouldBe expected
             }
         }
 

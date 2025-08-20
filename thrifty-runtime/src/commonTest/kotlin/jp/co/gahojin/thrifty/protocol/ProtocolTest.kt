@@ -21,7 +21,8 @@
  */
 package jp.co.gahojin.thrifty.protocol
 
-import io.kotest.assertions.fail
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.throwable.shouldHaveMessage
@@ -138,12 +139,9 @@ class ProtocolTest {
         protocol.writeFieldEnd()
         protocol.writeFieldStop()
         protocol.writeStructEnd()
-        try {
+        shouldThrow<ProtocolException> {
             protocol.skip(TType.STRUCT)
-            fail("Expected a ProtocolException but nothing was thrown")
-        } catch (ignored: ProtocolException) {
-            ignored shouldHaveMessage "Unrecognized TType value: 84"
-        }
+        } shouldHaveMessage "Unrecognized TType value: 84"
     }
 
     @Test

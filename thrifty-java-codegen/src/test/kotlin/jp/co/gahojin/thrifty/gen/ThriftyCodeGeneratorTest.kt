@@ -21,7 +21,6 @@
 package jp.co.gahojin.thrifty.gen
 
 import com.squareup.javapoet.JavaFile
-import io.kotest.assertions.fail
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -60,9 +59,7 @@ class ThriftyCodeGeneratorTest {
         val gen = ThriftyCodeGenerator(schema)
         val java = gen.generateTypes()
 
-        if (java.none { it.toString().contains("foo = fields.Constants.TEST_CONST;") }) {
-            fail("Const reference was not found in field assignment")
-        }
+        java.none { it.toString().contains("foo = fields.Constants.TEST_CONST;") } shouldBe false
 
         java shouldHaveSize 2
     }
