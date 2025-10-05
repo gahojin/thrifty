@@ -47,14 +47,3 @@ subprojects {
         jvmTarget = "21"
     }
 }
-
-// FIXME Dokkaにより、脆弱な依存関係が取り込まれている
-// https://github.com/Kotlin/dokka/issues/3194
-allprojects {
-    configurations.all {
-        resolutionStrategy {
-            force(libs.fastxml.woodstox)
-        }
-    }
-}
-
