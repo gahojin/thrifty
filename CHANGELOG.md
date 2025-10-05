@@ -1,4 +1,4 @@
-4.7.0 (unreleased)
+4.7.0
 ------------------
 - build(deps): Bump com.squareup.okio:okio from 3.11.0 to 3.16.0
 - build(deps): Bump com.fasterxml.woodstox:woodstox-core from 7.1.0 to 7.1.1

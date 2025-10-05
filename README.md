@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'jp.co.gahojin.thrifty:thrifty-runtime-jvm:4.6.3'
+  implementation 'jp.co.gahojin.thrifty:thrifty-runtime-jvm:4.7.0'
 }
 ```
 
@@ -51,7 +51,7 @@ Or, with the Gradle plugin:
 
 buildscript {
   dependencies {
-    classpath 'jp.co.gahojin.thrifty:thrifty-gradle-plugin:4.6.3'
+    classpath 'jp.co.gahojin.thrifty:thrifty-gradle-plugin:4.7.0'
   }
 }
 
