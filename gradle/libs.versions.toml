@@ -12,9 +12,7 @@ clikt = "5.0.3"
 
 detekt = "1.23.8"
 
-dokka = "2.0.0"
-
-fastxml-woodstox = "7.1.1"
+dokka = "2.1.0-Beta"
 
 gradle-plugin-publish = "2.0.0"
 
@@ -57,8 +55,6 @@ apache-thrift = { group = "org.apache.thrift", name = "libthrift", version.ref =
 assertj = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
 
 clikt = { group = "com.github.ajalt.clikt", name = "clikt", version.ref = "clikt" }
-
-fastxml-woodstox = { group = "com.fasterxml.woodstox", name = "woodstox-core", version.ref = "fastxml-woodstox" }
 
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 

@@ -1,5 +1,27 @@
 4.7.0 (unreleased)
 ------------------
+- build(deps): Bump com.squareup.okio:okio from 3.11.0 to 3.16.0
+- build(deps): Bump com.fasterxml.woodstox:woodstox-core from 7.1.0 to 7.1.1
+- build(deps): Bump junit from 5.12.2 to 5.13.4
+- build(deps): Bump org.jetbrains.kotlinx:atomicfu from 0.27.0 to 0.29.0
+- build(deps): Bump io.ktor from 3.1.2 to 3.3.0
+- build(deps): Bump assertj from 3.27.3 to 3.27.6
+- build(deps): Bump kotlin from 2.1.21 to 2.2.20
+- build(deps): Bump kotest from 5.9.1 to 6.0.3
+- build(deps): Bump tomcat from 11.0.9 to 1.0.11
+- build(deps): Bump lefthook from 1.11.13 to 1.13.4
+- build(deps): Bump thrift from 0.21.0 to 0.22.0
+- build(deps): Bump jp.co.gahojin.refreshVersions from 0.1.4 to 0.4.0
+- build(deps): Bump com.vanniktech.maven.publish from 0.32.0 to 0.34.0
+- build(deps): Bump com.gradleup.shadow from 8.3.6 to 9.2.2
+- build(deps): Bump org.jetbrains.kotlinx.kover from 0.9.1 to 0.9.2
+- build(deps): Bump dokka from 2.0.0 to 2.1.0-Beta
+- build(deps): Bump npm-check-updates from 18.0.1 to 18.3.0
+- build(deps): Bump commitlint from 19.8.1 to 20.0.0
+- build(deps): Bump actions/checkout from 4.2.2 to 5.0.0
+- build(deps): Bump actions/setup-java from 4.7.1 to 5.0.0
+- build(deps): Bump gradle/actions from 4.4.0 to 4.4.3
+- Update Gradle Wrapper from 8.14.1 to 9.1.0
 
 4.6.3 (released 26 May 2025)
 ------------------
