@@ -1,9 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 /*
  * Thrifty
  *
- * Copyright (c) Microsoft Corporation
  * Copyright (c) GAHOJIN, Inc.
  *
  * All rights reserved.
@@ -21,19 +18,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
  *
  * See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
-plugins {
-    id 'java-library'
-    id 'idea'
-}
+import org.gradle.api.JavaVersion
 
-dependencies {
-    api libs.junit.api
-    implementation libs.apache.thrift
-    implementation libs.slf4j.api
-    implementation libs.tomcat.embed.core
-}
-
-java {
-    sourceCompatibility = Build.jvmTarget
-    targetCompatibility = Build.jvmTarget
+object Build {
+    val jvmTarget = JavaVersion.VERSION_17
 }
