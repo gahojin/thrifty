@@ -12,7 +12,7 @@ clikt = "5.0.3"
 
 detekt = "1.23.8"
 
-dokka = "2.1.0-Beta"
+dokka = "2.1.0"
 
 gradle-plugin-publish = "2.0.0"
 
@@ -22,7 +22,7 @@ java-poet = "1.13.0"
 
 junit = "6.0.0"
 
-kotest = "6.0.3"
+kotest = "6.0.4"
 
 kotlin = "2.2.20"
 
