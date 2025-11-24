@@ -38,7 +38,7 @@ ktor = "3.3.2"
 
 maven-publish = "0.35.0"
 
-okio = "3.16.2"
+okio = "3.16.3"
 
 shadow = "9.2.2"
 
