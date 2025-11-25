@@ -22,7 +22,7 @@ java-poet = "1.13.0"
 
 junit = "6.0.1"
 
-kotest = "6.0.4"
+kotest = "6.0.5"
 
 kotlin = "2.2.21"
 
@@ -38,7 +38,7 @@ ktor = "3.3.2"
 
 maven-publish = "0.35.0"
 
-okio = "3.16.3"
+okio = "3.16.4"
 
 shadow = "9.2.2"
 
