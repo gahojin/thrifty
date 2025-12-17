@@ -22,7 +22,7 @@ java-poet = "1.13.0"
 
 junit = "6.0.1"
 
-kotest = "6.0.5"
+kotest = "6.0.7"
 
 kotlin = "2.2.21"
 
@@ -40,11 +40,11 @@ maven-publish = "0.35.0"
 
 okio = "3.16.4"
 
-shadow = "9.2.2"
+shadow = "9.3.0"
 
 slf4j = "2.0.17"
 
-tomcat = "11.0.14"
+tomcat = "11.0.15"
 
 [libraries]
 
