@@ -40,7 +40,7 @@ maven-publish = "0.35.0"
 
 okio = "3.16.4"
 
-shadow = "9.3.0"
+shadow = "9.3.1"
 
 slf4j = "2.0.17"
 
