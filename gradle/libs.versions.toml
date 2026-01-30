@@ -22,13 +22,13 @@ java-poet = "1.13.0"
 
 junit = "6.0.2"
 
-kotest = "6.1.0"
+kotest = "6.1.1"
 
 kotlin = "2.3.0"
 
 kotlin-poet = "2.2.0"
 
-kotlinx-atomicfu = "0.30.0"
+kotlinx-atomicfu = "0.31.0"
 
 kotlinx-coroutines = "1.10.2"
 
