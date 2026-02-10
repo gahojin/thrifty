@@ -3,29 +3,19 @@ name: Pre-merge checks
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
-    paths-ignore:
-      - '.npmignore'
-      - '.husky/**'
-      - '.idea/**'
-      - 'LICENSE'
-      - 'NOTICE'
-      - '*.md'
-      - 'bumpver.toml'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
+    branches: ['main']
+    paths:
+      - 'gradle/**'
+      - 'thrifty-*/**'
+      - 'gradle.properties'
+      - '*.gradle.kts'
   pull_request:
     branches: [ main ]
-    paths-ignore:
-      - '.npmignore'
-      - '.husky/**'
-      - '.idea/**'
-      - 'LICENSE'
-      - 'NOTICE'
-      - '*.md'
-      - 'bumpver.toml'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
+    paths:
+      - 'gradle/**'
+      - 'thrifty-*/**'
+      - 'gradle.properties'
+      - '*.gradle.kts'
 
 permissions:
   contents: write
