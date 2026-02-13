@@ -22,9 +22,9 @@ java-poet = "1.13.0"
 
 junit = "6.0.2"
 
-kotest = "6.1.2"
+kotest = "6.1.3"
 
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 
 kotlin-poet = "2.2.0"
 
@@ -32,7 +32,7 @@ kotlinx-atomicfu = "0.31.0"
 
 kotlinx-coroutines = "1.10.2"
 
-kotlinx-kover = "0.9.5"
+kotlinx-kover = "0.9.6"
 
 ktor = "3.4.0"
 
