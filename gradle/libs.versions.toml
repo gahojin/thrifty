@@ -32,7 +32,7 @@ kotlinx-atomicfu = "0.31.0"
 
 kotlinx-coroutines = "1.10.2"
 
-kotlinx-kover = "0.9.6"
+kotlinx-kover = "0.9.7"
 
 ktor = "3.4.0"
 
