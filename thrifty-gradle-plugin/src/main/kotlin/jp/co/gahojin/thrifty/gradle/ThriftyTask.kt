@@ -26,11 +26,14 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.logging.configuration.ShowStacktrace
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.workers.WorkerExecutor
@@ -43,11 +46,13 @@ import javax.inject.Inject
  * In practice, just a thin layer around a Worker API action which does the heavy
  * lifting.
  */
+@CacheableTask
 abstract class ThriftyTask : SourceTask() {
     @get:OutputDirectory
     abstract val outputDirectory: DirectoryProperty
 
     @get:InputFiles
+    @get:PathSensitive(PathSensitivity.ABSOLUTE)
     abstract val includePath: ListProperty<File>
 
     @get:Nested
