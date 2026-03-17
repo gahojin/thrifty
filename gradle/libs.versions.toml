@@ -14,7 +14,7 @@ detekt = "1.23.8"
 
 dokka = "2.1.0"
 
-gradle-plugin-publish = "2.0.0"
+gradle-plugin-publish = "2.1.0"
 
 guava = "33.5.0-jre"
 
@@ -22,9 +22,9 @@ java-poet = "1.13.0"
 
 junit = "6.0.3"
 
-kotest = "6.1.4"
+kotest = "6.1.7"
 
-kotlin = "2.3.10"
+kotlin = "2.3.20"
 
 kotlin-poet = "2.2.0"
 
@@ -34,13 +34,13 @@ kotlinx-coroutines = "1.10.2"
 
 kotlinx-kover = "0.9.7"
 
-ktor = "3.4.0"
+ktor = "3.4.1"
 
 maven-publish = "0.36.0"
 
-okio = "3.16.4"
+okio = "3.17.0"
 
-shadow = "9.3.2"
+shadow = "9.4.0"
 
 slf4j = "2.0.17"
 
