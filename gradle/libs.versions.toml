@@ -14,7 +14,7 @@ detekt = "1.23.8"
 
 dokka = "2.1.0"
 
-gradle-plugin-publish = "2.1.0"
+gradle-plugin-publish = "2.1.1"
 
 guava = "33.5.0-jre"
 
@@ -44,7 +44,7 @@ shadow = "9.4.0"
 
 slf4j = "2.0.17"
 
-tomcat = "11.0.18"
+tomcat = "11.0.20"
 
 [libraries]
 
