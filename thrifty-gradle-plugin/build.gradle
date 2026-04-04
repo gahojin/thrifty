@@ -41,7 +41,7 @@ java {
 kotlin {
     compilerOptions {
         jvmTarget = JvmTarget.fromTarget(Build.jvmTarget.toString())
-        freeCompilerArgs.add('-Xjvm-default=all')
+        freeCompilerArgs.add('-jvm-default=all')
     }
 }
 
