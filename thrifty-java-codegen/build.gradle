@@ -67,14 +67,6 @@ tasks.withType(Test).configureEach {
     }
 }
 
-signing {
-    def versionName = (String) project.findProperty("VERSION_NAME")
-    if (!versionName?.endsWith("-SNAPSHOT")) {
-        useGpgCmd()
-    }
-    sign(publishing.publications)
-}
-
 mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
