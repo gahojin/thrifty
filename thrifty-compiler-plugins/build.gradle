@@ -44,7 +44,7 @@ java {
 kotlin {
     compilerOptions {
         jvmTarget = JvmTarget.fromTarget(Build.jvmTarget.toString())
-        freeCompilerArgs.add('-Xjvm-default=all')
+        freeCompilerArgs.add('-jvm-default=enable')
     }
 }
 
@@ -58,14 +58,12 @@ tasks.withType(Test).configureEach {
 }
 
 signing {
-    def versionName = (String) project.findProperty("VERSION_NAME")
-    if (!versionName?.endsWith("-SNAPSHOT")) {
-        useGpgCmd()
-    }
-    sign(publishing.publications)
+    required = project.hasProperty("signingInMemoryKey") || System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKey") != null
 }
 
 mavenPublishing {
     publishToMavenCentral()
-    signAllPublications()
+    if (project.hasProperty("signingInMemoryKey") || System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKey") != null) {
+        signAllPublications()
+    }
 }
