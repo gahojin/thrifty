@@ -22,7 +22,7 @@ java-poet = "1.13.0"
 
 junit = "6.0.3"
 
-kotest = "6.1.10"
+kotest = "6.1.11"
 
 kotlin = "2.3.20"
 
