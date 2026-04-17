@@ -16,7 +16,7 @@ dokka = "2.2.0"
 
 gradle-plugin-publish = "2.1.1"
 
-guava = "33.5.0-jre"
+guava = "33.6.0-jre"
 
 java-poet = "1.13.0"
 
