@@ -30,7 +30,7 @@ kotlin-poet = "2.3.0"
 
 kotlinx-atomicfu = "0.32.1"
 
-kotlinx-coroutines = "1.10.2"
+kotlinx-coroutines = "1.11.0"
 
 kotlinx-kover = "0.9.8"
 
@@ -44,7 +44,7 @@ shadow = "9.4.1"
 
 slf4j = "2.0.17"
 
-tomcat = "11.0.21"
+tomcat = "11.0.22"
 
 [libraries]
 
