@@ -3,20 +3,20 @@ name: Publish
 on:
   workflow_dispatch:
   release:
-    types: [released, prereleased]
+    types:
+      - published
 
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
   publish:
     name: Release build and publish
+    if: github.repository == 'gahojin/thrifty'
     timeout-minutes: 30
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        java-version: [21]
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
@@ -24,11 +24,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup JDK ${{ matrix.java-version }}
+      - name: Setup JDK
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: temurin
-          java-version: ${{ matrix.java-version }}
+          java-version: 21
 
       - name: Publish to MavenCentral
         run: ./gradlew publishToMavenCentral --no-configuration-cache
