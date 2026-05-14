@@ -2,23 +2,11 @@ name: Pre-merge checks
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     branches: ['main']
-    paths:
-      - 'gradle/**'
-      - 'thrifty-*/**'
-      - 'gradle.properties'
-      - '*.gradle.kts'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - 'gradle/**'
-      - 'thrifty-*/**'
-      - 'gradle.properties'
-      - '*.gradle.kts'
 
-permissions:
-  contents: write
+permissions: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,17 +14,24 @@ concurrency:
 
 jobs:
   build:
-    timeout-minutes: 30
     name: Build and test (OS ${{ matrix.os }}, JDK ${{ matrix.jvm-version }})
+
+    timeout-minutes: 30
     runs-on: ${{ matrix.os }}
+
+    permissions:
+      contents: write
+
     strategy:
       fail-fast: false
       matrix:
         jvm-version: [21]
         os: [ubuntu-latest]
+
     env:
       JDK_VERSION: ${{ matrix.jvm-version }}
       GRADLE_OPTS: -Dorg.gradle.daemon=false
+
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
