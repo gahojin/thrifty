@@ -11,6 +11,7 @@ permissions: {}
 jobs:
   publish:
     name: Release build and publish
+    if: github.repository == 'gahojin/thrifty'
     timeout-minutes: 30
     runs-on: ubuntu-latest
 
