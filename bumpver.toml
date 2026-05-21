@@ -2,18 +2,13 @@
 current_version = "v4.8.0"
 version_pattern = "vMAJOR.MINOR.PATCH"
 commit_message = "chore: bump version {old_version} -> {new_version}"
-tag_message = "{new_version}"
-tag_scope = "default"
 pre_commit_hook = ""
 post_commit_hook = ""
 commit = true
-tag = true
+tag = false
 push = false
 
 [bumpver.file_patterns]
 "gradle.properties" = [
     "VERSION_NAME={pep440_version}",
-]
-"bumpver.toml" = [
-    'current_version = "{version}"',
 ]
