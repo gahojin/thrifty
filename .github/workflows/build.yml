@@ -9,13 +9,12 @@ on:
 permissions: {}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
-    name: Build and test (OS ${{ matrix.os }}, JDK ${{ matrix.jvm-version }})
-
+    name: Build and test (OS ${{ matrix.os }}, JDK ${{ matrix.java-version }})
     timeout-minutes: 30
     runs-on: ${{ matrix.os }}
 
@@ -25,11 +24,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jvm-version: [21]
+        java-version: [21]
         os: [ubuntu-latest]
 
     env:
-      JDK_VERSION: ${{ matrix.jvm-version }}
+      JDK_VERSION: ${{ matrix.java-version }}
       GRADLE_OPTS: -Dorg.gradle.daemon=false
 
     steps:
@@ -39,14 +38,14 @@ jobs:
           persist-credentials: false
 
       - name: Ensure all code files have license headers
-        if: matrix.os == 'ubuntu-latest' && matrix.jvm-version == '21'
+        if: matrix.os == 'ubuntu-latest' && matrix.java-version == '21'
         shell: bash
         run: ./script/ensure_license_headers.sh
 
-      - name: Set up JDK
+      - name: Setup JDK ${{ matrix.java-version }}
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
-          java-version: ${{ matrix.jvm-version }}
+          java-version: ${{ matrix.java-version }}
           distribution: zulu
 
       - name: Setup Gradle
